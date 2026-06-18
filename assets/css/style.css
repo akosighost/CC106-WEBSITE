@@ -818,3 +818,454 @@ body.active { overflow: hidden; }
   font-family: inherit;
   line-height: 1.6;
 }
+
+/*-----------------------------------*\
+ * #MOVIE DETAIL VIEWPORT INTERACTION MODAL STYLES
+\*-----------------------------------*/
+
+.movie-detail-modal-container {
+  max-width: 900px !important;
+  width: 95% !important;
+  height: auto;
+  max-height: 90vh !important;
+  border-top: 4px solid var(--citrine);
+  overflow: hidden;
+}
+
+.movie-detail-layout-grid {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  height: 100%;
+  max-height: calc(90vh - 4px);
+}
+
+/* Left Section Column Blueprint */
+.detail-poster-column {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  border-right: 1px solid var(--gunmetal-1);
+}
+
+.detail-poster-frame {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+
+.detail-poster-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.detail-view-counter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--gainsboro);
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 8px 16px;
+  border-radius: 50px;
+  border: 1px solid var(--gunmetal-1);
+}
+
+.detail-view-counter ion-icon {
+  color: var(--citrine);
+  font-size: 18px;
+}
+
+/* Right Section Content Column Layout */
+.detail-content-column {
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  max-height: calc(90vh - 4px);
+}
+
+.detail-content-column::-webkit-scrollbar { width: 6px; }
+.detail-content-column::-webkit-scrollbar-thumb { background: var(--gunmetal-1); border-radius: 10px; }
+
+.detail-main-title {
+  font-size: 28px;
+  color: var(--white);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.detail-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.detail-date-badge {
+  background: var(--citrine);
+  color: var(--rich-black-fogra-29);
+  font-size: 11px;
+  font-weight: var(--fw-700);
+  padding: 4px 10px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.detail-author-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #678;
+  font-size: 13px;
+}
+
+.detail-section-label {
+  color: #678;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--gunmetal-1);
+  padding-bottom: 6px;
+}
+
+.detail-paragraph-content {
+  color: var(--gainsboro);
+  font-size: 14px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 15px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.02);
+  margin-bottom: 25px;
+}
+
+/* Discussion Feed & Card Layout Rules */
+.detail-comments-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.comments-scroll-vault {
+  max-height: 220px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-right: 5px;
+}
+
+.comments-scroll-vault::-webkit-scrollbar { width: 4px; }
+.comments-scroll-vault::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+
+.comment-card-node {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--gunmetal-1);
+  padding: 12px 16px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.comment-left-stack h5 {
+  color: var(--white);
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.comment-stars-row {
+  color: var(--citrine);
+  font-size: 11px;
+  margin-bottom: 6px;
+}
+
+.comment-body-text {
+  color: var(--gainsboro);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Heart Counter Core Assembly Rules */
+.comment-right-stack {
+  display: flex;
+  align-items: center;
+}
+
+.comment-heart-action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #678;
+  font-size: 11px;
+  transition: var(--transition-1);
+}
+
+.comment-heart-action-btn ion-icon {
+  font-size: 18px;
+  margin-bottom: 2px;
+  cursor: pointer;
+}
+
+.comment-heart-action-btn:hover,
+.comment-heart-action-btn.liked-active {
+  color: #ff4560;
+}
+
+/* Comment Editor Panel Assembly Box Override */
+.detail-comment-form-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid var(--gunmetal-1);
+}
+
+.comment-textarea {
+  padding: 12px !important;
+  min-height: 60px;
+  height: 60px;
+  resize: none;
+}
+
+.comment-submission-utilities-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.interactive-star-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.selector-label {
+  color: #678;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.star-nodes {
+  display: flex;
+  gap: 4px;
+  color: #678;
+  font-size: 16px;
+}
+
+.star-nodes ion-icon {
+  cursor: pointer;
+  transition: var(--transition-1);
+}
+
+.star-nodes ion-icon.hovered-star,
+.star-nodes ion-icon.selected-star {
+  color: var(--citrine);
+}
+
+.comment-submit-btn-override {
+  width: auto !important;
+  margin-top: 0 !important;
+  padding: 10px 24px !important;
+  font-size: 12px;
+}
+
+/* Media Query Responsiveness Overrides */
+@media (max-width: 768px) {
+  .movie-detail-layout-grid {
+    grid-template-columns: 1fr;
+  }
+  .detail-poster-column {
+    border-right: none;
+    border-bottom: 1px solid var(--gunmetal-1);
+    padding: 20px;
+  }
+  .detail-poster-frame {
+    width: 140px;
+  }
+}
+
+/*-----------------------------------*\
+ * #MOVIE DETAIL GLOBAL SCORE STYLES
+\*-----------------------------------*/
+
+.detail-average-rating-container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-block: 8px 12px;
+}
+
+.detail-average-rating-container ion-icon {
+  font-size: 18px;
+}
+
+.detail-average-rating-container .average-score-text {
+  font-family: var(--ff-poppins);
+  font-size: 13px;
+  font-weight: var(--fw-700);
+  margin-left: 6px;
+  letter-spacing: 0.5px;
+}
+
+/*-----------------------------------*\
+ * #SECURE MODAL DELETE UTILITIES
+\*-----------------------------------*/
+
+.detail-delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #ff4560; /* Matches your community heart/like warning red bounds */
+  font-family: var(--ff-poppins);
+  font-size: 12px;
+  font-weight: var(--fw-700);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  background: rgba(255, 69, 96, 0.03);
+  border: 1px solid #ff4560;
+  padding: 10px 20px;
+  border-radius: 50px;
+  width: 100%;
+  transition: var(--transition-1);
+  margin-top: 12px;
+}
+
+.detail-delete-btn:hover {
+  background: #ff4560;
+  color: var(--white);
+  box-shadow: 0 6px 20px rgba(255, 69, 96, 0.4);
+  transform: translateY(-2px);
+}
+
+.detail-delete-btn:active {
+  transform: translateY(0);
+}
+
+.detail-delete-btn ion-icon {
+  font-size: 16px;
+}
+
+/*-----------------------------------*\
+ * #TIMESTAMPS & ACTIONABLE COMMENT BUTTONS
+\*-----------------------------------*/
+
+.detail-time-stamp-label {
+  color: #678;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.comment-header-row-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.comment-time-stamp-text {
+  color: #567;
+  font-size: 11px;
+  font-weight: var(--fw-500);
+}
+
+.comment-utilities-right-align {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.comment-inline-trash-btn {
+  color: #678;
+  font-size: 15px;
+  transition: var(--transition-1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.comment-inline-trash-btn:hover {
+  color: #ff4560;
+  transform: scale(1.1);
+}
+
+/*-----------------------------------*\
+ * #SECURE EDIT MODE INTERFACE OVERLAYS
+\*-----------------------------------*/
+
+.detail-edit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--citrine);
+  font-family: var(--ff-poppins);
+  font-size: 12px;
+  font-weight: var(--fw-700);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  background: rgba(229, 184, 0, 0.03);
+  border: 1px solid var(--citrine);
+  padding: 10px 20px;
+  border-radius: 50px;
+  width: 100%;
+  transition: var(--transition-1);
+  margin-top: 5px;
+}
+
+.detail-edit-btn:hover {
+  background: var(--citrine);
+  color: var(--black);
+  box-shadow: 0 6px 20px rgba(229, 184, 0, 0.3);
+  transform: translateY(-2px);
+}
+
+.edit-poster-hover-wrapper {
+  position: relative;
+}
+
+.poster-edit-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  color: var(--citrine);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  opacity: 0;
+  visibility: hidden;
+  transition: var(--transition-1);
+  cursor: pointer;
+  z-index: 5;
+}
+
+/* Show photo input changer only when edit mode is toggled active */
+.movie-detail-modal-container.is-editing-mode .poster-edit-overlay {
+  opacity: 1;
+  visibility: visible;
+}
+
+.poster-edit-overlay ion-icon {
+  font-size: 32px;
+}

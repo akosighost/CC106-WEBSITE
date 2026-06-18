@@ -41,21 +41,20 @@ process.on('uncaughtException', (err) => {
 // ==========================================
 app.post('/api/auth/signup', async (req, res) => {
   const { username, email, password } = req.body;
-
+  
   try {
-    // Check if email already exists
-    const emailCheck = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    // ALWAYS match using LOWER() to prevent duplicate case entries
+    const emailCheck = await pool.query('SELECT * FROM users WHERE LOWER(email) = LOWER($1)', [email]);
     if (emailCheck.rows.length > 0) {
       return res.status(400).json({ message: 'Email address is already registered.' });
     }
 
-    // Hash the password securely
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    // Save the new user record
+    // Force store as clean lowercase
     const newUser = await pool.query(
-      'INSERT INTO users (username, email, password_hash) VALUES ($1, $2, $3) RETURNING user_id, username, email',
+      'INSERT INTO users (username, email, password_hash) VALUES ($1, LOWER($2), $3) RETURNING user_id, username, email',
       [username, email, passwordHash]
     );
 
@@ -66,7 +65,6 @@ app.post('/api/auth/signup', async (req, res) => {
 
   } catch (err) {
     console.error("🔴 Live DB Error Catch:", err.message);
-    // CRITICAL: This passes the exact database block straight to your browser alert popup!
     res.status(500).json({ message: `Database Error: ${err.message}` });
   }
 });
@@ -78,7 +76,7 @@ app.post('/api/auth/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const userResult = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    const userResult = await pool.query('SELECT * FROM users WHERE LOWER(email) = LOWER($1)', [email]);
     if (userResult.rows.length === 0) {
       return res.status(401).json({ message: 'Invalid email or password match.' });
     }
@@ -92,7 +90,7 @@ app.post('/api/auth/login', async (req, res) => {
     res.json({
       message: 'Login successful!',
       username: user.username,
-      email: user.email,
+      email: user.email.toLowerCase(), 
       password: '●●●●●●●●', 
       token: 'session-jwt-token-production-abc123'
     });
@@ -175,14 +173,13 @@ app.post('/api/reviews/upload', async (req, res) => {
   const { email, movieName, publishDate, reviewText, imageData } = req.body;
 
   try {
-    // Look up user_id linked to the current active session email
-    const userQuery = await pool.query('SELECT user_id FROM users WHERE email = $1', [email]);
+    // FIX: Uses LOWER() to ensure case-insensitive email matching across accounts
+    const userQuery = await pool.query('SELECT user_id FROM users WHERE LOWER(email) = LOWER($1)', [email]);
     if (userQuery.rows.length === 0) {
       return res.status(404).json({ message: 'Active profile identity not found.' });
     }
     const userId = userQuery.rows[0].user_id;
 
-    // Save the movie review into the user's secure collection pool
     await pool.query(
       'INSERT INTO reviews (user_id, movie_name, publish_date, review_text, image_data) VALUES ($1, $2, $3, $4, $5)',
       [userId, movieName, publishDate, reviewText, imageData]
@@ -197,21 +194,28 @@ app.post('/api/reviews/upload', async (req, res) => {
 });
 
 // ==========================================
-// 6. GET USER-SPECIFIC REVIEWS ENDPOINT
+// 6. GET USER-SPECIFIC REVIEWS ENDPOINT (WITH DYNAMIC RATING AGGREGATION)
 // ==========================================
 app.get('/api/reviews/user', async (req, res) => {
   const { email } = req.query;
 
   try {
-    const userQuery = await pool.query('SELECT user_id FROM users WHERE email = $1', [email]);
+    const userQuery = await pool.query('SELECT user_id FROM users WHERE LOWER(email) = LOWER($1)', [email]);
     if (userQuery.rows.length === 0) {
-      return res.json([]); // Return empty list if no profile matches
+      return res.json([]); 
     }
     const userId = userQuery.rows[0].user_id;
 
-    // Fetch only the reviews that match this logged-in user ID
+    // Advanced Query: Left joins comment table records to compute live movie row metrics
     const reviewsQuery = await pool.query(
-      'SELECT * FROM reviews WHERE user_id = $1 ORDER BY created_at DESC',
+      `SELECT r.*, 
+              COALESCE(ROUND(AVG(c.rating), 1), 0) as avg_rating,
+              COUNT(c.rating) as rating_count
+       FROM reviews r
+       LEFT JOIN movie_comments c ON r.review_id = c.review_id
+       WHERE r.user_id = $1
+       GROUP BY r.review_id
+       ORDER BY r.review_id DESC`,
       [userId]
     );
     
@@ -224,13 +228,20 @@ app.get('/api/reviews/user', async (req, res) => {
 });
 
 // ==========================================
-// 7. GET ALL PUBLIC REVIEWS (AUDIENCE REVIEWS)
+// 7. GET ALL PUBLIC REVIEWS (AUDIENCE REVIEWS WITH DYNAMIC RATING AGGREGATION)
 // ==========================================
 app.get('/api/reviews/all', async (req, res) => {
   try {
-    // Fetch all reviews joined with usernames, ordered by newest first
+    // Advanced Query: Joins users and left-joins comments to calculate live scores across the system
     const reviewsQuery = await pool.query(
-      'SELECT r.*, u.username FROM reviews r JOIN users u ON r.user_id = u.user_id ORDER BY r.created_at DESC'
+      `SELECT r.*, u.username,
+              COALESCE(ROUND(AVG(c.rating), 1), 0) as avg_rating,
+              COUNT(c.rating) as rating_count
+       FROM reviews r
+       JOIN users u ON r.user_id = u.user_id
+       LEFT JOIN movie_comments c ON r.review_id = c.review_id
+       GROUP BY r.review_id, u.username
+       ORDER BY r.review_id DESC`
     );
     
     res.json(reviewsQuery.rows);
@@ -238,6 +249,182 @@ app.get('/api/reviews/all', async (req, res) => {
   } catch (err) {
     console.error("❌ Error fetching public reviews:", err.message);
     res.status(500).json({ message: 'Internal engine fault reading public reviews.' });
+  }
+});
+
+// ==========================================
+// 8. GET SPECIFIC MOVIE DETAILS WITH USER-LIKE TRACKING & OWNER FLAGS
+// ==========================================
+app.get('/api/reviews/details/:id', async (req, res) => {
+  const reviewId = req.params.id;
+  const { email } = req.query; 
+
+  try {
+    // Automatically increment view counter metric (+1)
+    await pool.query('UPDATE reviews SET view_count = view_count + 1 WHERE review_id = $1', [reviewId]);
+
+    const reviewQuery = await pool.query(
+      'SELECT r.*, u.username FROM reviews r JOIN users u ON r.user_id = u.user_id WHERE r.review_id = $1',
+      [reviewId]
+    );
+
+    if (reviewQuery.rows.length === 0) {
+      return res.status(404).json({ message: 'Review record not found.' });
+    }
+
+    // Verify if current browser session visitor owns this review
+    const userQuery = await pool.query('SELECT user_id FROM users WHERE LOWER(email) = LOWER($1)', [email || '']);
+    const currentUserId = userQuery.rows.length > 0 ? userQuery.rows[0].user_id : null;
+    const isOwner = currentUserId && (reviewQuery.rows[0].user_id === currentUserId);
+
+    // Fetch comments and check if the active user liked them
+    const commentsQuery = await pool.query(
+      `SELECT c.*, u.username,
+       EXISTS (
+         SELECT 1 FROM comment_likes cl
+         JOIN users lu ON cl.user_id = lu.user_id
+         WHERE cl.comment_id = c.comment_id AND LOWER(lu.email) = LOWER($2)
+       ) as user_has_liked
+       FROM movie_comments c
+       JOIN users u ON c.user_id = u.user_id
+       WHERE c.review_id = $1
+       ORDER BY c.comment_id ASC`,
+      [reviewId, email || '']
+    );
+
+    res.json({
+      review: { ...reviewQuery.rows[0], is_owner: isOwner },
+      comments: commentsQuery.rows
+    });
+
+  } catch (err) {
+    console.error("❌ Error fetching review detail packet:", err.message);
+    res.status(500).json({ message: 'Internal server error resolving review payload packet.' });
+  }
+});
+
+// ==========================================
+// 9. POST NEW COMMUNITY FEED COMMENT
+// ==========================================
+app.post('/api/reviews/details/:id/comments', async (req, res) => {
+  const reviewId = req.params.id;
+  const { email, commentText, rating } = req.body;
+
+  try {
+    const userQuery = await pool.query('SELECT user_id FROM users WHERE LOWER(email) = LOWER($1)', [email]);
+    if (userQuery.rows.length === 0) {
+      return res.status(401).json({ message: 'Session unauthorized.' });
+    }
+    const userId = userQuery.rows[0].user_id;
+
+    const newComment = await pool.query(
+      'INSERT INTO movie_comments (review_id, user_id, comment_text, rating) VALUES ($1, $2, $3, $4) RETURNING *',
+      [reviewId, userId, commentText, rating]
+    );
+
+    res.status(201).json({ message: 'Comment appended successfully!', comment: newComment.rows[0] });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error processing comment form submission.' });
+  }
+});
+
+// ==========================================
+// 10. SMART HEART TOGGLE (LIKE / UNLIKE) ENDPOINT
+// ==========================================
+app.post('/api/comments/like/:id', async (req, res) => {
+  const commentId = req.params.id;
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(401).json({ message: 'You must be signed in to like comments.' });
+  }
+
+  try {
+    const userQuery = await pool.query('SELECT user_id FROM users WHERE LOWER(email) = LOWER($1)', [email]);
+    if (userQuery.rows.length === 0) return res.status(404).json({ message: 'User not found.' });
+    const userId = userQuery.rows[0].user_id;
+
+    const likeCheck = await pool.query('SELECT * FROM comment_likes WHERE comment_id = $1 AND user_id = $2', [commentId, userId]);
+    let isLikedNow = false;
+
+    if (likeCheck.rows.length > 0) {
+      await pool.query('DELETE FROM comment_likes WHERE comment_id = $1 AND user_id = $2', [commentId, userId]);
+      await pool.query('UPDATE movie_comments SET likes_count = GREATEST(0, likes_count - 1) WHERE comment_id = $1', [commentId]);
+      isLikedNow = false;
+    } else {
+      await pool.query('INSERT INTO comment_likes (comment_id, user_id) VALUES ($1, $2)', [commentId, userId]);
+      await pool.query('UPDATE movie_comments SET likes_count = likes_count + 1 WHERE comment_id = $1', [commentId]);
+      isLikedNow = true;
+    }
+
+    const countQuery = await pool.query('SELECT likes_count FROM movie_comments WHERE comment_id = $1', [commentId]);
+    res.json({ success: true, newCount: countQuery.rows[0].likes_count, liked: isLikedNow });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error processing heart interaction.' });
+  }
+});
+
+// ==========================================
+// 11. SECURED SYSTEM REVIEW TERMINATION (DELETE REVIEW ROUTE)
+// ==========================================
+app.delete('/api/reviews/:id', async (req, res) => {
+  const reviewId = req.params.id;
+  const { email } = req.body;
+
+  try {
+    const userQuery = await pool.query('SELECT user_id FROM users WHERE LOWER(email) = LOWER($1)', [email]);
+    if (userQuery.rows.length === 0) return res.status(401).json({ message: 'Session unauthorized.' });
+    const userId = userQuery.rows[0].user_id;
+
+    const reviewCheck = await pool.query('SELECT user_id FROM reviews WHERE review_id = $1', [reviewId]);
+    if (reviewCheck.rows.length === 0) return res.status(404).json({ message: 'Review not found.' });
+
+    if (reviewCheck.rows[0].user_id !== userId) {
+      return res.status(403).json({ message: 'Unauthorized action rejected.' });
+    }
+
+    await pool.query('DELETE FROM reviews WHERE review_id = $1', [reviewId]);
+    res.json({ message: 'Movie review deleted successfully!' });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal database error.' });
+  }
+});
+
+// ==========================================
+// 12. SECURED COMMENT DELETION (DELETE COMMENT ROUTE)
+// ==========================================
+app.delete('/api/comments/:id', async (req, res) => {
+  const commentId = req.params.id;
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(401).json({ message: 'Session unauthorized.' });
+  }
+
+  try {
+    const userQuery = await pool.query('SELECT user_id FROM users WHERE LOWER(email) = LOWER($1)', [email]);
+    if (userQuery.rows.length === 0) return res.status(404).json({ message: 'User not found.' });
+    const userId = userQuery.rows[0].user_id;
+
+    const commentCheck = await pool.query('SELECT user_id FROM movie_comments WHERE comment_id = $1', [commentId]);
+    if (commentCheck.rows.length === 0) return res.status(404).json({ message: 'Comment not found.' });
+
+    if (commentCheck.rows[0].user_id !== userId) {
+      return res.status(403).json({ message: 'Unauthorized: You can only delete your own comments.' });
+    }
+
+    await pool.query('DELETE FROM movie_comments WHERE comment_id = $1', [commentId]);
+    res.json({ message: 'Comment removed successfully!' });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal database error.' });
   }
 });
 

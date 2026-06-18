@@ -761,18 +761,28 @@ document.addEventListener('DOMContentLoaded', () => {
   const uploadPrompt = document.getElementById('upload-zone-prompt');
   
   const reviewsGrid = document.getElementById('user-reviews-grid');
-  const audienceGrid = document.getElementById('audience-reviews-grid'); // New Global Grid Hook
+  const audienceGrid = document.getElementById('audience-reviews-grid');
 
+  // Movie Details Modal Selectors
+  const detailModal = document.getElementById('movie-detail-modal-overlay');
+  const closeDetailModalBtn = document.getElementById('close-detail-modal-btn');
+  const commentForm = document.getElementById('detail-comment-form');
+  
   let base64ImageString = ""; 
+  let currentActiveReviewId = null;
+  let activeSelectedRating = 0; // State variable tracking input star selection
 
-  // 1. private user review loader engine
+  // 1. PRIVATE USER REVIEW LOADER ENGINE (ADDED BY YOU)
   async function fetchAndRenderUserReviews() {
     if (!reviewsGrid) return;
-    
+    const userContainer = document.getElementById('user-reviews-container');
     const userEmail = localStorage.getItem("userEmail");
+    
     if (!userEmail) {
-      reviewsGrid.innerHTML = `<p style="color: #678; font-size: 13px; grid-column: span 6; text-align: center; padding: 20px;">Sign in to view your custom uploaded movie reviews collection.</p>`;
+      if (userContainer) userContainer.style.display = 'none';
       return;
+    } else {
+      if (userContainer) userContainer.style.display = 'block';
     }
 
     try {
@@ -784,20 +794,30 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      reviewsGrid.innerHTML = reviews.map(item => `
-        <div class="premium-box-card">
-          <div class="poster-wrapper">
-            <img src="${item.image_data || './assets/images/obs.jpg'}" alt="${item.movie_name}" />
-          </div>
-          <div class="poster-footer">
-            <span class="reviewer-name">${item.movie_name}</span>
-            <div class="card-meta">
-              <span class="stars-indicator">★★★★★</span>
-              <span class="review-date">${item.publish_date}</span>
+      reviewsGrid.innerHTML = reviews.map(item => {
+        const ratingCount = parseInt(item.rating_count) || 0;
+        const avgRating = parseFloat(item.avg_rating) || 0;
+        
+        // Calculate standard font star strings dynamically
+        const starText = ratingCount > 0 
+          ? "★".repeat(Math.round(avgRating)) + "☆".repeat(5 - Math.round(avgRating)) 
+          : "☆☆☆☆☆";
+
+        return `
+          <div class="premium-box-card review-click-target-node" data-review-id="${item.review_id}" style="cursor: pointer;">
+            <div class="poster-wrapper">
+              <img src="${item.image_data || './assets/images/obs.jpg'}" alt="${item.movie_name}" />
+            </div>
+            <div class="poster-footer">
+              <span class="reviewer-name">${item.movie_name}</span>
+              <div class="card-meta">
+                <span class="stars-indicator">${starText}</span>
+                <span class="review-date">${item.publish_date}</span>
+              </div>
             </div>
           </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
 
     } catch (err) {
       console.error("Error drawing profile dashboard nodes:", err);
@@ -817,31 +837,480 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      audienceGrid.innerHTML = reviews.map(item => `
-        <div class="premium-box-card" style="border-bottom: 3px solid var(--citrine);">
-          <div class="poster-wrapper">
-            <img src="${item.image_data || './assets/images/obs.jpg'}" alt="${item.movie_name}" />
-          </div>
-          <div class="poster-footer">
-            <span class="reviewer-name">${item.movie_name}</span>
-            <div class="card-meta">
-              <span class="stars-indicator" style="color: var(--citrine); font-size: 11px;">By: ${item.username}</span>
-              <span class="review-date">${item.publish_date}</span>
+      audienceGrid.innerHTML = reviews.map(item => {
+        const ratingCount = parseInt(item.rating_count) || 0;
+        const avgRating = parseFloat(item.avg_rating) || 0;
+        
+        const starText = ratingCount > 0 
+          ? "★".repeat(Math.round(avgRating)) + "☆".repeat(5 - Math.round(avgRating)) 
+          : "☆☆☆☆☆";
+
+        return `
+          <div class="premium-box-card review-click-target-node" data-review-id="${item.review_id}" style="border-bottom: 3px solid var(--citrine); cursor: pointer;">
+            <div class="poster-wrapper">
+              <img src="${item.image_data || './assets/images/obs.jpg'}" alt="${item.movie_name}" />
+            </div>
+            <div class="poster-footer">
+              <span class="reviewer-name">${item.movie_name}</span>
+              <span style="color: var(--citrine); font-size: 11px; margin-top: -2px; font-weight: 500;">By: ${item.username}</span>
+              <div class="card-meta">
+                <span class="stars-indicator" style="color: var(--citrine);">${starText}</span>
+                <span class="review-date">${item.publish_date}</span>
+              </div>
             </div>
           </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
 
     } catch (err) {
       console.error("Error drawing global audience grid nodes:", err);
     }
   }
 
-  // Boot up both query arrays immediately when page is loaded
   fetchAndRenderUserReviews();
   fetchAndRenderAudienceReviews();
 
-  // 3. MODAL CONTROLS
+  // ============================================================
+  // PRODUCTION TIMESTAMP FORMATTING PARSER ENGINE (AM/PM FORMAT)
+  // ============================================================
+  function parseSystemTimestampToLocal(isoString) {
+    if (!isoString) return "";
+    const dateInstance = new Date(isoString);
+    return dateInstance.toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+  }
+
+  // 3. FULL-STACK PROFILE DETAILS RENDERING & INTERACTIVE EDIT SUBSYSTEM
+  async function openReviewDetailsViewport(reviewId) {
+    if (!detailModal) return;
+    currentActiveReviewId = reviewId;
+    const userEmail = localStorage.getItem("userEmail") || "";
+
+    // Reset modal state back to default read-only view mode container
+    const modalContainer = document.querySelector('.movie-detail-modal-container');
+    if (modalContainer) modalContainer.classList.remove('is-editing-mode');
+    toggleEditFormState(false);
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/reviews/details/${reviewId}?email=${encodeURIComponent(userEmail)}`);
+      if (!response.ok) throw new Error("Packet unresolved.");
+      const data = await response.json();
+
+      const moviePosterImg = document.getElementById('detail-movie-poster');
+      moviePosterImg.src = data.review.image_data || './assets/images/obs.jpg';
+      document.getElementById('detail-movie-title').textContent = data.review.movie_name;
+      document.getElementById('detail-movie-date').textContent = data.review.publish_date;
+      document.getElementById('detail-movie-author').textContent = data.review.username;
+      document.getElementById('detail-review-text').textContent = data.review.review_text;
+      document.getElementById('detail-view-count').textContent = data.review.view_count || 0;
+
+      const timePlaceholder = document.getElementById('detail-upload-time');
+      if (timePlaceholder && data.review.created_at) {
+        timePlaceholder.textContent = `• Uploaded: ${parseSystemTimestampToLocal(data.review.created_at)}`;
+      }
+
+      // Render star rating blocks 
+      const ratingBox = document.getElementById('detail-average-rating-box');
+      if (ratingBox) {
+        const scoredComments = data.comments.filter(c => c.rating !== null && c.rating !== undefined);
+        let ratingHTML = "";
+        if (scoredComments.length > 0) {
+          const sum = scoredComments.reduce((acc, curr) => acc + parseInt(curr.rating), 0);
+          const averageScore = (sum / scoredComments.length).toFixed(1);
+          for (let i = 1; i <= 5; i++) {
+            if (averageScore >= i) ratingHTML += '<ion-icon name="star" style="color: var(--citrine);"></ion-icon>';
+            else if (averageScore >= i - 0.5) ratingHTML += '<ion-icon name="star-half-outline" style="color: var(--citrine);"></ion-icon>';
+            else ratingHTML += '<ion-icon name="star-outline" style="color: #678 BLOCK;"></ion-icon>';
+          }
+          ratingHTML += `<span class="average-score-text" style="color: var(--white);">${averageScore} / 5 (${scoredComments.length} users rated)</span>`;
+        } else {
+          for (let i = 1; i <= 5; i++) ratingHTML += '<ion-icon name="star-outline" style="color: #678;"></ion-icon>';
+          ratingHTML += `<span class="average-score-text" style="color: #678; font-weight: 500;">No ratings left yet</span>`;
+        }
+        ratingBox.innerHTML = ratingHTML;
+      }
+
+      // ============================================================
+      // COMPREHENSIVE REVIEWS EDIT LOGIC CONTROLLER SYSTEM
+      // ============================================================
+      const editBtn = document.getElementById('detail-edit-review-btn');
+      const deleteBtn = document.getElementById('detail-delete-review-btn');
+      
+      let temporaryBase64PosterString = ""; // Stores new image if changed
+
+      if (data.review.is_owner) {
+        if (editBtn) editBtn.style.display = 'flex';
+        if (deleteBtn) deleteBtn.style.display = 'flex';
+
+        // Wipe old listeners
+        const cleanEditBtn = editBtn.cloneNode(true);
+        editBtn.parentNode.replaceChild(cleanEditBtn, editBtn);
+
+        const posterOverlayBtn = document.getElementById('poster-edit-overlay-btn');
+        const editFileInput = document.getElementById('edit-movie-image-input');
+
+        // Handle Change Poster Trigger Click
+        posterOverlayBtn.onclick = () => editFileInput.click();
+        editFileInput.onchange = function() {
+          const file = this.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function() {
+              moviePosterImg.src = this.result;
+              temporaryBase64PosterString = this.result;
+            };
+            reader.readAsDataURL(file);
+          }
+        };
+
+        // Handle Edit Button Click
+        cleanEditBtn.addEventListener('click', () => {
+          modalContainer.classList.add('is-editing-mode');
+          toggleEditFormState(true);
+          temporaryBase64PosterString = ""; // Reset variable on mode open
+
+          // Hydrate fields with existing text strings
+          document.getElementById('edit-movie-name-field').value = document.getElementById('detail-movie-title').textContent;
+          document.getElementById('edit-movie-date-field').value = document.getElementById('detail-movie-date').textContent;
+          document.getElementById('edit-movie-text-field').value = document.getElementById('detail-review-text').textContent;
+        });
+
+        // Save Button Pipeline Function Execution
+        document.getElementById('edit-save-btn').onclick = async () => {
+          const updatedName = document.getElementById('edit-movie-name-field').value.trim();
+          const updatedDate = document.getElementById('edit-movie-date-field').value.trim();
+          const updatedText = document.getElementById('edit-movie-text-field').value.trim();
+
+          if(!updatedName || !updatedDate || !updatedText) {
+            alert("All values are required!");
+            return;
+          }
+
+          try {
+            const updateResponse = await fetch(`http://localhost:5000/api/reviews/${currentActiveReviewId}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                email: userEmail,
+                movieName: updatedName,
+                publishDate: updatedDate,
+                reviewText: updatedText,
+                imageData: temporaryBase64PosterString || null
+              })
+            });
+            const updateData = await updateResponse.json();
+            alert(updateData.message);
+
+            if (updateResponse.ok) {
+              detailModal.classList.remove('active');
+              document.body.classList.remove('active');
+              await fetchAndRenderUserReviews();
+              await fetchAndRenderAudienceReviews();
+            }
+          } catch (err) {
+            alert("Network link failure writing update logs.");
+          }
+        };
+
+        // Cancel Button Action
+        document.getElementById('edit-cancel-btn').onclick = () => {
+          modalContainer.classList.remove('is-editing-mode');
+          toggleEditFormState(false);
+          moviePosterImg.src = data.review.image_data || './assets/images/obs.jpg'; // Revert visual image changes
+        };
+
+        // Delete Button Initialization Handler Hook
+        const cleanDeleteBtn = deleteBtn.cloneNode(true);
+        deleteBtn.parentNode.replaceChild(cleanDeleteBtn, deleteBtn);
+        cleanDeleteBtn.addEventListener('click', async () => {
+          const confirmDelete = confirm("Are you sure you want to delete this review? This action cannot be undone.");
+          if (!confirmDelete) return;
+          try {
+            const delResponse = await fetch(`http://localhost:5000/api/reviews/${currentActiveReviewId}`, {
+              method: "DELETE",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email: userEmail })
+            });
+            const delData = await delResponse.json();
+            alert(delData.message);
+            if (delResponse.ok) {
+              detailModal.classList.remove('active');
+              document.body.classList.remove('active');
+              await fetchAndRenderUserReviews();
+              await fetchAndRenderAudienceReviews();
+            }
+          } catch (err) { alert("Network error processing deletion."); }
+        });
+
+      } else {
+        if (editBtn) editBtn.style.display = 'none';
+        if (deleteBtn) deleteBtn.style.display = 'none';
+      }
+      // ============================================================
+
+      renderCommentsListCollection(data.comments);
+      resetStarSelectorInterfaceNode();
+
+      detailModal.classList.add('active');
+      document.body.classList.add('active');
+
+    } catch (err) {
+      alert("Error contacting dataset detail endpoint nodes.");
+    }
+  }
+
+  // Helper visibility layout control switcher
+  function toggleEditFormState(showEditForm) {
+    const viewStyle = showEditForm ? 'none' : 'block';
+    const inlineViewStyle = showEditForm ? 'none' : 'inline-block';
+    const editStyle = showEditForm ? 'block' : 'none';
+
+    document.getElementById('title-view-wrapper').style.display = viewStyle;
+    document.getElementById('title-edit-wrapper').style.display = editStyle;
+    document.getElementById('date-view-wrapper').style.display = inlineViewStyle;
+    document.getElementById('date-edit-wrapper').style.display = editStyle;
+    document.getElementById('text-view-wrapper').style.display = viewStyle;
+    document.getElementById('text-edit-wrapper').style.display = editStyle;
+    
+    document.getElementById('edit-actions-utilities-bar').style.display = showEditForm ? 'flex' : 'none';
+    document.getElementById('detail-modal-comments-block-wrapper').style.display = viewStyle; // Hide comments while editing
+  }
+
+  function renderCommentsListCollection(comments) {
+    const listContainer = document.getElementById('modal-comments-list');
+    if (!listContainer) return;
+
+    if (!comments || comments.length === 0) {
+      listContainer.innerHTML = `<p id="no-comments-fallback-text" style="color: #678; font-size: 13px; text-align: center; padding-block: 10px;">No community thoughts posted yet. Be the first to share details!</p>`;
+      return;
+    }
+
+    const currentActiveSessionUser = localStorage.getItem("username");
+
+    listContainer.innerHTML = comments.map(c => {
+      let stars = "";
+      if (c.rating) {
+        for(let i=0; i<c.rating; i++) stars += "★";
+      }
+      
+      const heartIconName = c.user_has_liked ? "heart" : "heart-outline";
+      const activeClass = c.user_has_liked ? "liked-active" : "";
+      
+      // Ownership evaluation: Render option if the comment author matches active user context
+      const isCommentOwner = currentActiveSessionUser && (c.username === currentActiveSessionUser);
+
+      return `
+        <div class="comment-card-node">
+          <div class="comment-left-stack">
+            <div class="comment-header-row-wrapper">
+              <h5>${c.username}</h5>
+              <span class="comment-time-stamp-text">${parseSystemTimestampToLocal(c.created_at)}</span>
+            </div>
+            ${stars ? `<div class="comment-stars-row">${stars}</div>` : ''}
+            <p class="comment-body-text">${c.comment_text}</p>
+          </div>
+          <div class="comment-utilities-right-align">
+            ${isCommentOwner ? `
+              <button class="comment-inline-trash-btn comment-delete-trigger-action-node" data-comment-id="${c.comment_id}" title="Delete Your Comment">
+                <ion-icon name="trash-outline"></ion-icon>
+              </button>
+            ` : ''}
+            <button class="comment-heart-action-btn comment-like-trigger-node ${activeClass}" data-comment-id="${c.comment_id}">
+              <ion-icon name="${heartIconName}"></ion-icon>
+              <span>${c.likes_count || 0}</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Intercept grid wrapper clicks to route targeted item indexes
+  [reviewsGrid, audienceGrid].forEach(grid => {
+    if (grid) {
+      grid.addEventListener('click', (e) => {
+        const targetedCard = e.target.closest('.review-click-target-node');
+        if (targetedCard) {
+          const id = targetedCard.getAttribute('data-review-id');
+          openReviewDetailsViewport(id);
+        }
+      });
+    }
+  });
+
+  // Close Detail Layer Panel Actions
+  if (closeDetailModalBtn && detailModal) {
+    closeDetailModalBtn.addEventListener('click', () => {
+      detailModal.classList.remove('active');
+      document.body.classList.remove('active');
+    });
+  }
+
+  // 4. COMMUNITY COMMENTS DISCUSSIONS PANEL POST MANAGEMENT PIPELINE
+  if (commentForm) {
+    commentForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const userEmail = localStorage.getItem("userEmail");
+      
+      if (!userEmail) {
+        alert("Please sign in to participate in the user discussion tracks!");
+        return;
+      }
+
+      const commentField = document.getElementById('comment-field-text');
+      const text = commentField.value.trim();
+
+      try {
+        const response = await fetch(`http://localhost:5000/api/reviews/details/${currentActiveReviewId}/comments`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: userEmail,
+            commentText: text,
+            rating: activeSelectedRating > 0 ? activeSelectedRating : null
+          })
+        });
+
+        if (response.ok) {
+          // Success: Clean form inputs fields values out
+          commentField.value = "";
+          resetStarSelectorInterfaceNode();
+
+          // Refresh the list content panel array track data immediately from database
+          const refreshRes = await fetch(`http://localhost:5000/api/reviews/details/${currentActiveReviewId}`);
+          const refreshData = await refreshRes.json();
+          renderCommentsListCollection(refreshData.comments);
+        }
+      } catch (err) {
+        console.error("Comment submission pipeline fault:", err);
+      }
+    });
+  }
+
+  // 5. DELEGATION LAYER FOR HEART TOGGLES AND COMMENT DELETIONS
+  if (detailModal) {
+    detailModal.addEventListener('click', async (e) => {
+      const userEmail = localStorage.getItem("userEmail");
+      
+      // TRASH TARGET DETECTOR
+      const trashBtn = e.target.closest('.comment-delete-trigger-action-node');
+      if (trashBtn) {
+        e.preventDefault();
+        const commentId = trashBtn.getAttribute('data-comment-id');
+        
+        const confirmCommentWipe = confirm("Are you sure you want to delete your comment?");
+        if (!confirmCommentWipe) return;
+
+        try {
+          const response = await fetch(`http://localhost:5000/api/comments/${commentId}`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: userEmail })
+          });
+          const data = await response.json();
+          
+          if (response.ok) {
+            // Hot refresh data stream right into rendering layout loop structures
+            const refreshRes = await fetch(`http://localhost:5000/api/reviews/details/${currentActiveReviewId}?email=${encodeURIComponent(userEmail || '')}`);
+            const refreshData = await refreshRes.json();
+            renderCommentsListCollection(refreshData.comments);
+          } else {
+            alert(data.message);
+          }
+        } catch (err) {
+          console.error("Error executing comment deletion pipeline:", err);
+        }
+        return;
+      }
+
+      // HEART TARGET DETECTOR
+      const heartBtn = e.target.closest('.comment-like-trigger-node');
+      if (heartBtn) {
+        e.preventDefault();
+        const commentId = heartBtn.getAttribute('data-comment-id');
+
+        if (!userEmail) {
+          alert("Please sign in to like comments!");
+          return;
+        }
+        
+        try {
+          const response = await fetch(`http://localhost:5000/api/comments/like/${commentId}`, { 
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: userEmail })
+          });
+          
+          const data = await response.json();
+          if (data.success) {
+            heartBtn.querySelector('span').textContent = data.newCount;
+            if (data.liked) {
+              heartBtn.querySelector('ion-icon').setAttribute('name', 'heart');
+              heartBtn.classList.add('liked-active');
+            } else {
+              heartBtn.querySelector('ion-icon').setAttribute('name', 'heart-outline');
+              heartBtn.classList.remove('liked-active');
+            }
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      }
+    });
+  }
+
+  // 6. INTERACTIVE INPUT STAR RATING ACTION NODES STATES
+  const starContainer = document.getElementById('comment-star-selector');
+  if (starContainer) {
+    const starsArr = Array.from(starContainer.querySelectorAll('.star-nodes ion-icon'));
+    
+    starsArr.forEach(star => {
+      star.addEventListener('mouseenter', function() {
+        const val = parseInt(this.getAttribute('data-value'));
+        starsArr.forEach((s, idx) => {
+          if (idx < val) s.classList.add('hovered-star');
+          else s.classList.remove('hovered-star');
+        });
+      });
+
+      star.addEventListener('mouseleave', function() {
+        starsArr.forEach(s => s.classList.remove('hovered-star'));
+      });
+
+      star.addEventListener('click', function() {
+        activeSelectedRating = parseInt(this.getAttribute('data-value'));
+        starsArr.forEach((s, idx) => {
+          if (idx < activeSelectedRating) {
+            s.classList.add('selected-star');
+            s.setAttribute('name', 'star');
+          } else {
+            s.classList.remove('selected-star');
+            s.setAttribute('name', 'star-outline');
+          }
+        });
+      });
+    });
+  }
+
+  function resetStarSelectorInterfaceNode() {
+    activeSelectedRating = 0;
+    const starContainer = document.getElementById('comment-star-selector');
+    if (starContainer) {
+      const starsArr = starContainer.querySelectorAll('.star-nodes ion-icon');
+      starsArr.forEach(s => {
+        s.classList.remove('selected-star', 'hovered-star');
+        s.setAttribute('name', 'star-outline');
+      });
+    }
+  }
+
+  // 7. BASE UPLOAD CONTAINER MECHANICS DECK (KEEP INTACT)
   if (uploadReviewBtn && uploadModal) {
     uploadReviewBtn.addEventListener('click', () => {
       if (!localStorage.getItem("userToken")) {
@@ -890,16 +1359,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 4. PIPELINE NETWORK FORM TRANSMISSION SUBMIT
   if (uploadForm) {
     uploadForm.addEventListener('submit', async function(e) {
       e.preventDefault();
-      
       const movieName = document.getElementById('review-movie-name').value.trim();
       const publishDate = document.getElementById('review-movie-date').value.trim();
       const reviewText = document.getElementById('review-movie-text').value.trim();
       const userEmail = localStorage.getItem("userEmail");
-      const submitBtn = this.querySelector('button[type="submit"]');
+      const submitBtn = this.querySelector('button[type=\"submit\"]');
 
       try {
         submitBtn.textContent = "Publishing Package...";
@@ -926,15 +1393,12 @@ document.addEventListener('DOMContentLoaded', () => {
           previewImg.style.display = 'none';
           uploadPrompt.style.opacity = '1';
           base64ImageString = "";
-
           uploadModal.classList.remove('active');
           document.body.classList.remove('active');
 
-          // CRITICAL: Refreshes both rows instantly without reloading the browser window!
           await fetchAndRenderUserReviews();
           await fetchAndRenderAudienceReviews();
         }
-
       } catch (err) {
         alert("Pipeline error communicating with backend server.");
       } finally {
