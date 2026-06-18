@@ -50,6 +50,13 @@
             </div>
           </div>
 
+          
+
+          <button class="upload-review-btn" id="upload-review-btn">
+            <ion-icon name="cloud-upload-outline"></ion-icon>
+            <span>Upload Review</span>
+          </button>
+
           <button class="btn btn-primary" id="signin-btn">Sign in</button>
         </div>
 
@@ -70,9 +77,9 @@
 
           <ul class="navbar-list">
             <li><a href="./index.html" class="navbar-link">Home</a></li>
-            <li><a href="#" class="navbar-link" id="about-film-link" data-i18n="about">About film</a></li>
-            <li><a href="#" class="navbar-link" id="references-link" data-i18n="references">References</a></li>
-            <li><a href="#" class="navbar-link" id="members-link" data-i18n="members">About Us / Members</a></li>
+            <li><a href="#" class="navbar-link" id="recommendations-link" data-i18n="recommendations">Recommendations</a></li>
+            <li><a href="#" class="navbar-link" id="added-by-user-link" data-i18n="added-by-user">Added by the User</a></li>
+            <li><a href="#" class="navbar-link" id="members-link" data-i18n="members">About Us</a></li>
           </ul>
 
           <ul class="navbar-social-list">
@@ -112,18 +119,7 @@
                 </div>
               </div>
 
-              <div class="premium-box-card">
-                <div class="poster-wrapper">
-                  <img src="./assets/images/obs.jpg" alt="Obsession" />
-                </div>
-                <div class="poster-footer">
-                  <span class="reviewer-name">JOhan</span>
-                  <div class="card-meta">
-                    <span class="stars-indicator">★★★★★</span>
-                    <span class="review-date">Jun 17</span>
-                  </div>
-                </div>
-              </div>
+              
             </div>
           </div>
 
@@ -149,18 +145,7 @@
                 </div>
               </div>
 
-              <div class="premium-box-card">
-                <div class="poster-wrapper">
-                  <img src="./assets/images/obs.jpg" alt="Obsession" />
-                </div>
-                <div class="poster-footer">
-                  <span class="reviewer-name">JOhan</span>
-                  <div class="card-meta">
-                    <span class="stars-indicator">★★★★★</span>
-                    <span class="review-date">Jun 17</span>
-                  </div>
-                </div>
-              </div>
+              
             </div>
           </div>
 
@@ -172,33 +157,21 @@
               </span>
             </div>
 
-            <div class="movie-row-grid">
-              <div class="premium-box-card">
-                <div class="poster-wrapper">
-                  <img src="./assets/images/obs.jpg" alt="Obsession" />
-                </div>
-                <div class="poster-footer">
-                  <span class="reviewer-name">JOhan</span>
-                  <div class="card-meta">
-                    <span class="stars-indicator">★★★★★</span>
-                    <span class="review-date">Jun 17</span>
-                  </div>
-                </div>
+            <div class="movie-row-grid" id="user-reviews-grid">
+              
               </div>
+          </div>
 
-              <div class="premium-box-card">
-                <div class="poster-wrapper">
-                  <img src="./assets/images/obs.jpg" alt="Obsession" />
-                </div>
-                <div class="poster-footer">
-                  <span class="reviewer-name">JOhan</span>
-                  <div class="card-meta">
-                    <span class="stars-indicator">★★★★★</span>
-                    <span class="review-date">Jun 17</span>
-                  </div>
-                </div>
-              </div>
+          <div class="container">
+            <div class="trending-header">
+              <h2 class="trending-title">AUDIENCE REVIEWS</h2>
+              <span class="activity-link">
+                <ion-icon name="flash-outline"></ion-icon> GLOBAL ACTIVITY
+              </span>
             </div>
+
+            <div class="movie-row-grid" id="audience-reviews-grid">
+              </div>
           </div>
         </section>
 
@@ -771,30 +744,35 @@
     </div>
 
     <div class="review-modal-overlay" id="signin-modal-overlay">
-      <div class="review-modal max-width-signin">
-        <button class="close-review-btn" id="close-signin-btn"><ion-icon name="close-outline"></ion-icon></button>
-        <div class="review-modal-content text-center">
-          <div class="margin-bottom-large">
-            <h2 class="signin-modal-heading">Welcome Back</h2>
-            <p style="color: var(--gainsboro)">Please sign in to your account</p>
+      <div class="review-modal max-width-signin text-center" style="padding: 30px;">
+        <button class="close-review-btn" id="close-signin-btn">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+        
+        <h2 class="signin-modal-heading">Welcome Back</h2>
+        <p style="color: var(--gainsboro); margin-bottom: 25px;">Please sign in to your account</p>
+
+        <form class="signin-form" id="login-form">
+          <div class="input-group">
+            <input type="email" placeholder="Email Address" required class="login-input" />
+            <ion-icon name="mail-outline"></ion-icon>
           </div>
-          <form class="signin-form" id="login-form">
-            <div class="input-group">
-              <input type="email" placeholder="Email Address" required class="login-input" />
-              <ion-icon name="mail-outline"></ion-icon>
-            </div>
-            <div class="input-group">
-              <input type="password" placeholder="Password" required class="login-input" />
-              <ion-icon name="lock-closed-outline"></ion-icon>
-            </div>
-            <div class="forgot-password-wrapper">
-              <a href="#">Forgot Password?</a>
-            </div>
-            <button type="submit" class="signin-submit-btn">Sign In</button>
-          </form>
-          <div class="modal-divider"></div>
-          <p class="signup-prompt">Don't have an account? <a href="#">Sign Up</a></p>
-        </div>
+
+          <div class="input-group">
+            <input type="password" id="login-password" placeholder="Password" required class="login-input" style="padding-right: 45px;" />
+            <ion-icon name="lock-closed-outline"></ion-icon>
+            <ion-icon name="eye-outline" id="password-toggle-icon" class="password-eye-btn" style="color: var(--gainsboro) !important;"></ion-icon>
+          </div>
+
+          <div class="forgot-password-wrapper">
+            <a href="#">Forgot Password?</a>
+          </div>
+
+          <button type="submit" class="signin-submit-btn">Sign In</button>
+        </form>
+
+        <div class="modal-divider"></div>
+        <p class="signup-prompt">Don't have an account? <a href="#">Sign Up</a></p>
       </div>
     </div>
 
@@ -827,7 +805,156 @@
       </div>
     </div>
 
+    <div class="review-modal-overlay" id="user-profile-modal-overlay">
+      <div class="profile-card-container">
+        <button class="close-review-btn" id="close-profile-modal-btn">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+
+        <div class="profile-card-banner"></div>
+
+        <div class="profile-card-avatar-wrapper">
+          <div class="profile-card-avatar">
+            <ion-icon name="person-outline"></ion-icon>
+          </div>
+        </div>
+
+        <div class="profile-card-content">
+          <h3 id="profile-card-username" class="profile-display-name">Username</h3>
+          <p class="profile-display-role">Website Developer (VSCODE)</p>
+
+          <div class="profile-action-row">
+            <button class="action-row-btn active"><ion-icon name="people-outline"></ion-icon> Connect</button>
+            <button class="action-row-btn"><ion-icon name="chatbubble-ellipses-outline"></ion-icon> Message</button>
+          </div>
+
+          <div class="profile-stats-grid">
+            <div class="stat-item">
+              <span class="stat-number">12</span>
+              <span class="stat-label">Reviews</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">43</span>
+              <span class="stat-label">Likes</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">21</span>
+              <span class="stat-label">Comments</span>
+            </div>
+          </div>
+
+          <div class="profile-account-fields">
+            <div class="field-item">
+              <label>Email Address</label>
+              <p id="profile-card-email">email@example.com</p>
+            </div>
+            <div class="field-item">
+              <label>Database Account Password</label>
+              <div class="input-group">
+                <input type="password" id="profile-card-password" readonly value="******" class="login-input" />
+                <ion-icon name="eye-outline" id="profile-password-toggle-icon" class="password-eye-btn"></ion-icon>
+              </div>
+            </div>
+          </div>
+
+          <button id="profile-signout-btn" class="profile-card-signout">
+            Sign Out Account
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-modal-overlay" id="signup-modal-overlay">
+      <div class="review-modal max-width-signin text-center" style="padding: 30px;">
+        <button class="close-review-btn" id="close-signup-btn">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+        <h2 class="signin-modal-heading">Create Account</h2>
+        <p style="color: var(--gainsboro); margin-bottom: 25px;">Join the community group phase</p>
+
+        <form class="signin-form" id="signup-form">
+          <div class="input-group">
+            <input type="text" id="signup-username" placeholder="Choose Username" required class="login-input" style="padding-left: 45px;" />
+            <ion-icon name="person-outline"></ion-icon>
+          </div>
+          <div class="input-group">
+            <input type="email" id="signup-email" placeholder="Email Address" required class="login-input" />
+            <ion-icon name="mail-outline"></ion-icon>
+          </div>
+          <div class="input-group">
+            <input type="password" id="signup-password" placeholder="Password" required class="login-input" style="padding-right: 45px;" />
+            <ion-icon name="lock-closed-outline"></ion-icon>
+          </div>
+          <button type="submit" class="signin-submit-btn">Register</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="review-modal-overlay" id="reset-modal-overlay">
+      <div class="review-modal max-width-signin text-center" style="padding: 30px;">
+        <h2 class="signin-modal-heading">New Password</h2>
+        <p style="color: var(--gainsboro); margin-bottom: 25px;">Type a replacement password below</p>
+
+        <form class="signin-form" id="reset-password-form">
+          <input type="hidden" id="reset-token-hidden" />
+          <div class="input-group">
+            <input type="password" id="reset-new-password" placeholder="New Password" required class="login-input" style="padding-right: 45px;" />
+            <ion-icon name="lock-open-outline"></ion-icon>
+          </div>
+          <button type="submit" class="signin-submit-btn">Update Password</button>
+        </form>
+      </div>
+    </div>
+
     <a href="#top" class="go-top" data-go-top><ion-icon name="chevron-up"></ion-icon></a>
+
+    <div class="review-modal-overlay active" id="upload-review-modal-overlay">
+      <div class="review-modal max-width-signin" style="padding: 30px; max-width: 480px; border-top: 4px solid var(--citrine);">
+        <button class="close-review-btn" id="close-upload-modal-btn">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+        
+        <h2 class="signin-modal-heading" style="font-size: 24px; text-align: center;">Upload Review</h2>
+        <p style="color: var(--gainsboro); margin-bottom: 20px; text-align: center; font-size: 14px;">Share your cinematic thoughts with the community</p>
+
+        <form class="signin-form" id="upload-review-form">
+          <div class="form-field-item">
+            <label class="form-input-label">Movie Thumbnail / Poster</label>
+            <div class="thumbnail-upload-zone" id="thumb-upload-zone">
+              <input type="file" id="review-movie-image" accept="image/*" required style="display: none;" />
+              <div class="upload-zone-content" id="upload-zone-prompt">
+                <ion-icon name="cloud-upload-outline" style="font-size: 40px; color: var(--citrine); margin-bottom: 8px;"></ion-icon>
+                <p style="color: var(--gainsboro); font-size: 13px; font-weight: 500;">Click to select movie poster</p>
+                <p style="color: #678; font-size: 11px; margin-top: 2px;">Supports JPG, PNG, or WEBP</p>
+              </div>
+              <img src="" id="upload-preview-img" alt="Movie Preview" class="upload-preview-thumbnail" />
+            </div>
+          </div>
+
+          <div class="input-group">
+            <input type="text" id="review-movie-name" placeholder="Movie Name" required class="login-input" style="padding-left: 45px;" />
+            <ion-icon name="film-outline"></ion-icon>
+          </div>
+
+          <div class="input-group">
+            <input type="text" id="review-movie-date" placeholder="Date Published (e.g., Jun 17, 2026)" required class="login-input" style="padding-left: 45px;" />
+            <ion-icon name="calendar-outline"></ion-icon>
+          </div>
+
+          <div class="form-field-item">
+            <label class="form-input-label">Your Review</label>
+            <div class="input-group">
+              <textarea id="review-movie-text" placeholder="Write your full analytical review text here..." required class="login-input review-textarea-field"></textarea>
+              <ion-icon name="create-outline" style="top: 20px; transform: none;"></ion-icon>
+            </div>
+          </div>
+
+          <button type="submit" class="signin-submit-btn" style="margin-top: 5px;">
+            Publish Review
+          </button>
+        </form>
+      </div>
+    </div>
 
     <script src="./assets/js/script.js"></script>
     <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>

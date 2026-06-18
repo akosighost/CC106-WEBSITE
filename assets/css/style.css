@@ -71,6 +71,9 @@ body.active { overflow: hidden; }
 }
 .section-title { text-align: center; }
 
+
+
+
 .btn {
   color: var(--white);
   font-size: var(--fs-11);
@@ -245,7 +248,11 @@ body.active { overflow: hidden; }
  * #MODALS LAYOUT
 \*-----------------------------------*/
 
-.share-modal-overlay, .review-modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: 0.3s ease; backdrop-filter: blur(8px); z-index: 1100; }
+.share-modal-overlay, .review-modal-overlay { 
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, 0.85); 
+  display: flex; justify-content: 
+  center; align-items: center; opacity: 0; visibility: hidden; transition: 0.3s ease; backdrop-filter: blur(8px); z-index: 1100; }
 .share-modal-overlay.active, .review-modal-overlay.active { opacity: 1; visibility: visible; }
 
 .share-modal, .review-modal { background: var(--rich-black-fogra-29); border: 1px solid var(--gunmetal-1); width: 90%; max-width: 700px; max-height: 80vh; border-radius: 16px; position: relative; transform: scale(0.9); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; }
@@ -301,7 +308,11 @@ body.active { overflow: hidden; }
 .member-item:hover { border-color: var(--citrine); background: rgba(255, 255, 255, 0.08); transform: translateY(-2px); }
 .member-avatar { width: 50px; height: 50px; border-radius: 50%; overflow: hidden; border: 2px solid var(--citrine); flex-shrink: 0; }
 .member-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.member-info h4 { color: var(--white); font-size: 15px; font-weight: 600; margin-bottom: 2px; line-height: 1.2; }
+.member-info h4 { 
+  color: var(--white); 
+  font-size: 15px; 
+  font-weight: 600; 
+  margin-bottom: 2px; line-height: 1.2; }
 .member-info p { color: var(--gainsboro); font-size: 13px; margin: 0; }
 .member-item .role { color: var(--citrine); font-weight: 500; font-size: 12px; }
 
@@ -422,4 +433,388 @@ body.active { overflow: hidden; }
   .header-actions .btn-primary { display: block; --fs-11: 14px; padding: 10px 35px; letter-spacing: 1px; }
   .service-content { width: calc(100% - 700px); }
   .service-list, .service-title { max-width: 480px; }
+}
+
+/*-----------------------------------*\
+ * #MODERN PROFILE CARD - MEMBERS DARK THEME STYLE
+\*-----------------------------------*/
+
+/* Force center overlay flex mapping */
+#user-profile-modal-overlay.active {
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Master Card Container - Matched to your dark modal background */
+.profile-card-container {
+  background: var(--rich-black-fogra-29) !important;
+  border: 1px solid var(--gunmetal-1);
+  width: 92%;
+  max-width: 440px;
+  border-radius: 16px; /* Matches the border-radius of the members panel layout */
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  transform: scale(0.9);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+#user-profile-modal-overlay.active .profile-card-container {
+  transform: scale(1);
+}
+
+/* Floating Cross Close Target Button */
+.profile-card-container .close-review-btn {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: var(--gainsboro) !important;
+  top: 15px;
+  right: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.profile-card-container .close-review-btn:hover {
+  background: var(--citrine) !important;
+  color: var(--black) !important;
+}
+
+/* Top Banner Gradient Area matching your inner card dark theme styles */
+.profile-card-banner {
+  height: 130px;
+  background: linear-gradient(135deg, var(--raisin-black) 0%, var(--eerie-black) 100%);
+  border-bottom: 1px solid var(--gunmetal-1);
+  width: 100%;
+}
+
+/* Overlapping Circular Profile Placement Geometry */
+.profile-card-avatar-wrapper {
+  position: relative;
+  height: 60px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.profile-card-avatar {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: var(--gunmetal-2);
+  border: 4px solid var(--rich-black-fogra-29);
+  position: absolute;
+  top: -55px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* User avatar default asset icon matching members panel gold accent rules */
+.profile-card-avatar ion-icon {
+  font-size: 55px;
+  color: var(--citrine); 
+}
+
+/* Center Body Content Stack Elements */
+.profile-card-content {
+  padding: 25px 30px 30px;
+  text-align: center;
+  background: var(--rich-black-fogra-29);
+}
+
+/* Main Username Display */
+.profile-display-name {
+  color: var(--white) !important;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+/* Core System Assignment Metadata Subtitle Role Label */
+.profile-display-role {
+  color: var(--citrine); /* Swapped to highlight yellow text */
+  font-size: 13px;
+  font-weight: var(--fw-500);
+  margin-bottom: 20px;
+}
+
+/* Interactive Action Buttons Row Cluster */
+.profile-action-row {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  margin-bottom: 25px;
+}
+
+.action-row-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--gainsboro);
+  font-size: 13px;
+  font-weight: 600;
+  transition: var(--transition-1);
+}
+
+.action-row-btn ion-icon {
+  font-size: 16px;
+  color: var(--citrine); /* Yellow accents for option action elements */
+}
+
+.action-row-btn:hover {
+  color: var(--citrine);
+}
+
+/* Community Statistics Summary Metric Grid Panel Deck */
+.profile-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid var(--gunmetal-1);
+  border-bottom: 1px solid var(--gunmetal-1);
+  background: rgba(255, 255, 255, 0.02);
+  padding-block: 15px;
+  border-radius: 8px;
+  margin-bottom: 25px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-number {
+  color: var(--white);
+  font-size: 18px;
+  font-weight: var(--fw-700);
+}
+
+.stat-label {
+  color: #678; /* Muted slate text matching headings */
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+/* Secured Database Account Data Input Field Assemblies */
+.profile-account-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  text-align: left;
+  margin-bottom: 25px;
+}
+
+.field-item label {
+  color: #678;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Input Fields styled identically to your custom login interface nodes */
+.profile-account-fields p,
+.profile-account-fields .login-input {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: var(--white) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  padding: 12px 14px !important;
+  border-radius: 6px !important;
+  margin-top: 4px;
+}
+
+.profile-account-fields .input-group {
+  position: relative;
+  width: 100%;
+}
+
+.profile-account-fields .password-eye-btn {
+  color: var(--gainsboro) !important;
+  right: 14px !important;
+  left: auto !important;
+  cursor: pointer;
+}
+
+/* Profile Termination Sign Out Action Button Trigger */
+.profile-card-signout {
+  width: 100%;
+  background: transparent;
+  color: #ff4560; /* Keeps a high-visibility warning color red aspect boundary */
+  border: 1px solid #ff4560;
+  padding: 14px;
+  font-size: 13px;
+  font-weight: var(--fw-700);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: 6px;
+  transition: var(--transition-1);
+}
+
+.profile-card-signout:hover {
+  background: #ff4560;
+  color: var(--white);
+  box-shadow: 0 4px 15px rgba(255, 69, 96, 0.25);
+}
+
+
+/* Ensure the Sign Up and Reset Password overlay layers show up cleanly when triggered active */
+#signup-modal-overlay.active,
+#reset-modal-overlay.active {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+#signup-modal-overlay .review-modal,
+#reset-modal-overlay .review-modal {
+  transform: scale(1) !important;
+}
+
+/*-----------------------------------*\
+ * #HIGHLIGHTED HEADER UPLOAD BUTTON
+\*-----------------------------------*/
+
+.upload-review-btn {
+  background: linear-gradient(135deg, var(--citrine) 0%, #ffcc00 100%) !important;
+  color: var(--rich-black-fogra-29) !important;
+  font-family: var(--ff-poppins);
+  font-size: 13px;
+  font-weight: var(--fw-700);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px; /* Increased padding slightly for a cleaner premium look */
+  border-radius: 50px;
+  border: none;
+  white-space: nowrap; /* CRITICAL FIX: Stops the word from breaking into two rows */
+  box-shadow: 0 4px 15px rgba(229, 184, 0, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  margin-right: 15px; 
+}
+
+.upload-review-btn ion-icon {
+  font-size: 18px;
+  color: var(--rich-black-fogra-29);
+  --ionicon-stroke-width: 45px;
+}
+
+/* Hover and Focus interaction states */
+.upload-review-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(229, 184, 0, 0.5);
+  background: var(--white) !important;
+  color: var(--black) !important;
+}
+
+.upload-review-btn:hover ion-icon {
+  color: var(--black) !important;
+}
+
+.upload-review-btn:active {
+  transform: translateY(0);
+}
+
+/*-----------------------------------*\
+ * #FIX: FORCE ALL HEADER AND NAVBAR LINKS TO SINGLE LINE
+\*-----------------------------------*/
+
+.navbar-link,
+.upload-review-btn,
+#signin-btn,
+.profile-nav-btn,
+.btn {
+  white-space: nowrap !important; /* Forces all text elements to remain on one single line */
+}
+
+/*-----------------------------------*\
+ * #UPLOAD MOVIE REVIEW FORM STYLES
+\*-----------------------------------*/
+
+/* Force layout centering map logic */
+#upload-review-modal-overlay.active {
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-field-item {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  width: 100%;
+}
+
+.form-input-label {
+  color: #678;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+/* Premium Image Upload Zone Base Box */
+.thumbnail-upload-zone {
+  width: 100%;
+  height: 130px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px dashed var(--gunmetal-1);
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+  transition: var(--transition-1);
+  margin-bottom: 5px;
+}
+
+.thumbnail-upload-zone:hover {
+  border-color: var(--citrine);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.upload-zone-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  pointer-events: none;
+  padding: 15px;
+}
+
+/* Scaled Preview Render Engine Box */
+.upload-preview-thumbnail {
+  position: absolute;
+  width: auto;
+  height: 100%;
+  object-fit: contain;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none; /* Controlled dynamically via JS FileReader state flags */
+  z-index: 1;
+  background: var(--rich-black-fogra-29);
+  border-radius: 6px;
+}
+
+/* Custom Multiline Form Field Metrics Override */
+.review-textarea-field {
+  min-height: 110px;
+  resize: vertical;
+  padding-left: 45px !important;
+  padding-top: 14px !important;
+  font-family: inherit;
+  line-height: 1.6;
 }
