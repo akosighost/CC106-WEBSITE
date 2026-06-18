@@ -1,0 +1,836 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BC5MD</title>
+
+    <link rel="shortcut icon" href="./favicon.svg" type="image/svg+xml" />
+
+    <link rel="stylesheet" href="./assets/css/style.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  </head>
+
+  <body id="top">
+
+    <header class="header" data-header>
+      <div class="container">
+        <div class="overlay" data-overlay></div>
+
+        <a href="./index.html" class="logo">
+          <img src="./assets/images/svg.svg" alt="Filmlane logo" />
+        </a>
+
+        <div class="header-actions">
+          <button class="search-btn">
+            <ion-icon name="search-outline"></ion-icon>
+          </button>
+
+          <div class="lang-wrapper">
+            <label for="language">
+              <ion-icon name="globe-outline"></ion-icon>
+            </label>
+
+            <div class="lang-dropdown">
+              <button class="lang-dropdown-btn" id="lang-toggle">
+                <span id="current-lang-text">EN</span>
+                <ion-icon name="chevron-down-outline"></ion-icon>
+              </button>
+
+              <ul class="lang-dropdown-list" id="lang-list">
+                <li class="lang-item active" data-lang="EN">EN</li>
+                <li class="lang-item" data-lang="AU">AU</li>
+                <li class="lang-item" data-lang="AR">AR</li>
+                <li class="lang-item" data-lang="TU">TU</li>
+              </ul>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" id="signin-btn">Sign in</button>
+        </div>
+
+        <button class="menu-open-btn" data-menu-open-btn>
+          <ion-icon name="reorder-two"></ion-icon>
+        </button>
+
+        <nav class="navbar" data-navbar>
+          <div class="navbar-top">
+            <a href="./index.html" class="logo">
+              <img src="./assets/images/svg.svg" alt="Filmlane logo" />
+            </a>
+
+            <button class="menu-close-btn" data-menu-close-btn>
+              <ion-icon name="close-outline"></ion-icon>
+            </button>
+          </div>
+
+          <ul class="navbar-list">
+            <li><a href="./index.html" class="navbar-link">Home</a></li>
+            <li><a href="#" class="navbar-link" id="about-film-link" data-i18n="about">About film</a></li>
+            <li><a href="#" class="navbar-link" id="references-link" data-i18n="references">References</a></li>
+            <li><a href="#" class="navbar-link" id="members-link" data-i18n="members">About Us / Members</a></li>
+          </ul>
+
+          <ul class="navbar-social-list">
+            <li><a href="#" class="navbar-social-link"><ion-icon name="logo-twitter"></ion-icon></a></li>
+            <li><a href="#" class="navbar-social-link"><ion-icon name="logo-facebook"></ion-icon></a></li>
+            <li><a href="#" class="navbar-social-link"><ion-icon name="logo-pinterest"></ion-icon></a></li>
+            <li><a href="#" class="navbar-social-link"><ion-icon name="logo-instagram"></ion-icon></a></li>
+            <li><a href="#" class="navbar-social-link"><ion-icon name="logo-youtube"></ion-icon></a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <article>
+        
+        <section class="bg-main">
+          <div class="container">
+            <div class="trending-header">
+              <h2 class="trending-title">NEW ON JOHAN</h2>
+              <span class="activity-link">
+                <ion-icon name="flash-outline"></ion-icon> RECENT ACTIVITY
+              </span>
+            </div>
+
+            <div class="movie-row-grid">
+              <div class="premium-box-card">
+                <div class="poster-wrapper">
+                  <img src="./assets/images/obs.jpg" alt="Obsession" />
+                </div>
+                <div class="poster-footer">
+                  <span class="reviewer-name">JOhan</span>
+                  <div class="card-meta">
+                    <span class="stars-indicator">★★★★★</span>
+                    <span class="review-date">Jun 17</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="premium-box-card">
+                <div class="poster-wrapper">
+                  <img src="./assets/images/obs.jpg" alt="Obsession" />
+                </div>
+                <div class="poster-footer">
+                  <span class="reviewer-name">JOhan</span>
+                  <div class="card-meta">
+                    <span class="stars-indicator">★★★★★</span>
+                    <span class="review-date">Jun 17</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="container">
+            <div class="trending-header">
+              <h2 class="trending-title">RECOMMENDATIONS</h2>
+              <span class="activity-link">
+                <ion-icon name="flash-outline"></ion-icon> RECENT ACTIVITY
+              </span>
+            </div>
+
+            <div class="movie-row-grid">
+              <div class="premium-box-card">
+                <div class="poster-wrapper">
+                  <img src="./assets/images/obs.jpg" alt="Obsession" />
+                </div>
+                <div class="poster-footer">
+                  <span class="reviewer-name">JOhan</span>
+                  <div class="card-meta">
+                    <span class="stars-indicator">★★★★★</span>
+                    <span class="review-date">Jun 17</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="premium-box-card">
+                <div class="poster-wrapper">
+                  <img src="./assets/images/obs.jpg" alt="Obsession" />
+                </div>
+                <div class="poster-footer">
+                  <span class="reviewer-name">JOhan</span>
+                  <div class="card-meta">
+                    <span class="stars-indicator">★★★★★</span>
+                    <span class="review-date">Jun 17</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="container">
+            <div class="trending-header">
+              <h2 class="trending-title">ADDED BY THE USER</h2>
+              <span class="activity-link">
+                <ion-icon name="flash-outline"></ion-icon> RECENT ACTIVITY
+              </span>
+            </div>
+
+            <div class="movie-row-grid">
+              <div class="premium-box-card">
+                <div class="poster-wrapper">
+                  <img src="./assets/images/obs.jpg" alt="Obsession" />
+                </div>
+                <div class="poster-footer">
+                  <span class="reviewer-name">JOhan</span>
+                  <div class="card-meta">
+                    <span class="stars-indicator">★★★★★</span>
+                    <span class="review-date">Jun 17</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="premium-box-card">
+                <div class="poster-wrapper">
+                  <img src="./assets/images/obs.jpg" alt="Obsession" />
+                </div>
+                <div class="poster-footer">
+                  <span class="reviewer-name">JOhan</span>
+                  <div class="card-meta">
+                    <span class="stars-indicator">★★★★★</span>
+                    <span class="review-date">Jun 17</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="upcoming reveal">
+          <div class="container">
+            <div class="flex-wrapper">
+              <div class="title-wrapper">
+                <h2 class="h2 section-title">Community</h2>
+              </div>
+              <ul class="filter-list">
+                <li><button class="filter-btn active" data-sort="highest">Highest Rated</button></li>
+                <li><button class="filter-btn" data-sort="lowest">Lowest Rated</button></li>
+              </ul>
+            </div>
+
+            <div class="review-grid">
+              <div class="review-card card-blue" data-rating="5" data-review-file="princes.txt">
+                <div class="card-top-row">
+                  <div class="review-header">
+                    <div class="avatar">
+                      <img src="./assets/review-photos/princes.jpg" alt="User" />
+                    </div>
+                    <div class="user-info">
+                      <h3 class="username">Princes</h3>
+                      <div class="rating-wrapper">
+                        <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
+                        <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
+                        <ion-icon name="star"></ion-icon>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="card-movie-meta-row">
+                    <div class="card-movie-poster">
+                      <img src="./assets/images/bf.jpg" alt="Movie Poster" />
+                    </div>
+                    <div class="card-movie-details">
+                      <h4 class="card-movie-title">Die Beautiful</h4>
+                      <span class="card-movie-release">2016</span>
+                    </div>
+                  </div>
+                </div>
+
+                <p class="review-text">Loading review...</p>
+                
+                <div class="card-footer">
+                  <button class="see-more-btn">See More</button>
+                  <div class="card-actions-row">
+                    <div class="left-interactions">
+                      <div class="interaction-item">
+                        <button class="action-btn card-like-btn" title="Like Review">
+                          <ion-icon name="heart-outline"></ion-icon>
+                        </button>
+                        <span class="interaction-count">24</span>
+                      </div>
+                      <div class="interaction-item">
+                        <button class="action-btn card-comment-btn" title="View Comments">
+                          <ion-icon name="chatbubble-outline"></ion-icon>
+                        </button>
+                        <span class="interaction-count">12</span>
+                      </div>
+                    </div>
+
+                    <div class="right-utilities">
+                      <button class="action-btn expand-btn" title="Read Full Review"><ion-icon name="expand-outline"></ion-icon></button>
+                      <button class="action-btn copy-btn" title="Copy Review"><ion-icon name="copy-outline"></ion-icon></button>
+                      <button class="action-btn share-btn" title="Share Review"><ion-icon name="share-social-outline"></ion-icon></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="review-card card-blue" data-rating="4" data-review-file="yesha.txt">
+                <div class="review-header">
+                  <div class="avatar">
+                    <img src="./assets/review-photos/yesha.jpg" alt="User" />
+                  </div>
+                  <div class="user-info">
+                    <h3 class="username">Yesha</h3>
+                    <div class="rating-wrapper">
+                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
+                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
+                      <ion-icon name="star"></ion-icon>
+                    </div>
+                  </div>
+                </div>
+                <p class="review-text">Loading review...</p>
+                <div class="card-footer">
+                  <button class="see-more-btn">See More</button>
+                  <div class="card-actions">
+                    <button class="action-btn expand-btn" title="Read Full Review"><ion-icon name="expand-outline"></ion-icon></button>
+                    <button class="action-btn copy-btn" title="Copy Review"><ion-icon name="copy-outline"></ion-icon></button>
+                    <button class="action-btn share-btn" title="Share Review"><ion-icon name="share-social-outline"></ion-icon></button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="review-card card-blue" data-rating="4.5" data-review-file="joehanne.txt">
+                <div class="review-header">
+                  <div class="avatar">
+                    <img src="./assets/review-photos/joehan.jpg" alt="User" />
+                  </div>
+                  <div class="user-info">
+                    <h3 class="username">Joehanne</h3>
+                    <div class="rating-wrapper">
+                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
+                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
+                      <ion-icon name="star"></ion-icon>
+                    </div>
+                  </div>
+                </div>
+                <p class="review-text">Loading review...</p>
+                <div class="card-footer">
+                  <button class="see-more-btn">See More</button>
+                  <div class="card-actions">
+                    <button class="action-btn expand-btn" title="Read Full Review"><ion-icon name="expand-outline"></ion-icon></button>
+                    <button class="action-btn copy-btn" title="Copy Review"><ion-icon name="copy-outline"></ion-icon></button>
+                    <button class="action-btn share-btn" title="Share Review"><ion-icon name="share-social-outline"></ion-icon></button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="review-card card-blue" data-rating="4" data-review-file="king.txt">
+                <div class="review-header">
+                  <div class="avatar">
+                    <img src="./assets/review-photos/king.jpg" alt="User" />
+                  </div>
+                  <div class="user-info">
+                    <h3 class="username">King Acel</h3>
+                    <div class="rating-wrapper">
+                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
+                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
+                      <ion-icon name="star"></ion-icon>
+                    </div>
+                  </div>
+                </div>
+                <p class="review-text">Loading review...</p>
+                <div class="card-footer">
+                  <button class="see-more-btn">See More</button>
+                  <div class="card-actions">
+                    <button class="action-btn expand-btn" title="Read Full Review"><ion-icon name="expand-outline"></ion-icon></button>
+                    <button class="action-btn copy-btn" title="Copy Review"><ion-icon name="copy-outline"></ion-icon></button>
+                    <button class="action-btn share-btn" title="Share Review"><ion-icon name="share-social-outline"></ion-icon></button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="review-card card-blue" data-rating="4" data-review-file="kyleen.txt">
+                <div class="review-header">
+                  <div class="avatar">
+                    <img src="./assets/review-photos/kyleen.jpg" alt="User" />
+                  </div>
+                  <div class="user-info">
+                    <h3 class="username">Kyleen</h3>
+                    <div class="rating-wrapper">
+                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
+                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
+                      <ion-icon name="star"></ion-icon>
+                    </div>
+                  </div>
+                </div>
+                <p class="review-text">Loading review...</p>
+                <div class="card-footer">
+                  <button class="see-more-btn">See More</button>
+                  <div class="card-actions">
+                    <button class="action-btn expand-btn" title="Read Full Review"><ion-icon name="expand-outline"></ion-icon></button>
+                    <button class="action-btn copy-btn" title="Copy Review"><ion-icon name="copy-outline"></ion-icon></button>
+                    <button class="action-btn share-btn" title="Share Review"><ion-icon name="share-social-outline"></ion-icon></button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="review-card card-blue" data-rating="4" data-review-file="joana.txt">
+                <div class="review-header">
+                  <div class="avatar">
+                    <img src="./assets/review-photos/joana.jpg" alt="User" />
+                  </div>
+                  <div class="user-info">
+                    <h3 class="username">Joana</h3>
+                    <div class="rating-wrapper">
+                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
+                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
+                      <ion-icon name="star"></ion-icon>
+                    </div>
+                  </div>
+                </div>
+                <p class="review-text">Loading review...</p>
+                <div class="card-footer">
+                  <button class="see-more-btn">See More</button>
+                  <div class="card-actions">
+                    <button class="action-btn expand-btn" title="Read Full Review"><ion-icon name="expand-outline"></ion-icon></button>
+                    <button class="action-btn copy-btn" title="Copy Review"><ion-icon name="copy-outline"></ion-icon></button>
+                    <button class="action-btn share-btn" title="Share Review"><ion-icon name="share-social-outline"></ion-icon></button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="review-card card-blue" data-rating="3.8" data-review-file="dennis.txt">
+                <div class="review-header">
+                  <div class="avatar">
+                    <img src="./assets/review-photos/dennis.jpg" alt="User" />
+                  </div>
+                  <div class="user-info">
+                    <h3 class="username">Dennis</h3>
+                    <div class="rating-wrapper">
+                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
+                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
+                      <ion-icon name="star"></ion-icon>
+                    </div>
+                  </div>
+                </div>
+                <p class="review-text">Loading review...</p>
+                <div class="card-footer">
+                  <button class="see-more-btn">See More</button>
+                  <div class="card-actions">
+                    <button class="action-btn expand-btn" title="Read Full Review"><ion-icon name="expand-outline"></ion-icon></button>
+                    <button class="action-btn copy-btn" title="Copy Review"><ion-icon name="copy-outline"></ion-icon></button>
+                    <button class="action-btn share-btn" title="Share Review"><ion-icon name="share-social-outline"></ion-icon></button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="review-card card-blue" data-rating="4" data-review-file="adrian.txt">
+                <div class="review-header">
+                  <div class="avatar">
+                    <img src="./assets/review-photos/adrian.jpg" alt="User" />
+                  </div>
+                  <div class="user-info">
+                    <h3 class="username">Adrian Nico</h3>
+                    <div class="rating-wrapper">
+                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
+                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
+                      <ion-icon name="star"></ion-icon>
+                    </div>
+                  </div>
+                </div>
+                <p class="review-text">Loading review...</p>
+                <div class="card-footer">
+                  <button class="see-more-btn">See More</button>
+                  <div class="card-actions">
+                    <button class="action-btn expand-btn" title="Read Full Review"><ion-icon name="expand-outline"></ion-icon></button>
+                    <button class="action-btn copy-btn" title="Copy Review"><ion-icon name="copy-outline"></ion-icon></button>
+                    <button class="action-btn share-btn" title="Share Review"><ion-icon name="share-social-outline"></ion-icon></button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="review-card card-blue" data-rating="4.89" data-review-file="johnpaul.txt">
+                <div class="review-header">
+                  <div class="avatar">
+                    <img src="./assets/review-photos/john paul.jpg" alt="User" />
+                  </div>
+                  <div class="user-info">
+                    <h3 class="username">John Paul</h3>
+                    <div class="rating-wrapper">
+                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
+                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
+                      <ion-icon name="star"></ion-icon>
+                    </div>
+                  </div>
+                </div>
+                <p class="review-text">Loading review...</p>
+                <div class="card-footer">
+                  <button class="see-more-btn">See More</button>
+                  <div class="card-actions">
+                    <button class="action-btn expand-btn" title="Read Full Review"><ion-icon name="expand-outline"></ion-icon></button>
+                    <button class="action-btn copy-btn" title="Copy Review"><ion-icon name="copy-outline"></ion-icon></button>
+                    <button class="action-btn share-btn" title="Share Review"><ion-icon name="share-social-outline"></ion-icon></button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="review-card card-blue" data-rating="3.5" data-review-file="jhayr.txt">
+                <div class="review-header">
+                  <div class="avatar">
+                    <img src="./assets/review-photos/jhayr.jpg" alt="User" />
+                  </div>
+                  <div class="user-info">
+                    <h3 class="username">Jhayr</h3>
+                    <div class="rating-wrapper">
+                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
+                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
+                      <ion-icon name="star"></ion-icon>
+                    </div>
+                  </div>
+                </div>
+                <p class="review-text">Loading review...</p>
+                <div class="card-footer">
+                  <button class="see-more-btn">See More</button>
+                  <div class="card-actions">
+                    <button class="action-btn expand-btn" title="Read Full Review"><ion-icon name="expand-outline"></ion-icon></button>
+                    <button class="action-btn copy-btn" title="Copy Review"><ion-icon name="copy-outline"></ion-icon></button>
+                    <button class="action-btn share-btn" title="Share Review"><ion-icon name="share-social-outline"></ion-icon></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="service">
+          <div class="container">
+            <div class="service-banner">
+              <figure>
+                <img src="./assets/images/bf.jpg" alt="Die Beautiful - HD 4k resolution" />
+              </figure>
+              <a href="#" class="service-btn" download>
+                <span>Download</span>
+                <ion-icon name="download-outline"></ion-icon>
+              </a>
+            </div>
+
+            <div class="service-content">
+              <p class="service-subtitle">Our Services</p>
+              <h2 class="h2 service-title">Download Die Beautiful.</h2>
+              <p class="service-text">
+                Trisha, a Filipino transgender woman, suddenly dies while being crowned in a beauty pageant. Her last wish was to be presented as a different celebrity on each night of her wake, but her conservative father wants to bury her as a man.
+              </p>
+              <ul class="service-list">
+                <li>
+                  <div class="service-card">
+                    <div class="card-icon"><ion-icon name="tv"></ion-icon></div>
+                    <div class="card-content">
+                      <h3 class="h3 card-title">Enjoy on Your TV.</h3>
+                      <p class="card-text">
+                        Watch on Smart TVs, PlayStation, Xbox, Chromecast, Apple TV, Blu-ray players, and more. See every vibrant makeup transformation on the big screen.
+                      </p>
+                    </div>
+                  </div>
+                </li>
+                <li>
+                  <div class="service-card">
+                    <div class="card-icon"><ion-icon name="videocam"></ion-icon></div>
+                    <div class="card-content">
+                      <h3 class="h3 card-title">Watch Everywhere.</h3>
+                      <p class="card-text">
+                        Stream unlimited movies and TV shows on your phone, tablet, laptop, and other devices. Take your favorite stories with you on your commute or travel without using data.
+                      </p>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      </article>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-top">
+        <div class="container">
+          <div class="divider"></div>
+          <div class="quicklink-wrapper">
+            <a href="./index.html" class="logo">
+              <img src="./assets/images/svg.svg" alt="Filmlane logo" />
+            </a>
+            <ul class="quicklink-list">
+              <li><a href="#" class="quicklink-link" id="faq-link">Faq</a></li>
+              <li><a href="#" class="quicklink-link" id="help-link">Help center</a></li>
+              <li><a href="#" class="quicklink-link" id="terms-link">Terms of use</a></li>
+              <li><a href="#" class="quicklink-link" id="privacy-link">Privacy</a></li>
+            </ul>
+            <ul class="social-list">
+              <li><a href="#" class="social-link"><ion-icon name="logo-facebook"></ion-icon></a></li>
+              <li><a href="#" class="social-link"><ion-icon name="logo-twitter"></ion-icon></a></li>
+              <li><a href="#" class="social-link"><ion-icon name="logo-pinterest"></ion-icon></a></li>
+              <li><a href="#" class="social-link"><ion-icon name="logo-linkedin"></ion-icon></a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="container">
+          <p class="copyright">
+            &copy; 2022 <a href="#">codewithjiar</a>. All Rights Reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <div class="share-modal-overlay" id="share-modal-overlay">
+      <div class="share-modal">
+        <div class="share-header">
+          <h3>Share</h3>
+          <button class="close-share-btn" onclick="toggleShareModal(false)">
+            <ion-icon name="close-outline"></ion-icon>
+          </button>
+        </div>
+        <div class="share-options">
+          <a href="#" target="_blank" class="social-btn facebook" id="s-fb">
+            <div class="icon-box"><ion-icon name="logo-facebook"></ion-icon></div>
+            <span>Facebook</span>
+          </a>
+          <a href="#" target="_blank" class="social-btn twitter" id="s-tw">
+            <div class="icon-box"><ion-icon name="logo-twitter"></ion-icon></div>
+            <span>X</span>
+          </a>
+          <a href="#" target="_blank" class="social-btn whatsapp" id="s-wa">
+            <div class="icon-box"><ion-icon name="logo-whatsapp"></ion-icon></div>
+            <span>WhatsApp</span>
+          </a>
+          <a href="#" target="_blank" class="social-btn pinterest" id="s-pin">
+            <div class="icon-box"><ion-icon name="logo-pinterest"></ion-icon></div>
+            <span>Pinterest</span>
+          </a>
+          <a href="#" class="social-btn email" id="s-mail">
+            <div class="icon-box"><ion-icon name="mail-outline"></ion-icon></div>
+            <span>Email</span>
+          </a>
+        </div>
+        <div class="link-copier">
+          <input type="text" id="share-link-input" readonly value="https://filmlane.com" />
+          <button class="copy-modal-btn" id="copy-modal-btn">Copy</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-modal-overlay" id="review-modal-overlay">
+      <div class="review-modal">
+        <button class="close-review-btn" onclick="toggleReviewModal(false)">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+        <div class="review-modal-content">
+          <div class="modal-header">
+            <div class="modal-avatar">
+              <img src="" alt="User" id="modal-user-img" />
+            </div>
+            <div class="modal-user-details">
+              <h3 id="modal-user-name">Username</h3>
+              <div class="modal-rating" id="modal-user-rating"></div>
+            </div>
+          </div>
+          <div class="modal-body">
+            <p id="modal-review-text">Review content goes here...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-modal-overlay" id="about-modal-overlay">
+      <div class="review-modal">
+        <button class="close-review-btn" id="close-about-btn">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+        <div class="review-modal-content">
+          <div class="modal-header">
+            <div class="modal-user-details">
+              <h3 class="modal-custom-title">DIE BEAUTIFUL (2016)</h3>
+              <p class="modal-custom-subtitle">Directed by: Jun Robles Lana</p>
+            </div>
+          </div>
+          <div class="modal-body">
+            <h4 class="modal-section-heading">Synopsis:</h4>
+            <p class="modal-section-paragraph">
+              Trisha, a transgender woman and beauty queen, dies unexpectedly after winning a contest. Her last wish is to be made up as different celebrities during the seven nights of her wake. As her friends mourn and reminisce about her sudden passing after winning Binibining Gay Pilipinas, Trisha's life story plays out through a non-linear narrative. In these fragmented slices of life, we witness Trisha's journey from her traumatic childhood and high school life, to her tragedy and triumphs as a struggling beauty queen.
+            </p>
+            <h4 class="modal-section-heading">Background:</h4>
+            <p class="modal-section-paragraph">
+              Directed by Jun Robles Lana, “Die Beautiful” is one of the few movies that explores themes such as happiness, day-to-day challenges of being a transgender in the Philippines, as well as discrimination towards the queer community. The movie focuses on Trisha Echevarria, played by Paolo Ballesteros, a transgender woman who dreams of becoming a crowned beauty queen. When she finally won the title, Trisha unexpectedly died due to a ruptured aneurysm.
+            </p>
+            <p class="modal-section-paragraph no-margin">
+              Following Trisha’s story as she faces prejudice and challenges while discovering love, loyalty, and the courage to live happily on her own way, the film bravely raises the voice of the Philippines’ often suppressed transgender minority. It seeks to show her complexity, humanity, and dignity. The outstanding performance of Paolo Ballesteros as Trisha and Christian Bables as Barbs, which won Best Actor and Best Supporting Actor at the 2016 Metro Manila Film Festival, respectively, undoubtedly conveys the story’s nuanced and real emotions.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-modal-overlay" id="references-modal-overlay">
+      <div class="review-modal">
+        <button class="close-review-btn" id="close-references-btn">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+        <div class="review-modal-content">
+          <div class="modal-header">
+            <div class="modal-user-details">
+              <h3 class="modal-custom-title">References</h3>
+            </div>
+          </div>
+          <div class="modal-body">
+            <ul class="references-list-wrapper">
+              <li>
+                <p>Die Beautiful (2016). (2025, September 1). <em>Letterboxd</em>.</p>
+                <a href="https://letterboxd.com/film/die-beautiful/" target="_blank">https://letterboxd.com/film/die-beautiful/</a>
+              </li>
+              <li>
+                <p>Ph, E., & Ph, E. (2025, July 24). DIE BEAUTIFULLY: How Trisha Echevarria dazzled in life, and death? <em>Explained PH</em>.</p>
+                <a href="https://explained.ph/die-beautifully-how-trisha-echevarria-dazzled-in-life-and-death/" target="_blank">https://explained.ph/die-beautifully-how-trisha-echevarria-dazzled-in-life-and-death/</a>
+              </li>
+              <li>
+                <p>Prudente, J. (2024, September 7). Die Beautiful - Film review | SINEGANG.ph. <em>SINEGANG.ph</em>.</p>
+                <a href="https://www.sinegang.ph/filmreviews/die-beautiful-jp" target="_blank">https://www.sinegang.ph/filmreviews/die-beautiful-jp</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-modal-overlay" id="members-modal-overlay">
+      <div class="review-modal">
+        <button class="close-review-btn" id="close-members-btn">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+        <div class="review-modal-content">
+          <div class="modal-header">
+            <div class="modal-user-details">
+              <h3 class="modal-custom-title">About Us / Members</h3>
+              <p class="modal-subtitle-alt">BC5MD Group 1</p>
+            </div>
+          </div>
+          <div class="modal-body">
+            <div class="members-grid">
+              <div class="member-item">
+                <div class="member-avatar"><img src="./assets/review-photos/john paul.jpg" alt="John Paul" /></div>
+                <div class="member-info"><h4>Abella, John Paul</h4><p>BC5MD <span class="role">| Leader</span></p></div>
+              </div>
+              <div class="member-item">
+                <div class="member-avatar"><img src="./assets/review-photos/dennis.jpg" alt="Dennis" /></div>
+                <div class="member-info"><h4>Alde, Dennis</h4><p>BC5MD <span class="role">| Movie Reviewer</span></p></div>
+              </div>
+              <div class="member-item">
+                <div class="member-avatar"><img src="./assets/review-photos/adrian.jpg" alt="Adrian" /></div>
+                <div class="member-info"><h4>Aquino, Adrian Nico</h4><p>BC5MD <span class="role">| Movie Reviewer</span></p></div>
+              </div>
+              <div class="member-item">
+                <div class="member-avatar"><img src="./assets/review-photos/princes.jpg" alt="Princes" /></div>
+                <div class="member-info"><h4>Baluarte, Princes Mae</h4><p>BC5MD <span class="role">|Website Designer</span></p></div>
+              </div>
+              <div class="member-item">
+                <div class="member-avatar"><img src="./assets/review-photos/kyleen.jpg" alt="Kyleen" /></div>
+                <div class="member-info"><h4>Co, Kylene</h4><p>BC5MD <span class="role">| Movie Reviewer</span></p></div>
+              </div>
+              <div class="member-item">
+                <div class="member-avatar"><img src="./assets/review-photos/king.jpg" alt="King" /></div>
+                <div class="member-info"><h4>Encio, King Acel</h4><p>BC5MD <span class="role">| Movie Reviewer</span></p></div>
+              </div>
+              <div class="member-item">
+                <div class="member-avatar"><img src="./assets/review-photos/yesha.jpg" alt="Yesha" /></div>
+                <div class="member-info"><h4>Escobar, Yeshalyn</h4><p>BC5MD <span class="role">| Movie Reviewer</span></p></div>
+              </div>
+              <div class="member-item">
+                <div class="member-avatar"><img src="./assets/review-photos/joana.jpg" alt="Joanna" /></div>
+                <div class="member-info"><h4>Magalang, Joanna</h4><p>BC5MD <span class="role">| Movie Reviewer</span></p></div>
+              </div>
+              <div class="member-item">
+                <div class="member-avatar"><img src="./assets/review-photos/jhayr.jpg" alt="John Rey" /></div>
+                <div class="member-info"><h4>Natividad, John Rey</h4><p>BC5MD <span class="role">| Website Developer (VSCODE)</span></p></div>
+              </div>
+              <div class="member-item">
+                <div class="member-avatar"><img src="./assets/review-photos/joehan.jpg" alt="Joehanne" /></div>
+                <div class="member-info"><h4>Villar, Joehanne Marguirite</h4><p>BC5MD <span class="role">| Researcher</span></p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-modal-overlay" id="info-modal-overlay">
+      <div class="review-modal">
+        <button class="close-review-btn" id="close-info-btn"><ion-icon name="close-outline"></ion-icon></button>
+        <div class="review-modal-content">
+          <div class="modal-header">
+            <div class="modal-user-details"><h3 id="info-modal-title" class="modal-custom-title">Title</h3></div>
+          </div>
+          <div class="modal-body"><p id="info-modal-text" class="modal-info-body-text">Content...</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-modal-overlay" id="signin-modal-overlay">
+      <div class="review-modal max-width-signin">
+        <button class="close-review-btn" id="close-signin-btn"><ion-icon name="close-outline"></ion-icon></button>
+        <div class="review-modal-content text-center">
+          <div class="margin-bottom-large">
+            <h2 class="signin-modal-heading">Welcome Back</h2>
+            <p style="color: var(--gainsboro)">Please sign in to your account</p>
+          </div>
+          <form class="signin-form" id="login-form">
+            <div class="input-group">
+              <input type="email" placeholder="Email Address" required class="login-input" />
+              <ion-icon name="mail-outline"></ion-icon>
+            </div>
+            <div class="input-group">
+              <input type="password" placeholder="Password" required class="login-input" />
+              <ion-icon name="lock-closed-outline"></ion-icon>
+            </div>
+            <div class="forgot-password-wrapper">
+              <a href="#">Forgot Password?</a>
+            </div>
+            <button type="submit" class="signin-submit-btn">Sign In</button>
+          </form>
+          <div class="modal-divider"></div>
+          <p class="signup-prompt">Don't have an account? <a href="#">Sign Up</a></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-modal-overlay" id="member-detail-modal-overlay">
+      <div class="review-modal max-width-signin text-center">
+        <button class="close-review-btn" id="close-detail-btn"><ion-icon name="close-outline"></ion-icon></button>
+        <div class="review-modal-content">
+          <div class="modal-body flex-column-center">
+            <div class="detail-avatar">
+              <img src="" alt="Member" id="detail-img" />
+            </div>
+            <h3 id="detail-name" class="detail-name-text">Name</h3>
+            <p id="detail-role" class="detail-role-text">Role</p>
+            <p class="detail-group-text">BC5MD Group 1.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-modal-overlay" id="search-modal-overlay">
+      <div class="review-modal search-modal-layout">
+        <div class="search-modal-header">
+          <ion-icon name="search-outline" class="search-modal-icon"></ion-icon>
+          <input type="text" id="search-input" placeholder="Search for a movie..." />
+          <button id="close-search-btn"><ion-icon name="close-outline"></ion-icon></button>
+        </div>
+        <div class="modal-body search-modal-body">
+          <p id="search-status">Type to search...</p>
+        </div>
+      </div>
+    </div>
+
+    <a href="#top" class="go-top" data-go-top><ion-icon name="chevron-up"></ion-icon></a>
+
+    <script src="./assets/js/script.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+  </body>
+</html>
