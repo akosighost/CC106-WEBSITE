@@ -1,5 +1,7 @@
 'use strict';
 
+
+
 // 1. Define your base URL FIRST so the code knows what it is
 const API_BASE_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" 
   ? "http://localhost:5000" 
@@ -1086,6 +1088,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /// 3. FULL-STACK PROFILE DETAILS RENDERING & INTERACTIVE EDIT SUBSYSTEM
   async function openReviewDetailsViewport(reviewId) {
+    const loader = document.getElementById('loading-overlay');
+    if (loader) loader.style.display = 'flex';
+    
     if (!document.getElementById('detail-movie-title')) return;
     currentActiveReviewId = reviewId;
     const userEmail = localStorage.getItem("userEmail") || "";
@@ -1095,7 +1100,7 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleEditFormState(false);
 
     try {
-      const response = await fetch(`http://localhost:5000/api/reviews/details/${reviewId}?email=${encodeURIComponent(userEmail)}`);
+      const response = await fetch(`${API_BASE_URL}/api/reviews/details/${reviewId}?email=${encodeURIComponent(userEmail)}`);
       if (!response.ok) throw new Error("Packet unresolved.");
       const data = await response.json();
 
@@ -1330,8 +1335,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
     } catch (err) {
-      console.error("Error contacting dataset detail endpoint nodes:", err);
-    }
+        console.error("Error:", err);
+    } finally {
+      // 2. Hide the loading screen whether it succeeds or fails
+        if (loader) loader.style.display = 'none';
   }
 
   // Helper visibility layout control switcher
