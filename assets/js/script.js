@@ -1,9 +1,22 @@
 'use strict';
 
-// Change this URL string to your live Render backend URL once it's deployed!
+// 1. Define your base URL FIRST so the code knows what it is
 const API_BASE_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" 
   ? "http://localhost:5000" 
-  : "https://your-backend-name.onrender.com";
+  : "https://reavon-backend.onrender.com";
+
+console.log("Current API URL:", API_BASE_URL);
+
+// 2. Now you can safely use it. 
+// I changed '/api/movies' to '/api/reviews/all' because that route actually exists in your server.js
+fetch(`${API_BASE_URL}/api/reviews/all`) 
+  .then(response => response.json())
+  .then(data => {
+    console.log("Data from backend:", data);
+  })
+  .catch(error => console.error("Error fetching data:", error));
+
+console.log("Current API URL:", API_BASE_URL);
 
 /**
  * Navbar Toggle Logic Controller

@@ -618,6 +618,10 @@ if (reviewCheck.rows[0].user_id !== userId && !isAdmin) {
   }
 });
 
+app.get('/', (req, res) => {
+  res.send('API is running successfully!');
+});
+
 // Render dynamically assigns an environment port, fallback to 5000 locally
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
