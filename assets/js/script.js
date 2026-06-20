@@ -1095,9 +1095,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalContainer = document.querySelector('.movie-detail-modal-container') || document.querySelector('.full-page-thread-wrapper');
     if (modalContainer) modalContainer.classList.remove('is-editing-mode');
     toggleEditFormState(false);
+    
+    // 1. Show the loading screen
+    const loader = document.getElementById('loading-overlay');
+    if (loader) loader.style.display = 'flex';
 
     try {
-      const response = await fetch(`http://localhost:5000/api/reviews/details/${reviewId}?email=${encodeURIComponent(userEmail)}`);
+      const response = await fetch(`${API_BASE_URL}/api/reviews/details/${reviewId}?email=${encodeURIComponent(userEmail)}`);
       if (!response.ok) throw new Error("Packet unresolved.");
       const data = await response.json();
 
@@ -1332,7 +1336,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
     } catch (err) {
-      console.error("Error contacting dataset detail endpoint nodes:", err);
+        console.error("Error:", err);
+    } finally {
+        // 2. Hide the loading screen whether it succeeds or fails
+        if (loader) loader.style.display = 'none';
     }
   }
 
