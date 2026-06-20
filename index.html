@@ -99,28 +99,13 @@
         <section class="bg-main">
           <div class="container">
             <div class="trending-header">
-              <h2 class="trending-title">NEW ON JOHAN</h2>
+              <h2 class="trending-title">NEW ON REAV-ON</h2>
               <span class="activity-link">
-                <ion-icon name="flash-outline"></ion-icon> RECENT ACTIVITY
+                <ion-icon name="flash-outline"></ion-icon> CLICK TO VIEW
               </span>
             </div>
 
-            <div class="movie-row-grid">
-              <div class="premium-box-card">
-                <div class="poster-wrapper">
-                  <img src="./assets/images/obs.jpg" alt="Obsession" />
-                </div>
-                <div class="poster-footer">
-                  <span class="reviewer-name">JOhan</span>
-                  <div class="card-meta">
-                    <span class="stars-indicator">★★★★★</span>
-                    <span class="review-date">Jun 17</span>
-                  </div>
-                </div>
-              </div>
-
-              
-            </div>
+            <div class="movie-row-grid" id="featured-reviews-grid"></div>
           </div>
 
           <div class="container">
@@ -131,24 +116,9 @@
               </span>
             </div>
 
-            <div class="movie-row-grid">
-              <div class="premium-box-card">
-                <div class="poster-wrapper">
-                  <img src="./assets/images/obs.jpg" alt="Obsession" />
-                </div>
-                <div class="poster-footer">
-                  <span class="reviewer-name">JOhan</span>
-                  <div class="card-meta">
-                    <span class="stars-indicator">★★★★★</span>
-                    <span class="review-date">Jun 17</span>
-                  </div>
-                </div>
-              </div>
-
-              
-            </div>
+            <div class="movie-row-grid" id="recommendations-reviews-grid"></div>
           </div>
-
+          
           <div class="container" id="user-reviews-container" style="margin-bottom: 40px;">
             <div class="trending-header">
               <h2 class="trending-title">ADDED BY YOU</h2>
@@ -907,7 +877,7 @@
 
     <a href="#top" class="go-top" data-go-top><ion-icon name="chevron-up"></ion-icon></a>
 
-    <div class="review-modal-overlay active" id="upload-review-modal-overlay">
+    <div class="review-modal-overlay" id="upload-review-modal-overlay">
       <div class="review-modal max-width-signin" style="padding: 30px; max-width: 480px; border-top: 4px solid var(--citrine);">
         <button class="close-review-btn" id="close-upload-modal-btn">
           <ion-icon name="close-outline"></ion-icon>
@@ -917,19 +887,6 @@
         <p style="color: var(--gainsboro); margin-bottom: 20px; text-align: center; font-size: 14px;">Share your cinematic thoughts with the community</p>
 
         <form class="signin-form" id="upload-review-form">
-          <div class="form-field-item">
-            <label class="form-input-label">Movie Thumbnail / Poster</label>
-            <div class="thumbnail-upload-zone" id="thumb-upload-zone">
-              <input type="file" id="review-movie-image" accept="image/*" required style="display: none;" />
-              <div class="upload-zone-content" id="upload-zone-prompt">
-                <ion-icon name="cloud-upload-outline" style="font-size: 40px; color: var(--citrine); margin-bottom: 8px;"></ion-icon>
-                <p style="color: var(--gainsboro); font-size: 13px; font-weight: 500;">Click to select movie poster</p>
-                <p style="color: #678; font-size: 11px; margin-top: 2px;">Supports JPG, PNG, or WEBP</p>
-              </div>
-              <img src="" id="upload-preview-img" alt="Movie Preview" class="upload-preview-thumbnail" />
-            </div>
-          </div>
-
           <div class="input-group">
             <input type="text" id="review-movie-name" placeholder="Movie Name" required class="login-input" style="padding-left: 45px;" />
             <ion-icon name="film-outline"></ion-icon>
@@ -948,113 +905,28 @@
             </div>
           </div>
 
+          <div class="form-field-item">
+            <label class="form-input-label">Movie Thumbnail / Poster</label>
+            <div class="thumbnail-upload-zone" id="thumb-upload-zone">
+              <input type="file" id="review-movie-image" accept="image/*" required style="display: none;" />
+              <div class="upload-zone-content" id="upload-zone-prompt">
+                <ion-icon name="cloud-upload-outline" style="font-size: 40px; color: var(--citrine); margin-bottom: 8px;"></ion-icon>
+                <p style="color: var(--gainsboro); font-size: 13px; font-weight: 500;">Click to select movie poster</p>
+                <p style="color: #678; font-size: 11px; margin-top: 2px;">Supports JPG, PNG, or WEBP</p>
+              </div>
+              <img src="" id="upload-preview-img" alt="Movie Preview" class="upload-preview-thumbnail" />
+            </div>
+          </div>
+
+          <div class="form-field-item" id="admin-feature-checkbox-wrapper" style="display: none; flex-direction: row; align-items: center; gap: 10px; margin-bottom: 15px; background: rgba(229, 184, 0, 0.05); padding: 10px; border: 1px solid var(--citrine); border-radius: 6px;">
+            <input type="checkbox" id="review-is-featured" style="width: 18px; height: 18px; cursor: pointer; accent-color: var(--citrine);" />
+            <label for="review-is-featured" class="form-input-label" style="margin-bottom: 0; cursor: pointer; color: var(--citrine); font-weight: 700;">Publish to "NEW ON REAV-ON" grid</label>
+          </div>
+
           <button type="submit" class="signin-submit-btn" style="margin-top: 5px;">
             Publish Review
           </button>
         </form>
-      </div>
-    </div>
-
-    <div class="review-modal-overlay" id="movie-detail-modal-overlay">
-      <div class="review-modal movie-detail-modal-container">
-        <button class="close-review-btn" id="close-detail-modal-btn">
-          <ion-icon name="close-outline"></ion-icon>
-        </button>
-
-        <div class="movie-detail-layout-grid">
-          <div class="detail-poster-column">
-            <div class="detail-poster-frame edit-poster-hover-wrapper">
-              <img src="" id="detail-movie-poster" alt="Movie Poster" />
-              <input type="file" id="edit-movie-image-input" accept="image/*" style="display: none;" />
-              <div class="poster-edit-overlay" id="poster-edit-overlay-btn">
-                <ion-icon name="camera-outline"></ion-icon>
-                <span>Change Poster</span>
-              </div>
-            </div>
-            
-            <div class="detail-view-counter">
-              <ion-icon name="eye-outline"></ion-icon>
-              <span><strong id="detail-view-count">0</strong> Views</span>
-            </div>
-
-            <div class="owner-admin-buttons-row" style="width: 100%; display: flex; flex-direction: column; gap: 8px;">
-              <button id="detail-edit-review-btn" class="detail-edit-btn" style="display: none;">
-                <ion-icon name="create-outline"></ion-icon>
-                <span>Edit Review</span>
-              </button>
-              
-              <button id="detail-delete-review-btn" class="detail-delete-btn" style="display: none;">
-                <ion-icon name="trash-outline"></ion-icon>
-                <span>Delete Review</span>
-              </button>
-            </div>
-          </div>
-
-          <div class="detail-content-column">
-            <div class="detail-header-block">
-              <div id="title-view-wrapper">
-                <h2 id="detail-movie-title" class="detail-main-title">Movie Title</h2>
-              </div>
-              <div id="title-edit-wrapper" style="display: none; margin-bottom: 10px;">
-                <input type="text" id="edit-movie-name-field" class="login-input" style="padding-left: 15px;" />
-              </div>
-
-              <div class="detail-average-rating-container" id="detail-average-rating-box"></div>
-
-              <div class="detail-meta-row" style="margin-top: 10px;">
-                <div id="date-view-wrapper">
-                  <span id="detail-movie-date" class="detail-date-badge">Published Date</span>
-                </div>
-                <div id="date-edit-wrapper" style="display: none;">
-                  <input type="text" id="edit-movie-date-field" class="login-input" style="padding: 6px 12px; height: auto;" />
-                </div>
-
-                <span id="detail-upload-time" class="detail-time-stamp-label"></span>
-                <span class="detail-author-badge"><ion-icon name="person-outline"></ion-icon> Author: <span id="detail-movie-author">Username</span></span>
-              </div>
-            </div>
-
-            <div class="detail-review-body-box">
-              <h4 class="detail-section-label">Review Summary Text</h4>
-              <div id="text-view-wrapper">
-                <p id="detail-review-text" class="detail-paragraph-content">Review text reads here...</p>
-              </div>
-              <div id="text-edit-wrapper" style="display: none;">
-                <textarea id="edit-movie-text-field" class="login-input review-textarea-field" style="padding-left: 15px; margin-bottom: 15px;"></textarea>
-              </div>
-            </div>
-
-            <div id="edit-actions-utilities-bar" style="display: none; justify-content: flex-end; gap: 12px; margin-bottom: 20px; border-bottom: 1px solid var(--gunmetal-1); padding-bottom: 15px;">
-              <button id="edit-cancel-btn" class="upcoming filter-btn" style="padding: 8px 20px; background: transparent; cursor: pointer;">Cancel</button>
-              <button id="edit-save-btn" class="signin-submit-btn" style="width: auto; margin-top: 0; padding: 8px 24px; border-radius: 50px;">Save Changes</button>
-            </div>
-
-            <div class="detail-comments-section" id="detail-modal-comments-block-wrapper">
-              <h3 class="detail-section-label">Discussion Feed</h3>
-              <div class="comments-scroll-vault" id="modal-comments-list"></div>
-
-              <form id="detail-comment-form" class="detail-comment-form-box">
-                <div class="comment-input-wrapper">
-                  <textarea id="comment-field-text" placeholder="Add an analytical community comment thought..." required class="login-input comment-textarea"></textarea>
-                </div>
-                <div class="comment-submission-utilities-row">
-                  <div class="interactive-star-selector" id="comment-star-selector">
-                    <span class="selector-label">Your Rating:</span>
-                    <div class="star-nodes">
-                      <ion-icon name="star-outline" data-value="1"></ion-icon>
-                      <ion-icon name="star-outline" data-value="2"></ion-icon>
-                      <ion-icon name="star-outline" data-value="3"></ion-icon>
-                      <ion-icon name="star-outline" data-value="4"></ion-icon>
-                      <ion-icon name="star-outline" data-value="5"></ion-icon>
-                    </div>
-                  </div>
-                  <button type="submit" class="signin-submit-btn comment-submit-btn-override">Post Comment</button>
-                </div>
-              </form>
-            </div>
-
-          </div>
-        </div>
       </div>
     </div>
 

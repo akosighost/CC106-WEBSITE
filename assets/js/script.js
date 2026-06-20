@@ -1,5 +1,10 @@
 'use strict';
 
+// Change this URL string to your live Render backend URL once it's deployed!
+const API_BASE_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" 
+  ? "http://localhost:5000" 
+  : "https://your-backend-name.onrender.com";
+
 /**
  * Navbar Toggle Logic Controller
  */
@@ -175,6 +180,10 @@ document.addEventListener("DOMContentLoaded", () => {
           localStorage.setItem("username", data.username);
           localStorage.setItem("userEmail", data.email);
           localStorage.setItem("userPassword", data.password);
+          
+          // FIX: Ensure this line exists to save your role to the browser session!
+          localStorage.setItem("isAdmin", data.is_admin); 
+          
           window.location.reload();
         } else {
           alert(data.message || "Invalid account matching verification.");
@@ -762,15 +771,28 @@ document.addEventListener('DOMContentLoaded', () => {
   
   const reviewsGrid = document.getElementById('user-reviews-grid');
   const audienceGrid = document.getElementById('audience-reviews-grid');
+  const featuredGrid = document.getElementById('featured-reviews-grid');
+  const recommendationsGrid = document.getElementById('recommendations-reviews-grid');
 
-  // Movie Details Modal Selectors
+  // Movie Details & Edit UI Selectors
   const detailModal = document.getElementById('movie-detail-modal-overlay');
   const closeDetailModalBtn = document.getElementById('close-detail-modal-btn');
   const commentForm = document.getElementById('detail-comment-form');
   
   let base64ImageString = ""; 
   let currentActiveReviewId = null;
-  let activeSelectedRating = 0; // State variable tracking input star selection
+  let activeSelectedRating = 0; 
+
+ // TIMESTAMP FORMATTING HELPER
+  function parseSystemTimestampToLocal(isoString) {
+    if (!isoString) return "";
+    const dateInstance = new Date(isoString);
+    return dateInstance.toLocaleString('en-US', {
+      month: 'short', day: 'numeric', year: 'numeric',
+      hour: 'numeric', minute: '2-digit', hour12: true
+    });
+  }
+  
 
   // 1. PRIVATE USER REVIEW LOADER ENGINE (ADDED BY YOU)
   async function fetchAndRenderUserReviews() {
@@ -797,11 +819,7 @@ document.addEventListener('DOMContentLoaded', () => {
       reviewsGrid.innerHTML = reviews.map(item => {
         const ratingCount = parseInt(item.rating_count) || 0;
         const avgRating = parseFloat(item.avg_rating) || 0;
-        
-        // Calculate standard font star strings dynamically
-        const starText = ratingCount > 0 
-          ? "★".repeat(Math.round(avgRating)) + "☆".repeat(5 - Math.round(avgRating)) 
-          : "☆☆☆☆☆";
+        const starText = ratingCount > 0 ? "★".repeat(Math.round(avgRating)) + "☆".repeat(5 - Math.round(avgRating)) : "☆☆☆☆☆";
 
         return `
           <div class="premium-box-card review-click-target-node" data-review-id="${item.review_id}" style="cursor: pointer;">
@@ -811,7 +829,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="poster-footer">
               <span class="reviewer-name">${item.movie_name}</span>
               <div class="card-meta">
-                <span class="stars-indicator">${starText}</span>
+                <span class="stars-indicator" style="color: #00e054;">${starText}</span>
                 <span class="review-date">${item.publish_date}</span>
               </div>
             </div>
@@ -824,7 +842,98 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // 2. GLOBAL AUDIENCE REVIEWS LOADER ENGINE (SHOWS EVERYTHING TO EVERYONE)
+
+  // 1B. NEW: FEATURED REVIEWS LOADER ENGINE ("NEW ON REAV-ON")
+  async function fetchAndRenderFeaturedReviews() {
+    if (!featuredGrid) return;
+
+    
+
+    try {
+      const response = await fetch("http://localhost:5000/api/reviews/featured");
+      const reviews = await response.json();
+
+      if (reviews.length === 0) {
+        featuredGrid.innerHTML = `<p style="color: #678; font-size: 13px; grid-column: span 6; text-align: center; padding: 20px;">No featured movie highlights published yet.</p>`;
+        return;
+      }
+      
+
+      featuredGrid.innerHTML = reviews.map(item => {
+        const ratingCount = parseInt(item.rating_count) || 0;
+        const avgRating = parseFloat(item.avg_rating) || 0;
+        const starText = ratingCount > 0 ? "★".repeat(Math.round(avgRating)) + "☆".repeat(5 - Math.round(avgRating)) : "☆☆☆☆☆";
+
+        return `
+          <div class="premium-box-card review-click-target-node" data-review-id="${item.review_id}" style="border-bottom: 3px solid var(--citrine); cursor: pointer;">
+            <div class="poster-wrapper">
+              <img src="${item.image_data || './assets/images/obs.jpg'}" alt="${item.movie_name}" />
+            </div>
+            <div class="poster-footer">
+              <span class="reviewer-name">${item.movie_name}</span>
+              <span style="color: var(--citrine); font-size: 11px; margin-top: -2px; font-weight: 500;">By Admin: ${item.username}</span>
+              <div class="card-meta">
+                <span class="stars-indicator" style="color: var(--citrine);">${starText}</span>
+                <span class="review-date">${item.publish_date}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+    } catch (err) {
+      console.error("Error drawing featured reviews grid nodes:", err);
+    }
+  }
+
+  // 1C. NEW: RECOMMENDATIONS REVIEWS LOADER ENGINE (4-5 STARS ONLY)
+  async function fetchAndRenderRecommendations() {
+    if (!recommendationsGrid) return;
+
+    try {
+      const response = await fetch("http://localhost:5000/api/reviews/recommendations");
+      const reviews = await response.json();
+
+      if (reviews.length === 0) {
+        recommendationsGrid.innerHTML = `<p style="color: #678; font-size: 13px; grid-column: span 6; text-align: center; padding: 20px;">No high-rated community picks recommended yet.</p>`;
+        return;
+      }
+
+      recommendationsGrid.innerHTML = reviews.map(item => {
+        const ratingCount = parseInt(item.rating_count) || 0;
+        const avgRating = parseFloat(item.avg_rating) || 0;
+        const starText = "★".repeat(Math.round(avgRating)) + "☆".repeat(5 - Math.round(avgRating));
+
+        return `
+          <div class="premium-box-card review-click-target-node" data-review-id="${item.review_id}" style="cursor: pointer;">
+            <div class="poster-wrapper">
+              <img src="${item.image_data || './assets/images/obs.jpg'}" alt="${item.movie_name}" />
+            </div>
+            <div class="poster-footer">
+              <span class="reviewer-name">${item.movie_name}</span>
+              <span style="color: #678; font-size: 11px; margin-top: -2px; font-weight: 500;">By: ${item.username}</span>
+              <div class="card-meta">
+                <span class="stars-indicator" style="color: #00e054;">${starText}</span>
+                <span class="review-date">${item.publish_date}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+    } catch (err) {
+      console.error("Error drawing recommendations grid nodes:", err);
+    }
+  }
+
+  // Make sure to call it on page load alongside your other grids
+  // Trigger on load alongside your other active grids
+  fetchAndRenderFeaturedReviews();
+  fetchAndRenderUserReviews();
+  fetchAndRenderAudienceReviews();
+  fetchAndRenderRecommendations(); // FIX: Added initialization step
+
+  // 2. GLOBAL AUDIENCE REVIEWS LOADER ENGINE
   async function fetchAndRenderAudienceReviews() {
     if (!audienceGrid) return;
 
@@ -840,10 +949,7 @@ document.addEventListener('DOMContentLoaded', () => {
       audienceGrid.innerHTML = reviews.map(item => {
         const ratingCount = parseInt(item.rating_count) || 0;
         const avgRating = parseFloat(item.avg_rating) || 0;
-        
-        const starText = ratingCount > 0 
-          ? "★".repeat(Math.round(avgRating)) + "☆".repeat(5 - Math.round(avgRating)) 
-          : "☆☆☆☆☆";
+        const starText = ratingCount > 0 ? "★".repeat(Math.round(avgRating)) + "☆".repeat(5 - Math.round(avgRating)) : "☆☆☆☆☆";
 
         return `
           <div class="premium-box-card review-click-target-node" data-review-id="${item.review_id}" style="border-bottom: 3px solid var(--citrine); cursor: pointer;">
@@ -870,30 +976,108 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchAndRenderUserReviews();
   fetchAndRenderAudienceReviews();
 
-  // ============================================================
-  // PRODUCTION TIMESTAMP FORMATTING PARSER ENGINE (AM/PM FORMAT)
-  // ============================================================
-  function parseSystemTimestampToLocal(isoString) {
-    if (!isoString) return "";
-    const dateInstance = new Date(isoString);
-    return dateInstance.toLocaleString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
+  // Helper visibility layout control switcher
+  function toggleEditFormState(showEditForm) {
+    const viewStyle = showEditForm ? 'none' : 'block';
+    const inlineViewStyle = showEditForm ? 'none' : 'inline-block';
+    const editStyle = showEditForm ? 'block' : 'none';
+
+    document.getElementById('title-view-wrapper').style.display = viewStyle;
+    document.getElementById('title-edit-wrapper').style.display = editStyle;
+    document.getElementById('date-view-wrapper').style.display = inlineViewStyle;
+    document.getElementById('date-edit-wrapper').style.display = editStyle;
+    document.getElementById('text-view-wrapper').style.display = viewStyle;
+    document.getElementById('text-edit-wrapper').style.display = editStyle;
+    
+    document.getElementById('edit-actions-utilities-bar').style.display = showEditForm ? 'flex' : 'none';
+    document.getElementById('detail-modal-comments-block-wrapper').style.display = viewStyle; 
+  }
+
+  // Rewrite function to cleanly render aggregate ratings and interactive header stars
+  function updateModalHeaderStars(avgRating, ratingCount, userRating = null) {
+    const ratingBox = document.getElementById('detail-average-rating-box');
+    if (!ratingBox) return;
+
+    const averageScore = parseFloat(avgRating) || 0;
+    let ratingHTML = `<div class="rating-display-row" style="display: flex; align-items: center; gap: 4px;">`;
+
+    for (let i = 1; i <= 5; i++) {
+      if (averageScore >= i) ratingHTML += '<img src="data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 512 512\'><path fill=\'%23e5b800\' d=\'M256 39.37l68.75 139.32 153.75 22.33-111.25 108.45 26.25 153.13-137.5-72.29-137.5 72.29 26.25-153.13-111.25-108.45 153.75-22.33L256 39.37z\'/></svg>" style="width:16px; height:16px;" />';
+      else if (averageScore >= i - 0.5) ratingHTML += '<img src="data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 512 512\'><path fill=\'%23e5b800\' d=\'M256 39.37l68.75 139.32 153.75 22.33-111.25 108.45 26.25 153.13-137.5-72.29V39.37z\'/></svg>" style="width:16px; height:16px;" />';
+      else ratingHTML += '<img src="data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 512 512\'><path fill=\'none\' stroke=\'%23667788\' stroke-width=\'32\' d=\'M256 39.37l68.75 139.32 153.75 22.33-111.25 108.45 26.25 153.13-137.5-72.29-137.5 72.29 26.25-153.13-111.25-108.45 153.75-22.33L256 39.37z\'/></svg>" style="width:16px; height:16px;" />';
+    }
+
+    ratingHTML += `
+      <span class="average-score-text" style="color: var(--white); font-weight: 700; margin-left: 6px;">
+        ${averageScore > 0 ? `${averageScore} / 5 (${ratingCount} user${ratingCount === 1 ? '' : 's'} rated)` : 'No ratings left yet'}
+      </span>
+    </div>`;
+
+    // Inject the interactive 1-time selector row underneath
+    ratingHTML += `
+      <div class="interactive-user-rating-line" style="margin-top: 12px; display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.02); padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.05); width: max-content;">
+        <span style="color: #678; font-size: 12px; font-weight: 600;">${userRating ? 'Your Rating:' : 'Click to Rate:'}</span>
+        <div class="interactive-header-stars" style="display: flex; gap: 4px; font-size: 18px;">
+          ${[1, 2, 3, 4, 5].map(num => {
+            const isSelect = userRating && num <= userRating;
+            return `<ion-icon name="${isSelect ? 'star' : 'star-outline'}" data-value="${num}" class="${isSelect ? 'selected-star' : ''}" style="cursor: pointer; color: ${isSelect ? 'var(--citrine)' : '#678'}; transition: color 0.1s;"></ion-icon>`;
+          }).join('')}
+        </div>
+      </div>
+    `;
+
+    ratingBox.innerHTML = ratingHTML;
+    setupHeaderStarListeners();
+  }
+
+  // Handle high-performance click listeners for header stars
+  function setupHeaderStarListeners() {
+    const container = document.querySelector('.interactive-header-stars');
+    if (!container) return;
+
+    const stars = Array.from(container.querySelectorAll('ion-icon'));
+    const userEmail = localStorage.getItem("userEmail");
+
+    stars.forEach(star => {
+      star.addEventListener('mouseenter', function() {
+        const val = parseInt(this.getAttribute('data-value'), 10);
+        stars.forEach((s, idx) => s.style.color = idx < val ? 'var(--citrine)' : '#678');
+      });
+
+      star.addEventListener('mouseleave', function() {
+        stars.forEach(s => s.style.color = s.classList.contains('selected-star') ? 'var(--citrine)' : '#678');
+      });
+
+      star.addEventListener('click', async function() {
+        if (!userEmail) { alert("Please sign in to rate this movie!"); return; }
+        const ratingVal = parseInt(this.getAttribute('data-value'), 10);
+
+        try {
+          const response = await fetch(`http://localhost:5000/api/reviews/rate/${currentActiveReviewId}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: userEmail, rating: ratingVal })
+          });
+
+          if (response.ok) {
+            const refreshRes = await fetch(`http://localhost:5000/api/reviews/details/${currentActiveReviewId}?email=${encodeURIComponent(userEmail)}`);
+            const refreshData = await refreshRes.json();
+            updateModalHeaderStars(refreshData.review.avg_rating, refreshData.review.rating_count, refreshData.user_rating);
+            await fetchAndRenderUserReviews();
+            await fetchAndRenderAudienceReviews();
+          }
+        } catch (err) { console.error(err); }
+      });
     });
   }
 
-  // 3. FULL-STACK PROFILE DETAILS RENDERING & INTERACTIVE EDIT SUBSYSTEM
+  /// 3. FULL-STACK PROFILE DETAILS RENDERING & INTERACTIVE EDIT SUBSYSTEM
   async function openReviewDetailsViewport(reviewId) {
-    if (!detailModal) return;
+    if (!document.getElementById('detail-movie-title')) return;
     currentActiveReviewId = reviewId;
     const userEmail = localStorage.getItem("userEmail") || "";
 
-    // Reset modal state back to default read-only view mode container
-    const modalContainer = document.querySelector('.movie-detail-modal-container');
+    const modalContainer = document.querySelector('.movie-detail-modal-container') || document.querySelector('.full-page-thread-wrapper');
     if (modalContainer) modalContainer.classList.remove('is-editing-mode');
     toggleEditFormState(false);
 
@@ -907,161 +1091,233 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('detail-movie-title').textContent = data.review.movie_name;
       document.getElementById('detail-movie-date').textContent = data.review.publish_date;
       document.getElementById('detail-movie-author').textContent = data.review.username;
-      document.getElementById('detail-review-text').textContent = data.review.review_text;
       document.getElementById('detail-view-count').textContent = data.review.view_count || 0;
+      document.getElementById('detail-review-text').textContent = data.review.review_text;
 
+      
+
+      updateModalHeaderStars(data.review.avg_rating, data.review.rating_count, data.user_rating);
       const timePlaceholder = document.getElementById('detail-upload-time');
       if (timePlaceholder && data.review.created_at) {
         timePlaceholder.textContent = `• Uploaded: ${parseSystemTimestampToLocal(data.review.created_at)}`;
       }
 
-      // Render star rating blocks 
-      const ratingBox = document.getElementById('detail-average-rating-box');
-      if (ratingBox) {
-        const scoredComments = data.comments.filter(c => c.rating !== null && c.rating !== undefined);
-        let ratingHTML = "";
-        if (scoredComments.length > 0) {
-          const sum = scoredComments.reduce((acc, curr) => acc + parseInt(curr.rating), 0);
-          const averageScore = (sum / scoredComments.length).toFixed(1);
-          for (let i = 1; i <= 5; i++) {
-            if (averageScore >= i) ratingHTML += '<ion-icon name="star" style="color: var(--citrine);"></ion-icon>';
-            else if (averageScore >= i - 0.5) ratingHTML += '<ion-icon name="star-half-outline" style="color: var(--citrine);"></ion-icon>';
-            else ratingHTML += '<ion-icon name="star-outline" style="color: #678 BLOCK;"></ion-icon>';
-          }
-          ratingHTML += `<span class="average-score-text" style="color: var(--white);">${averageScore} / 5 (${scoredComments.length} users rated)</span>`;
-        } else {
-          for (let i = 1; i <= 5; i++) ratingHTML += '<ion-icon name="star-outline" style="color: #678;"></ion-icon>';
-          ratingHTML += `<span class="average-score-text" style="color: #678; font-weight: 500;">No ratings left yet</span>`;
-        }
-        ratingBox.innerHTML = ratingHTML;
+      // ============================================================
+      // BULLETPROOF GENRE DATA NORMALIZER & PILL RENDERER
+      // ============================================================
+      let processedGenres = [];
+      
+      if (Array.isArray(data.review.genres)) {
+        // If it's already a clean JavaScript array, use it directly
+        processedGenres = data.review.genres;
+      } else if (typeof data.review.genres === 'string' && data.review.genres.trim() !== '') {
+        // If it's returned as a raw Postgres array string literal like "{Action,Horror}", parse it safely
+        processedGenres = data.review.genres
+          .replace(/[{}]/g, '') // Strip brackets
+          .split(',')           // Split by comma divisions
+          .map(g => g.trim().replace(/^"|"$/g, '')) // Clean out loose quotes
+          .filter(g => g !== ''); // Drop empty string fragments
       }
 
+      const dynamicGenreWrapper = document.getElementById('detail-movie-genres');
+      if (dynamicGenreWrapper) {
+        if (processedGenres && processedGenres.length > 0) {
+          dynamicGenreWrapper.innerHTML = processedGenres.map(g => `<span class="imdb-genre-pill">${g}</span>`).join('');
+        } else {
+          dynamicGenreWrapper.innerHTML = `<span class="imdb-genre-pill" style="color: #567; border-color: #1a282d;">Uncategorized</span>`;
+        }
+      }
+
+      // REMOVED: The broken "updateModalHeaderStars(data.comments);" line that was clearing the UI
+
       // ============================================================
-      // COMPREHENSIVE REVIEWS EDIT LOGIC CONTROLLER SYSTEM
+      // SECURE REVIEW CONTENT MANAGEMENT CONTROL VISIBILITY GATE
       // ============================================================
       const editBtn = document.getElementById('detail-edit-review-btn');
       const deleteBtn = document.getElementById('detail-delete-review-btn');
-      
-      let temporaryBase64PosterString = ""; // Stores new image if changed
+      let temporaryBase64PosterString = "";
 
-      if (data.review.is_owner) {
+      // Explicitly check boolean conditions from backend response packet arrays
+      const isAuthorizedToModify = data.review.is_owner === true || data.is_admin === true;
+
+      if (isAuthorizedToModify) {
+        // Reveal control tools to authorized sessions
         if (editBtn) editBtn.style.display = 'flex';
         if (deleteBtn) deleteBtn.style.display = 'flex';
 
-        // Wipe old listeners
         const cleanEditBtn = editBtn.cloneNode(true);
         editBtn.parentNode.replaceChild(cleanEditBtn, editBtn);
 
         const posterOverlayBtn = document.getElementById('poster-edit-overlay-btn');
         const editFileInput = document.getElementById('edit-movie-image-input');
 
-        // Handle Change Poster Trigger Click
-        posterOverlayBtn.onclick = () => editFileInput.click();
-        editFileInput.onchange = function() {
-          const file = this.files[0];
-          if (file) {
-            const reader = new FileReader();
-            reader.onload = function() {
-              moviePosterImg.src = this.result;
-              temporaryBase64PosterString = this.result;
-            };
-            reader.readAsDataURL(file);
-          }
-        };
+        if (posterOverlayBtn) posterOverlayBtn.onclick = () => editFileInput?.click();
+        
+        if (editFileInput) {
+          editFileInput.onchange = function() {
+            const file = this.files[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = function() {
+                moviePosterImg.src = this.result;
+                temporaryBase64PosterString = this.result;
+              };
+              reader.readAsDataURL(file);
+            }
+          };
+        }
 
-        // Handle Edit Button Click
         cleanEditBtn.addEventListener('click', () => {
-          modalContainer.classList.add('is-editing-mode');
+          if (modalContainer) modalContainer.classList.add('is-editing-mode');
           toggleEditFormState(true);
-          temporaryBase64PosterString = ""; // Reset variable on mode open
+          temporaryBase64PosterString = ""; 
 
-          // Hydrate fields with existing text strings
           document.getElementById('edit-movie-name-field').value = document.getElementById('detail-movie-title').textContent;
           document.getElementById('edit-movie-date-field').value = document.getElementById('detail-movie-date').textContent;
           document.getElementById('edit-movie-text-field').value = document.getElementById('detail-review-text').textContent;
         });
 
-        // Save Button Pipeline Function Execution
-        document.getElementById('edit-save-btn').onclick = async () => {
-          const updatedName = document.getElementById('edit-movie-name-field').value.trim();
-          const updatedDate = document.getElementById('edit-movie-date-field').value.trim();
-          const updatedText = document.getElementById('edit-movie-text-field').value.trim();
+        const saveBtn = document.getElementById('edit-save-btn');
+        if (saveBtn) {
+          saveBtn.onclick = async () => {
+            const updatedName = document.getElementById('edit-movie-name-field').value.trim();
+            const updatedDate = document.getElementById('edit-movie-date-field').value.trim();
+            const updatedText = document.getElementById('edit-movie-text-field').value.trim();
 
-          if(!updatedName || !updatedDate || !updatedText) {
-            alert("All values are required!");
-            return;
-          }
-
-          try {
-            const updateResponse = await fetch(`http://localhost:5000/api/reviews/${currentActiveReviewId}`, {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                email: userEmail,
-                movieName: updatedName,
-                publishDate: updatedDate,
-                reviewText: updatedText,
-                imageData: temporaryBase64PosterString || null
-              })
-            });
-            const updateData = await updateResponse.json();
-            alert(updateData.message);
-
-            if (updateResponse.ok) {
-              detailModal.classList.remove('active');
-              document.body.classList.remove('active');
-              await fetchAndRenderUserReviews();
-              await fetchAndRenderAudienceReviews();
+            if(!updatedName || !updatedDate || !updatedText) {
+              alert("All values are required!");
+              return;
             }
-          } catch (err) {
-            alert("Network link failure writing update logs.");
-          }
-        };
 
-        // Cancel Button Action
-        document.getElementById('edit-cancel-btn').onclick = () => {
-          modalContainer.classList.remove('is-editing-mode');
-          toggleEditFormState(false);
-          moviePosterImg.src = data.review.image_data || './assets/images/obs.jpg'; // Revert visual image changes
-        };
+            try {
+              saveBtn.textContent = "Saving Changes...";
+              saveBtn.disabled = true;
 
-        // Delete Button Initialization Handler Hook
+              const updateResponse = await fetch(`http://localhost:5000/api/reviews/${currentActiveReviewId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  email: userEmail,
+                  movieName: updatedName,
+                  publishDate: updatedDate,
+                  reviewText: updatedText,
+                  imageData: temporaryBase64PosterString || null
+                })
+              });
+              
+              const updateData = await updateResponse.json();
+
+              if (updateResponse.ok) {
+                // Select custom edit success alert component nodes
+                const editOverlay = document.getElementById('edit-success-overlay');
+                const editMsgText = document.getElementById('edit-success-message');
+                const editAlertBtn = document.getElementById('edit-success-btn');
+
+                if (editOverlay && editAlertBtn) {
+                  if (editMsgText) editMsgText.textContent = updateData.message || "Movie review updated successfully!";
+                  
+                  // Reveal your custom modal box overlay interface
+                  editOverlay.style.display = 'flex';
+
+                  // Refresh your page rows ONLY after the user acknowledges the click
+                  editAlertBtn.onclick = function() {
+                    editOverlay.style.display = 'none';
+                    window.location.reload();
+                  };
+                } else {
+                  // Safe fallback if components are missing from DOM branch targets
+                  alert(updateData.message);
+                  window.location.reload();
+                }
+              } else {
+                alert(updateData.message || "Failed updating record parameters.");
+                saveBtn.textContent = "Save Changes";
+                saveBtn.disabled = false;
+              }
+            } catch (err) {
+              console.error(err);
+              alert("Network link failure writing update logs.");
+              saveBtn.textContent = "Save Changes";
+              saveBtn.disabled = false;
+            }
+          };
+        }
+
+        const cancelBtn = document.getElementById('edit-cancel-btn');
+        if (cancelBtn) {
+          cancelBtn.onclick = () => {
+            if (modalContainer) modalContainer.classList.remove('is-editing-mode');
+            toggleEditFormState(false);
+            moviePosterImg.src = data.review.image_data || './assets/images/obs.jpg'; 
+          };
+        }
+
+        // ============================================================
+        // UPDATED SECURED SYSTEM REVIEW TERMINATION MODAL
+        // ============================================================
         const cleanDeleteBtn = deleteBtn.cloneNode(true);
         deleteBtn.parentNode.replaceChild(cleanDeleteBtn, deleteBtn);
-        cleanDeleteBtn.addEventListener('click', async () => {
-          const confirmDelete = confirm("Are you sure you want to delete this review? This action cannot be undone.");
-          if (!confirmDelete) return;
-          try {
-            const delResponse = await fetch(`http://localhost:5000/api/reviews/${currentActiveReviewId}`, {
-              method: "DELETE",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ email: userEmail })
-            });
-            const delData = await delResponse.json();
-            alert(delData.message);
-            if (delResponse.ok) {
-              detailModal.classList.remove('active');
-              document.body.classList.remove('active');
-              await fetchAndRenderUserReviews();
-              await fetchAndRenderAudienceReviews();
-            }
-          } catch (err) { alert("Network error processing deletion."); }
+        
+        cleanDeleteBtn.addEventListener('click', () => {
+          // Select custom review deletion layout element hooks safely
+          const reviewDeleteOverlay = document.getElementById('review-delete-overlay');
+          const confirmDeleteBtn = document.getElementById('review-delete-confirm-btn');
+          const cancelDeleteBtn = document.getElementById('review-delete-cancel-btn');
+
+          if (reviewDeleteOverlay && confirmDeleteBtn && cancelDeleteBtn) {
+            // Open your custom modal component view frame
+            reviewDeleteOverlay.style.display = 'flex';
+
+            // Close the warning box harmlessly if canceled
+            cancelDeleteBtn.onclick = function() {
+              reviewDeleteOverlay.style.display = 'none';
+            };
+
+            // Dispatch network payload request to API endpoints upon confirmation
+            confirmDeleteBtn.onclick = async function() {
+              reviewDeleteOverlay.style.display = 'none';
+              
+              try {
+                const delResponse = await fetch(`http://localhost:5000/api/reviews/${currentActiveReviewId}`, {
+                  method: "DELETE",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ email: userEmail })
+                });
+                
+                if (delResponse.ok) {
+                  // Direct clean routing straight back to index landing page catalog
+                  window.location.href = "index.html";
+                } else {
+                  const delData = await delResponse.json();
+                  alert(delData.message || "Unauthorized execution context.");
+                }
+              } catch (err) {
+                console.error(err);
+                alert("Network link error communicating with execution server database.");
+              }
+            };
+          }
         });
 
       } else {
-        if (editBtn) editBtn.style.display = 'none';
-        if (deleteBtn) deleteBtn.style.display = 'none';
+        // FORCE HIDDEN: Strictly strip control visibility from unauthorized standard audience views
+        if (editBtn) editBtn.style.setProperty('display', 'none', 'important');
+        if (deleteBtn) deleteBtn.style.setProperty('display', 'none', 'important');
       }
-      // ============================================================
 
-      renderCommentsListCollection(data.comments);
+
+
+
+      renderCommentsListCollection(data.comments, data.is_admin);
       resetStarSelectorInterfaceNode();
 
-      detailModal.classList.add('active');
-      document.body.classList.add('active');
+      if (detailModal) {
+        detailModal.classList.add('active');
+        document.body.classList.add('active');
+      }
 
     } catch (err) {
-      alert("Error contacting dataset detail endpoint nodes.");
+      console.error("Error contacting dataset detail endpoint nodes:", err);
     }
   }
 
@@ -1082,7 +1338,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('detail-modal-comments-block-wrapper').style.display = viewStyle; // Hide comments while editing
   }
 
-  function renderCommentsListCollection(comments) {
+  function renderCommentsListCollection(comments, isAdmin = false) {
     const listContainer = document.getElementById('modal-comments-list');
     if (!listContainer) return;
 
@@ -1093,42 +1349,98 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const currentActiveSessionUser = localStorage.getItem("username");
 
-    listContainer.innerHTML = comments.map(c => {
-      let stars = "";
-      if (c.rating) {
-        for(let i=0; i<c.rating; i++) stars += "★";
-      }
-      
-      const heartIconName = c.user_has_liked ? "heart" : "heart-outline";
-      const activeClass = c.user_has_liked ? "liked-active" : "";
-      
-      // Ownership evaluation: Render option if the comment author matches active user context
+    // Separate flat database rows into categorized arrays
+    const rootComments = comments.filter(c => !c.parent_comment_id);
+    const replyComments = comments.filter(c => c.parent_comment_id);
+
+    // Recursive function loop to generate infinite child node depths cleanly
+    function buildCommentHTML(c, isReply = false) {
+      const upvoteIconName = c.user_has_liked ? "arrow-up" : "arrow-up-outline";
+      const downvoteIconName = c.user_has_disliked ? "arrow-down" : "arrow-down-outline";
+      const upvoteClass = c.user_has_liked ? "upvoted-active" : "";
+      const downvoteClass = c.user_has_disliked ? "downvoted-active" : "";
       const isCommentOwner = currentActiveSessionUser && (c.username === currentActiveSessionUser);
+      
+      const childReplies = replyComments.filter(r => Number(r.parent_comment_id) === Number(c.comment_id));
 
       return `
-        <div class="comment-card-node">
-          <div class="comment-left-stack">
-            <div class="comment-header-row-wrapper">
-              <h5>${c.username}</h5>
-              <span class="comment-time-stamp-text">${parseSystemTimestampToLocal(c.created_at)}</span>
+        <div class="reddit-comment-block-wrapper" style="margin-top: 12px; margin-left: ${isReply ? '36px' : '0px'};">
+          <div class="reddit-comment-node">
+            <div class="reddit-comment-sidebar">
+              <div class="reddit-avatar-sm">
+                <ion-icon name="person-circle-outline"></ion-icon>
+              </div>
+              <div class="reddit-thread-line"></div>
             </div>
-            ${stars ? `<div class="comment-stars-row">${stars}</div>` : ''}
-            <p class="comment-body-text">${c.comment_text}</p>
+            <div class="reddit-comment-main">
+              <div class="reddit-comment-header">
+                <span class="reddit-username">${c.username}</span>
+                
+                ${c.comment_user_is_admin ? `<span class="reddit-admin-user-badge">Admin</span>` : ''}
+                
+                ${c.is_verified ? `
+                  <span class="reddit-admin-verified-text-badge" title="Verified by Platform Management">
+                    <ion-icon name="shield-checkmark"></ion-icon>
+                    <span>comment verified by admin</span>
+                  </span>
+                ` : ''}
+                
+                <span class="reddit-bullet">•</span>
+                <span class="reddit-timestamp">${parseSystemTimestampToLocal(c.created_at)}</span>
+              </div>
+              <div class="reddit-comment-body">
+                <p id="comment-body-text-${c.comment_id}">${c.comment_text}</p>
+              </div>
+              <div class="reddit-comment-footer">
+                <div class="reddit-voting-wrapper">
+                  <button class="reddit-vote-btn reddit-upvote comment-like-trigger-node ${upvoteClass}" data-comment-id="${c.comment_id}">
+                    <ion-icon name="${upvoteIconName}"></ion-icon>
+                  </button>
+                  <span class="reddit-vote-count ${upvoteClass} ${downvoteClass}">${c.upvote_score || 0}</span>
+                  <button class="reddit-vote-btn reddit-downvote comment-downvote-trigger-node ${downvoteClass}" data-comment-id="${c.comment_id}">
+                    <ion-icon name="${downvoteIconName}"></ion-icon>
+                  </button>
+                </div>
+                
+                ${!isReply ? `
+                  <button class="reddit-action-btn comment-reply-trigger-node" data-comment-id="${c.comment_id}">
+                    <ion-icon name="chatbox-outline"></ion-icon>
+                    <span>Reply</span>
+                  </button>
+                ` : ''}
+
+                ${(isCommentOwner || isAdmin) ? `
+                  <button class="reddit-action-btn comment-edit-action-trigger-node" data-comment-id="${c.comment_id}">
+                    <ion-icon name="create-outline"></ion-icon>
+                    <span>Edit</span>
+                  </button>
+                ` : ''}
+                
+                ${(isCommentOwner || isAdmin) ? `
+                  <button class="reddit-action-btn comment-delete-trigger-action-node" data-comment-id="${c.comment_id}">
+                    <ion-icon name="trash-outline"></ion-icon>
+                    <span>Delete</span>
+                  </button>
+                ` : ''}
+
+                ${isAdmin ? `
+                  <button class="reddit-action-btn comment-verify-action-trigger-node" data-comment-id="${c.comment_id}" style="color: ${c.is_verified ? '#00e054' : '#678'}; font-weight: 700;">
+                    <ion-icon name="${c.is_verified ? 'checkmark-circle' : 'checkmark-circle-outline'}"></ion-icon>
+                    <span>${c.is_verified ? 'Verified' : 'Verify'}</span>
+                  </button>
+                ` : ''}
+              </div>
+            </div>
           </div>
-          <div class="comment-utilities-right-align">
-            ${isCommentOwner ? `
-              <button class="comment-inline-trash-btn comment-delete-trigger-action-node" data-comment-id="${c.comment_id}" title="Delete Your Comment">
-                <ion-icon name="trash-outline"></ion-icon>
-              </button>
-            ` : ''}
-            <button class="comment-heart-action-btn comment-like-trigger-node ${activeClass}" data-comment-id="${c.comment_id}">
-              <ion-icon name="${heartIconName}"></ion-icon>
-              <span>${c.likes_count || 0}</span>
-            </button>
+          
+          <div class="reddit-reply-box-container" id="reply-container-${c.comment_id}">
+            ${childReplies.map(child => buildCommentHTML(child, true)).join('')}
           </div>
         </div>
       `;
-    }).join('');
+    }
+
+    listContainer.innerHTML = rootComments.map(root => buildCommentHTML(root)).join('');
   }
 
   // Intercept grid wrapper clicks to route targeted item indexes
@@ -1152,19 +1464,226 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 4. COMMUNITY COMMENTS DISCUSSIONS PANEL POST MANAGEMENT PIPELINE
+  // ============================================================
+  // 4. DISCUSSION FORUM FORM MANAGEMENT SUBMISSIONS PIPELINE (XHR UPGRADE)
+  // ============================================================
   if (commentForm) {
     commentForm.addEventListener('submit', async function(e) {
       e.preventDefault();
       const userEmail = localStorage.getItem("userEmail");
-      
-      if (!userEmail) {
-        alert("Please sign in to participate in the user discussion tracks!");
-        return;
-      }
+      if (!userEmail) { alert("Please sign in to participate in discussion threads!"); return; }
 
       const commentField = document.getElementById('comment-field-text');
-      const text = commentField.value.trim();
+      const submitBtn = this.querySelector('.comment-submit-btn-override') || this.querySelector('button[type="submit"]');
+      
+      // Target localized progress UI variables
+      const progressWrapper = document.getElementById('comment-progress-wrapper');
+      const progressBar = document.getElementById('comment-progress-bar');
+      const progressPercent = document.getElementById('comment-progress-percent');
+
+      try {
+        submitBtn.textContent = "Sending..."; 
+        submitBtn.disabled = true;
+
+        // Initialize progress nodes
+        if (progressWrapper) progressWrapper.style.display = 'block';
+        if (progressBar) progressBar.style.width = '0%';
+        if (progressPercent) progressPercent.textContent = '0%';
+
+        // Initialize XMLHttpRequest transaction sequence
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", `http://localhost:5000/api/reviews/details/${currentActiveReviewId}/comments`);
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+        // Listen for active data stream progress frames
+        xhr.upload.addEventListener("progress", (event) => {
+          if (event.lengthComputable) {
+            const percentComplete = Math.round((event.loaded / event.total) * 100);
+            if (progressBar) progressBar.style.width = `${percentComplete}%`;
+            if (progressPercent) progressPercent.textContent = `${percentComplete}%`;
+          }
+        });
+
+        // Parse return data payload on close response hooks
+        xhr.onload = async function() {
+          submitBtn.textContent = "Post Comment";
+          submitBtn.disabled = false;
+          
+          // Clear visual loader rows out of view layout dynamically
+          if (progressWrapper) progressWrapper.style.display = 'none';
+
+          if (xhr.status >= 200 && xhr.status < 300) {
+            commentField.value = ""; 
+            resetStarSelectorInterfaceNode();
+            
+            // Re-fetch clean active lists from PostgreSQL backend rows
+            const refreshRes = await fetch(`http://localhost:5000/api/reviews/details/${currentActiveReviewId}?email=${encodeURIComponent(userEmail)}`);
+            const refreshData = await refreshRes.json(); 
+            
+            renderCommentsListCollection(refreshData.comments, refreshData.is_admin);
+            updateModalHeaderStars(refreshData.review.avg_rating, refreshData.review.rating_count, refreshData.user_rating);
+            
+            await fetchAndRenderUserReviews();
+            await fetchAndRenderAudienceReviews();
+          } else {
+            alert("Error processing community message packets.");
+          }
+        };
+
+        xhr.onerror = function() {
+          alert("Network execution failure attempting link communication.");
+          submitBtn.textContent = "Post Comment";
+          submitBtn.disabled = false;
+          if (progressWrapper) progressWrapper.style.display = 'none';
+        };
+
+        // Dispatch text stream across the active pipeline network gateway
+        xhr.send(JSON.stringify({ 
+          email: userEmail, 
+          commentText: commentField.value.trim(), 
+          rating: null 
+        }));
+
+      } catch (err) { 
+        console.error(err);
+        submitBtn.textContent = "Post Comment";
+        submitBtn.disabled = false;
+        if (progressWrapper) progressWrapper.style.display = 'none';
+      }
+    });
+  }
+
+  // 5. GLOBAL INTERACTIVE EVENT DELEGATION CAPTURE FOR COMMUNITY ELEMENTS
+  document.addEventListener('click', async (e) => {
+    const userEmail = localStorage.getItem("userEmail");
+
+    // ============================================================
+    // A. INLINE RECENT COMMENT DELETE HANDLER (CUSTOM MODAL UPGRADE)
+    // ============================================================
+    const trashBtn = e.target.closest('.comment-delete-trigger-action-node');
+    if (trashBtn) {
+      e.preventDefault();
+      const commentId = trashBtn.getAttribute('data-comment-id');
+      
+      // Select the layout confirmation modal elements safely
+      const deleteOverlay = document.getElementById('delete-confirm-overlay');
+      const confirmDeleteBtn = document.getElementById('delete-confirm-btn');
+      const cancelDeleteBtn = document.getElementById('delete-cancel-btn');
+      
+      if (deleteOverlay && confirmDeleteBtn && cancelDeleteBtn) {
+        // Force reveal the custom dark alert component overlay
+        deleteOverlay.style.display = 'flex';
+        
+        // Dissolve dialogue window panel harmlessly if dismissed
+        cancelDeleteBtn.onclick = function() {
+          deleteOverlay.style.display = 'none';
+        };
+        
+        // Dispatch backend network package parameters on verified confirmation click
+        confirmDeleteBtn.onclick = async function() {
+          deleteOverlay.style.display = 'none';
+          
+          try {
+            const response = await fetch(`http://localhost:5000/api/comments/${commentId}`, {
+              method: "DELETE", 
+              headers: { "Content-Type": "application/json" }, 
+              body: JSON.stringify({ email: userEmail })
+            });
+            
+            if (response.ok) {
+              const refreshRes = await fetch(`http://localhost:5000/api/reviews/details/${currentActiveReviewId}?email=${encodeURIComponent(userEmail || '')}`);
+              const refreshData = await refreshRes.json(); 
+              
+              // Cleanly map fresh data tree layers instantly onto feed positions
+              renderCommentsListCollection(refreshData.comments, refreshData.is_admin);
+              updateModalHeaderStars(refreshData.review.avg_rating, refreshData.review.rating_count, refreshData.user_rating);
+              
+              await fetchAndRenderUserReviews();
+              await fetchAndRenderAudienceReviews();
+            }
+          } catch (err) { 
+            console.error("Error dispatching comment removal:", err); 
+          }
+        };
+      }
+      return;
+    }
+
+    // B. INLINE COMMENT UPVOTE HANDLER
+    const upvoteBtn = e.target.closest('.comment-like-trigger-node');
+    if (upvoteBtn) {
+      e.preventDefault();
+      if (!userEmail) { alert("Please sign in to upvote comments!"); return; }
+      try {
+        const response = await fetch(`http://localhost:5000/api/comments/like/${upvoteBtn.getAttribute('data-comment-id')}`, {
+          method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: userEmail })
+        });
+        const data = await response.json();
+        if (data.success) {
+          const refreshRes = await fetch(`http://localhost:5000/api/reviews/details/${currentActiveReviewId}?email=${encodeURIComponent(userEmail)}`);
+          const refreshData = await refreshRes.json();
+          // FIX: Added refreshData.is_admin here
+          renderCommentsListCollection(refreshData.comments, refreshData.is_admin);
+        }
+      } catch (err) { console.error(err); }
+      return;
+    }
+
+    // C. INLINE COMMENT DOWNVOTE PERSISTENCE HANDLER
+    const downvoteBtn = e.target.closest('.comment-downvote-trigger-node');
+    if (downvoteBtn) {
+      e.preventDefault();
+      if (!userEmail) { alert("Please sign in to downvote comments!"); return; }
+      try {
+        const response = await fetch(`http://localhost:5000/api/comments/dislike/${downvoteBtn.getAttribute('data-comment-id')}`, {
+          method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: userEmail })
+        });
+        if (response.ok) {
+          const refreshRes = await fetch(`http://localhost:5000/api/reviews/details/${currentActiveReviewId}?email=${encodeURIComponent(userEmail)}`);
+          const refreshData = await refreshRes.json();
+          // FIX: Added refreshData.is_admin here
+          renderCommentsListCollection(refreshData.comments, refreshData.is_admin);
+        }
+      } catch (err) { console.error(err); }
+      return;
+    }
+
+    // D. DYNAMIC REDDIT-STYLE INLINE REPLY INPUT BOX INJECTION
+    const replyBtn = e.target.closest('.comment-reply-trigger-node');
+    if (replyBtn) {
+      e.preventDefault();
+      const commentId = replyBtn.getAttribute('data-comment-id');
+      const targetContainer = document.getElementById(`reply-container-${commentId}`);
+      if (!targetContainer) return;
+
+      const existingBox = targetContainer.querySelector('.reddit-inline-reply-box');
+      if (existingBox) {
+        existingBox.remove();
+      } else {
+        const inputFrame = document.createElement('div');
+        inputFrame.className = 'reddit-inline-reply-box';
+        inputFrame.style = "margin-block: 10px; display: flex; flex-direction: column; gap: 8px; background: #132226; padding: 12px; border-radius: 8px; border: 1px solid #243337; margin-left: 36px;";
+        inputFrame.innerHTML = `
+          <textarea id="reply-field-${commentId}" placeholder="Type a community response reply..." class="login-input comment-textarea" style="min-height: 50px; height: 50px; padding: 8px !important; background: #0b1416 !important; color: white !important;"></textarea>
+          <div style="display: flex; justify-content: flex-end; gap: 8px;">
+            <button class="btn comment-reply-cancel-action-btn" style="padding: 4px 12px; font-size: 11px; border-color: #243337; color: white;">Cancel</button>
+            <button class="signin-submit-btn comment-reply-submit-action-btn" style="width: auto; margin-top: 0; padding: 4px 14px; font-size: 11px; border-radius: 20px;" data-comment-id="${commentId}">Reply</button>
+          </div>
+        `;
+        targetContainer.insertBefore(inputFrame, targetContainer.firstChild);
+        document.getElementById(`reply-field-${commentId}`)?.focus();
+      }
+      return;
+    }
+
+    // E. INLINE REPLY FORM SUBMISSION ROUTE PIPELINE
+    const submitReplyBtn = e.target.closest('.comment-reply-submit-action-btn');
+    if (submitReplyBtn) {
+      e.preventDefault();
+      const commentId = submitReplyBtn.getAttribute('data-comment-id');
+      const replyField = document.getElementById(`reply-field-${commentId}`);
+      if (!replyField || !replyField.value.trim()) return;
+      if (!userEmail) { alert("Please sign in to reply!"); return; }
 
       try {
         const response = await fetch(`http://localhost:5000/api/reviews/details/${currentActiveReviewId}/comments`, {
@@ -1172,127 +1691,165 @@ document.addEventListener('DOMContentLoaded', () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             email: userEmail,
-            commentText: text,
-            rating: activeSelectedRating > 0 ? activeSelectedRating : null
+            commentText: replyField.value.trim(),
+            rating: null,
+            // FIX: Explicitly cast the commentId to a clean integer before transmission
+            parentCommentId: commentId ? parseInt(commentId, 10) : null
           })
         });
 
         if (response.ok) {
-          // Success: Clean form inputs fields values out
-          commentField.value = "";
-          resetStarSelectorInterfaceNode();
-
-          // Refresh the list content panel array track data immediately from database
-          const refreshRes = await fetch(`http://localhost:5000/api/reviews/details/${currentActiveReviewId}`);
-          const refreshData = await refreshRes.json();
-          renderCommentsListCollection(refreshData.comments);
+          const refreshRes = await fetch(`http://localhost:5000/api/reviews/details/${currentActiveReviewId}?email=${encodeURIComponent(userEmail)}`);
+          const refreshData = await refreshRes.json(); 
+          // FIX: Added refreshData.is_admin here
+          renderCommentsListCollection(refreshData.comments, refreshData.is_admin);
+          updateModalHeaderStars(refreshData.review.avg_rating, refreshData.review.rating_count, refreshData.user_rating);
+          await fetchAndRenderUserReviews();
+          await fetchAndRenderAudienceReviews();
         }
-      } catch (err) {
-        console.error("Comment submission pipeline fault:", err);
-      }
-    });
-  }
+      } catch (err) { console.error(err); }
+      return;
+    }
 
-  // 5. DELEGATION LAYER FOR HEART TOGGLES AND COMMENT DELETIONS
-  if (detailModal) {
-    detailModal.addEventListener('click', async (e) => {
-      const userEmail = localStorage.getItem("userEmail");
+    // F. INLINE REPLY BOX CLOSURE DISMISSAL
+    if (e.target.closest('.comment-reply-cancel-action-btn')) {
+      e.preventDefault();
+      e.target.closest('.reddit-inline-reply-box')?.remove();
+    }
+
+    // ============================================================
+    // G. ADMIN/OWNER ACTION: LIVE INLINE COMMENT EDITING WORKSPACE
+    // ============================================================
+    const commentEditBtn = e.target.closest('.comment-edit-action-trigger-node');
+    if (commentEditBtn) {
+      e.preventDefault();
+      const commentId = commentEditBtn.getAttribute('data-comment-id');
+      const textContainer = document.getElementById(`comment-body-text-${commentId}`);
+      if (!textContainer) return;
+
+      // Guard check: prevent duplicate editor instances from stacking
+      const parentBody = textContainer.parentElement;
+      if (parentBody.querySelector('.reddit-inline-edit-box')) return;
+
+      const currentText = textContainer.textContent.trim();
       
-      // TRASH TARGET DETECTOR
-      const trashBtn = e.target.closest('.comment-delete-trigger-action-node');
-      if (trashBtn) {
-        e.preventDefault();
-        const commentId = trashBtn.getAttribute('data-comment-id');
-        
-        const confirmCommentWipe = confirm("Are you sure you want to delete your comment?");
-        if (!confirmCommentWipe) return;
+      // Temporarily conceal original static paragraph row
+      textContainer.style.display = 'none';
 
-        try {
-          const response = await fetch(`http://localhost:5000/api/comments/${commentId}`, {
-            method: "DELETE",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email: userEmail })
-          });
-          const data = await response.json();
-          
-          if (response.ok) {
-            // Hot refresh data stream right into rendering layout loop structures
-            const refreshRes = await fetch(`http://localhost:5000/api/reviews/details/${currentActiveReviewId}?email=${encodeURIComponent(userEmail || '')}`);
-            const refreshData = await refreshRes.json();
-            renderCommentsListCollection(refreshData.comments);
-          } else {
-            alert(data.message);
-          }
-        } catch (err) {
-          console.error("Error executing comment deletion pipeline:", err);
-        }
-        return;
+      // Inject professional inline editing panel workspace matching system specs
+      const editBox = document.createElement('div');
+      editBox.className = 'reddit-inline-edit-box';
+      editBox.style = "margin-top: 10px; display: flex; flex-direction: column; gap: 10px; background: #0b1416; padding: 12px; border-radius: 6px; border: 1px solid #243337; width: 100%;";
+      editBox.innerHTML = `
+        <textarea id="edit-field-${commentId}" class="login-input comment-textarea" style="min-height: 75px; height: 75px; padding: 10px !important; background: #132226 !important; border-color: #243337 !important; color: white !important; width: 100%; border-radius: 4px; resize: vertical; font-family: var(--ff-poppins); font-size: 13px; line-height: 1.5;">${currentText}</textarea>
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+          <button type="button" class="btn comment-edit-cancel-action-btn" data-comment-id="${commentId}" style="padding: 6px 16px; font-size: 11px; border: 1px solid #243337; color: white; background: transparent; cursor: pointer; border-radius: 4px; font-weight: 600;">Cancel</button>
+          <button type="button" class="signin-submit-btn comment-edit-save-action-btn" data-comment-id="${commentId}" style="width: auto; margin-top: 0; padding: 6px 20px; font-size: 11px; border-radius: 4px; background: var(--citrine); color: black; font-weight: 700; border: none; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px;">Save</button>
+        </div>
+      `;
+      
+      parentBody.appendChild(editBox);
+      
+      // Auto focus the input frame and place cursor at end of character row
+      const textarea = document.getElementById(`edit-field-${commentId}`);
+      if (textarea) {
+        textarea.focus();
+        textarea.setSelectionRange(textarea.value.length, textarea.value.length);
       }
+      return;
+    }
 
-      // HEART TARGET DETECTOR
-      const heartBtn = e.target.closest('.comment-like-trigger-node');
-      if (heartBtn) {
-        e.preventDefault();
-        const commentId = heartBtn.getAttribute('data-comment-id');
+    // ============================================================
+    // G1. INLINE EDIT WORKSPACE CANCEL DISMISSAL HANDLER
+    // ============================================================
+    const cancelEditBtn = e.target.closest('.comment-edit-cancel-action-btn');
+    if (cancelEditBtn) {
+      e.preventDefault();
+      const commentId = cancelEditBtn.getAttribute('data-comment-id');
+      const textContainer = document.getElementById(`comment-body-text-${commentId}`);
+      
+      // Restore standard comment view visibility
+      if (textContainer) textContainer.style.display = 'block';
+      
+      // Purge the editor from DOM paths
+      e.target.closest('.reddit-inline-edit-box')?.remove();
+      return;
+    }
 
-        if (!userEmail) {
-          alert("Please sign in to like comments!");
-          return;
-        }
+    // ============================================================
+    // G2. INLINE EDIT WORKSPACE SAVE UPDATE DISPATCH PIPELINE
+    // ============================================================
+    const saveEditBtn = e.target.closest('.comment-edit-save-action-btn');
+    if (saveEditBtn) {
+      e.preventDefault();
+      const commentId = saveEditBtn.getAttribute('data-comment-id');
+      const editField = document.getElementById(`edit-field-${commentId}`);
+      if (!editField || !editField.value.trim()) return;
+
+      try {
+        saveEditBtn.textContent = "Saving...";
+        saveEditBtn.disabled = true;
+
+        const response = await fetch(`http://localhost:5000/api/comments/${commentId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: userEmail, commentText: editField.value.trim() })
+        });
         
-        try {
-          const response = await fetch(`http://localhost:5000/api/comments/like/${commentId}`, { 
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email: userEmail })
-          });
-          
-          const data = await response.json();
-          if (data.success) {
-            heartBtn.querySelector('span').textContent = data.newCount;
-            if (data.liked) {
-              heartBtn.querySelector('ion-icon').setAttribute('name', 'heart');
-              heartBtn.classList.add('liked-active');
-            } else {
-              heartBtn.querySelector('ion-icon').setAttribute('name', 'heart-outline');
-              heartBtn.classList.remove('liked-active');
-            }
-          }
-        } catch (err) {
-          console.error(err);
+        if (response.ok) {
+          // Re-hydrate the live forum list entries seamlessly from active datasets
+          const refreshRes = await fetch(`http://localhost:5000/api/reviews/details/${currentActiveReviewId}?email=${encodeURIComponent(userEmail || '')}`);
+          const refreshData = await refreshRes.json();
+          renderCommentsListCollection(refreshData.comments, refreshData.is_admin);
+        } else {
+          alert("Unauthorized modification or missing packet parameters.");
+          saveEditBtn.textContent = "Save";
+          saveEditBtn.disabled = false;
         }
+      } catch (err) { 
+        console.error(err); 
+        saveEditBtn.textContent = "Save";
+        saveEditBtn.disabled = false;
       }
-    });
-  }
+      return;
+    }
 
-  // 6. INTERACTIVE INPUT STAR RATING ACTION NODES STATES
+    // H. ADMIN EXCLUSIVE ACTION: PERSISTENT COMMENT VERIFICATION BADGE TOGGLE
+    const commentVerifyBtn = e.target.closest('.comment-verify-action-trigger-node');
+    if (commentVerifyBtn) {
+      e.preventDefault();
+      const commentId = commentVerifyBtn.getAttribute('data-comment-id');
+      try {
+        const response = await fetch(`http://localhost:5000/api/comments/verify/${commentId}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: userEmail })
+        });
+        if (response.ok) {
+          const refreshRes = await fetch(`http://localhost:5000/api/reviews/details/${currentActiveReviewId}?email=${encodeURIComponent(userEmail || '')}`);
+          const refreshData = await refreshRes.json();
+          renderCommentsListCollection(refreshData.comments, refreshData.is_admin);
+        }
+      } catch (err) { console.error(err); }
+      return;
+    }
+  });
+
+  // 6. INTERACTIVE STAR SELECTION NODE RULES
   const starContainer = document.getElementById('comment-star-selector');
   if (starContainer) {
     const starsArr = Array.from(starContainer.querySelectorAll('.star-nodes ion-icon'));
-    
     starsArr.forEach(star => {
       star.addEventListener('mouseenter', function() {
         const val = parseInt(this.getAttribute('data-value'));
-        starsArr.forEach((s, idx) => {
-          if (idx < val) s.classList.add('hovered-star');
-          else s.classList.remove('hovered-star');
-        });
+        starsArr.forEach((s, idx) => s.classList.toggle('hovered-star', idx < val));
       });
-
-      star.addEventListener('mouseleave', function() {
-        starsArr.forEach(s => s.classList.remove('hovered-star'));
-      });
-
+      star.addEventListener('mouseleave', function() { starsArr.forEach(s => s.classList.remove('hovered-star')); });
       star.addEventListener('click', function() {
         activeSelectedRating = parseInt(this.getAttribute('data-value'));
         starsArr.forEach((s, idx) => {
-          if (idx < activeSelectedRating) {
-            s.classList.add('selected-star');
-            s.setAttribute('name', 'star');
-          } else {
-            s.classList.remove('selected-star');
-            s.setAttribute('name', 'star-outline');
-          }
+          s.classList.toggle('selected-star', idx < activeSelectedRating);
+          s.setAttribute('name', idx < activeSelectedRating ? 'star' : 'star-outline');
         });
       });
     });
@@ -1302,57 +1859,39 @@ document.addEventListener('DOMContentLoaded', () => {
     activeSelectedRating = 0;
     const starContainer = document.getElementById('comment-star-selector');
     if (starContainer) {
-      const starsArr = starContainer.querySelectorAll('.star-nodes ion-icon');
-      starsArr.forEach(s => {
-        s.classList.remove('selected-star', 'hovered-star');
-        s.setAttribute('name', 'star-outline');
+      starContainer.querySelectorAll('.star-nodes ion-icon').forEach(s => {
+        s.classList.remove('selected-star', 'hovered-star'); s.setAttribute('name', 'star-outline');
       });
     }
   }
 
-  // 7. BASE UPLOAD CONTAINER MECHANICS DECK (KEEP INTACT)
-  if (uploadReviewBtn && uploadModal) {
+ if (uploadReviewBtn && uploadModal) {
     uploadReviewBtn.addEventListener('click', () => {
       if (!localStorage.getItem("userToken")) {
         alert("Please sign in to upload a movie review!");
         document.getElementById('signin-modal-overlay')?.classList.add('active');
-      } else {
-        uploadModal.classList.add('active');
-        document.body.classList.add('active');
+      } else { 
+        uploadModal.classList.add('active'); 
+        document.body.classList.add('active'); 
+        
+        // FIX: Look for the checkbox wrapper and turn it on if the user is an admin
+        const adminCheckbox = document.getElementById('admin-feature-checkbox-wrapper');
+        if (adminCheckbox) {
+          adminCheckbox.style.display = localStorage.getItem("isAdmin") === "true" ? "flex" : "none";
+        }
       }
     });
   }
-
-  if (closeUploadBtn && uploadModal) {
-    closeUploadBtn.addEventListener('click', () => {
-      uploadModal.classList.remove('active');
-      document.body.classList.remove('active');
-    });
-  }
-
-  if (uploadModal) {
-    uploadModal.addEventListener('click', (e) => {
-      if (e.target === uploadModal) {
-        uploadModal.classList.remove('active');
-        document.body.classList.remove('active');
-      }
-    });
-  }
-
-  if (uploadZone && fileInput) {
-    uploadZone.addEventListener('click', () => fileInput.click());
-  }
-
+  if (closeUploadBtn && uploadModal) { closeUploadBtn.addEventListener('click', () => { uploadModal.classList.remove('active'); document.body.classList.remove('active'); }); }
+  if (uploadModal) { uploadModal.addEventListener('click', (e) => { if (e.target === uploadModal) { uploadModal.classList.remove('active'); document.body.classList.remove('active'); } }); }
+  if (uploadZone && fileInput) { uploadZone.addEventListener('click', () => fileInput.click()); }
   if (fileInput && previewImg && uploadPrompt) {
     fileInput.addEventListener('change', function() {
       const file = this.files[0];
       if (file) {
         const reader = new FileReader();
         reader.addEventListener('load', function() {
-          previewImg.src = this.result;
-          previewImg.style.display = 'block';
-          uploadPrompt.style.opacity = '0';
-          base64ImageString = this.result; 
+          previewImg.src = this.result; previewImg.style.display = 'block'; uploadPrompt.style.opacity = '0'; base64ImageString = this.result; 
         });
         reader.readAsDataURL(file);
       }
@@ -1362,49 +1901,176 @@ document.addEventListener('DOMContentLoaded', () => {
   if (uploadForm) {
     uploadForm.addEventListener('submit', async function(e) {
       e.preventDefault();
+      
+      // FIX 3: Trim incoming field data values right at intercept edge
       const movieName = document.getElementById('review-movie-name').value.trim();
-      const publishDate = document.getElementById('review-movie-date').value.trim();
+      const rawDateSelected = document.getElementById('review-movie-date').value;
       const reviewText = document.getElementById('review-movie-text').value.trim();
+      
       const userEmail = localStorage.getItem("userEmail");
-      const submitBtn = this.querySelector('button[type=\"submit\"]');
+      const submitBtn = this.querySelector('button[type="submit"]');
+      const featuredCheckbox = document.getElementById('review-is-featured');
+      const isFeaturedChecked = featuredCheckbox ? featuredCheckbox.checked : false;
+      const checkedGenrePills = Array.from(document.querySelectorAll('.genre-checkbox-item:checked')).map(cb => cb.value);
+
+      // ANTI-SPAM PROTECTION GUARD: Detects and rejects empty spaces or blank text blocks
+      if (!movieName || !rawDateSelected || !reviewText) {
+        alert("Submission Rejected! Workspace text blocks cannot be empty or contain only blank spaces.");
+        return;
+      }
+
+      // DATE CONVERSION HELPER: Converts native format "YYYY-MM-DD" to your established style "Jun 20, 2026"
+      const dateFormattingInstance = new Date(rawDateSelected);
+      const formattedPublishDateString = dateFormattingInstance.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+
+      // Select layout progress UI components
+      const progressWrapper = document.getElementById('upload-progress-wrapper');
+      const progressBar = document.getElementById('upload-progress-bar');
+      const progressPercent = document.getElementById('upload-progress-percent');
+      const statusText = document.getElementById('upload-status-text');
 
       try {
-        submitBtn.textContent = "Publishing Package...";
+        submitBtn.textContent = "Processing..."; 
         submitBtn.disabled = true;
 
-        const response = await fetch("http://localhost:5000/api/reviews/upload", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: userEmail,
-            movieName: movieName,
-            publishDate: publishDate,
-            reviewText: reviewText,
-            imageData: base64ImageString
-          })
+        if (progressWrapper) progressWrapper.style.display = 'block';
+        if (progressBar) progressBar.style.width = '0%';
+        if (progressPercent) progressPercent.textContent = '0%';
+        if (statusText) statusText.textContent = 'Connecting to upload stream node...';
+
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "http://localhost:5000/api/reviews/upload");
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+        xhr.upload.addEventListener("progress", (event) => {
+          if (event.lengthComputable) {
+            const percentComplete = Math.round((event.loaded / event.total) * 100);
+            if (progressBar) progressBar.style.width = `${percentComplete}%`;
+            if (progressPercent) progressPercent.textContent = `${percentComplete}%`;
+            
+            if (percentComplete < 50) {
+              if (statusText) statusText.textContent = 'Streaming payload binary packets...';
+            } else {
+              if (statusText) statusText.textContent = 'Completing data payload file transfer...';
+            }
+          }
         });
 
-        const data = await response.json();
-        alert(data.message);
+        xhr.onload = function() {
+          submitBtn.textContent = "Publish Review Package";
+          submitBtn.disabled = false;
+          
+          try {
+            const data = JSON.parse(xhr.responseText);
+            if (xhr.status >= 200 && xhr.status < 300) {
+              const successOverlay = document.getElementById('success-alert-overlay');
+              const successMsg = document.getElementById('success-alert-message');
+              const successBtn = document.getElementById('success-alert-btn');
+              
+              if (successOverlay && successBtn) {
+                if (successMsg) successMsg.textContent = data.message;
+                successOverlay.classList.add('active');
+                
+                successBtn.onclick = function() {
+                  successOverlay.classList.remove('active');
+                  uploadForm.reset();
+                  window.location.href = "index.html";
+                };
+              } else {
+                window.location.href = "index.html";
+              }
+            } else {
+              alert(data.message || "Upload process failure tracking files.");
+              if (progressWrapper) progressWrapper.style.display = 'none';
+            }
+          } catch (err) {
+            alert("Server validation processing failure logs.");
+            if (progressWrapper) progressWrapper.style.display = 'none';
+          }
+        };
 
-        if (response.ok) {
-          uploadForm.reset();
-          previewImg.src = "";
-          previewImg.style.display = 'none';
-          uploadPrompt.style.opacity = '1';
-          base64ImageString = "";
-          uploadModal.classList.remove('active');
-          document.body.classList.remove('active');
+        xhr.send(JSON.stringify({ 
+          email: userEmail, 
+          movieName: movieName, 
+          publishDate: formattedPublishDateString, // Passes cleanly parsed readable date strings to DB indexes
+          reviewText: reviewText, 
+          imageData: base64ImageString,
+          isFeatured: isFeaturedChecked,
+          genres: checkedGenrePills
+        }));
 
-          await fetchAndRenderUserReviews();
-          await fetchAndRenderAudienceReviews();
-        }
-      } catch (err) {
-        alert("Pipeline error communicating with backend server.");
-      } finally {
-        submitBtn.textContent = "Publish Review";
+      } catch (err) { 
+        alert("Pipeline error communicating with backend server."); 
+        submitBtn.textContent = "Publish Review Package"; 
         submitBtn.disabled = false;
+        if (progressWrapper) progressWrapper.style.display = 'none';
       }
     });
   }
-});
+
+
+  // ==========================================
+  // 7. BASE REVIEW FILEREADER UPLOAD LAYER CONTROLS (STANDALONE WIDGET)
+  // ==========================================
+  if (uploadReviewBtn) {
+    uploadReviewBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      // Guard entry: force sign-in prompt modal if no active browser token is detected
+      if (!localStorage.getItem("userToken")) {
+        alert("Please sign in to upload a movie review!");
+        document.getElementById('signin-modal-overlay')?.classList.add('active');
+      } else { 
+        // Redirect seamlessly out to the dedicated review workspace page
+        window.location.href = "upload-review.html";
+      }
+    });
+  }
+
+  // Dedicated check condition executed exclusively when opening upload-review.html
+  if (window.location.pathname.includes('upload-review.html')) {
+    // Session Verification Guard
+    if (!localStorage.getItem("userToken")) {
+      alert("Unauthorized entry. Please sign in first.");
+      window.location.href = "index.html";
+    }
+
+    // Auto-reveal premium management checkbox options strictly for Admin sessions
+    const adminCheckbox = document.getElementById('admin-feature-checkbox-wrapper');
+    if (adminCheckbox) {
+      adminCheckbox.style.display = localStorage.getItem("isAdmin") === "true" ? "flex" : "none";
+    }
+  }
+
+
+
+  // ==========================================
+  // 8. SECURE FULL-PAGE ROUTING & HYDRATION (IMDb PAGE ROUTER)
+  // ==========================================
+  // FIX: Added recommendationsGrid into the target array array tracking loops
+  [featuredGrid, recommendationsGrid, reviewsGrid, audienceGrid].forEach(grid => {
+    if (grid) {
+      grid.addEventListener('click', async (e) => {
+        const targetedCard = e.target.closest('.review-click-target-node');
+        if (targetedCard) {
+          const id = targetedCard.getAttribute('data-review-id');
+          // Uses the base URL variable dynamically
+          await fetch(`${API_BASE_URL}/api/reviews/view/${id}`, { method: "POST" }).catch(err => console.error(err));
+          window.location.href = `view-review.html?id=${id}`;
+        }
+      });
+    }
+  });
+
+  // Automatically check URL parameters and build data if sitting on view-review.html
+  if (window.location.pathname.includes('view-review.html')) {
+    const pageUrlParams = new URLSearchParams(window.location.search);
+    const activeRouteId = pageUrlParams.get('id');
+    if (activeRouteId) {
+      openReviewDetailsViewport(activeRouteId);
+    }
+  }
+}); // Secures main master wrapper block structure

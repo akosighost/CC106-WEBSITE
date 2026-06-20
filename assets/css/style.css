@@ -1269,3 +1269,550 @@ body.active { overflow: hidden; }
 .poster-edit-overlay ion-icon {
   font-size: 32px;
 }
+
+/*-----------------------------------*\
+ * #REDDIT INTERFACE DESIGN OVERRIDES
+\*-----------------------------------*/
+
+/* Reddit Deep Matte Charcoal Background matching Image 2 */
+.movie-detail-modal-container {
+  background: #0b1416 !important;
+  border: 1px solid #243337 !important;
+}
+
+.detail-poster-column {
+  background: #070d0e !important;
+  border-right: 1px solid #1a2426 !important;
+}
+
+.detail-content-column {
+  background: #0b1416 !important;
+}
+
+/* Structural Layout for Thread Nodes */
+.reddit-comment-node {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding-top: 4px;
+}
+
+.reddit-comment-sidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 24px;
+}
+
+.reddit-avatar-sm {
+  font-size: 24px;
+  color: #818384;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The vertical linking line directly from your reference image */
+.reddit-thread-line {
+  width: 2px;
+  background: #1a2426;
+  flex-grow: 1;
+  margin-top: 6px;
+  border-radius: 1px;
+  transition: background 0.2s ease;
+}
+
+.reddit-comment-node:hover .reddit-thread-line {
+  background: #4f686f; 
+}
+
+.reddit-comment-main {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.reddit-comment-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.reddit-username {
+  color: #f2f4f5;
+  font-weight: 600;
+}
+
+.reddit-bullet {
+  color: #4f686f;
+}
+
+.reddit-timestamp {
+  color: #818384;
+}
+
+.reddit-comment-body p {
+  color: #d7dadc;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* Reddit Action Row Controls Container */
+.reddit-comment-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.reddit-voting-wrapper {
+  display: flex;
+  align-items: center;
+  background: #1a282d;
+  border-radius: 20px;
+  padding: 2px 6px;
+}
+
+.reddit-vote-btn {
+  color: #818384;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.1s ease;
+}
+
+.reddit-vote-btn:hover {
+  color: #d7dadc;
+}
+
+/* Signature Reddit Vote Highlighting colors */
+.reddit-vote-btn.upvoted-active {
+  color: #ff4500 !important; 
+}
+
+.reddit-vote-count {
+  color: #d7dadc;
+  font-size: 12px;
+  font-weight: 700;
+  padding-inline: 2px;
+  min-width: 16px;
+  text-align: center;
+}
+
+.reddit-vote-count.upvoted-active {
+  color: #ff4500 !important;
+}
+
+.reddit-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #818384;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.1s ease, color 0.1s ease;
+}
+
+.reddit-action-btn:hover {
+  background: #1a282d;
+  color: #d7dadc;
+}
+
+.reddit-action-btn ion-icon {
+  font-size: 15px;
+}
+
+/* Clean up input box styles to match the new color profile */
+.detail-comment-form-box {
+  background: #0b1416 !important;
+  border: 1px solid #243337 !important;
+  border-radius: 12px !important;
+  padding: 12px !important;
+}
+
+.comment-textarea {
+  background: #1a282d !important;
+  border: 1px solid #243337 !important;
+  color: #d7dadc !important;
+  border-radius: 8px !important;
+}
+
+/* Fullpage Specific Environment Styling */
+.reddit-dark-theme-page {
+  background: #0b1416 !important;
+  color: white;
+  min-height: 100vh;
+}
+
+.review-page-main-content {
+  padding-top: 100px; /* Leave space below sticky header */
+  background: #0b1416;
+  min-height: calc(100vh - 100px);
+}
+
+.full-page-thread-wrapper {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 30px;
+  background: #0b1416;
+}
+
+/* Remove scrolling constraint blocks on full page mode */
+.comments-scroll-vault-fullpage {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 30px;
+  height: auto; /* Expand downward infinitely */
+  max-height: none; 
+}
+
+/* Show photo input changer only when edit mode is toggled active */
+.movie-detail-modal-container.is-editing-mode .poster-edit-overlay,
+.full-page-thread-wrapper.is-editing-mode .poster-edit-overlay {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Fix input spacing inside full-page edit state variables */
+.full-page-thread-wrapper.is-editing-mode #title-edit-wrapper input,
+.full-page-thread-wrapper.is-editing-mode #date-edit-wrapper input {
+  background: #1a282d !important;
+  border: 1px solid #243337 !important;
+  color: white !important;
+  padding: 12px 15px !important;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+/* Signature Reddit Downvote Highlight color profile */
+.reddit-vote-btn.comment-downvote-trigger-node.downvoted-active {
+  color: #7193ff !important; 
+}
+
+/* Structural tweak for standard alignment inside input rows */
+.reddit-inline-reply-box .btn:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: #4f686f !important;
+}
+
+/*--------------------------------------------------*\
+ * #ADMINISTRATIVE STATUS VERIFICATION TEXT BADGES
+\*--------------------------------------------------*/
+
+.reddit-admin-verified-text-badge {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 5px;
+  background: rgba(0, 224, 84, 0.06) !important;
+  border: 1px solid rgba(0, 224, 84, 0.25) !important;
+  color: #00e054 !important;
+  font-family: var(--ff-poppins);
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  padding: 3px 10px !important;
+  border-radius: 4px;
+  margin-left: 6px;
+  vertical-align: middle;
+  user-select: none;
+}
+
+.reddit-admin-verified-text-badge ion-icon {
+  font-size: 13px !important;
+  color: #00e054 !important;
+  --ionicon-stroke-width: 45px;
+}
+
+/* Subtle accent pulse when the discussion container is focused */
+.reddit-comment-node:hover .reddit-admin-verified-text-badge {
+  background: rgba(0, 224, 84, 0.1) !important;
+  border-color: rgba(0, 224, 84, 0.4) !important;
+}
+
+/*--------------------------------------------------*\
+ * #ADMIN AUTHOR ACCOUNT BADGE IDENTIFICATION TAGS
+\*--------------------------------------------------*/
+
+.reddit-admin-user-badge {
+  background: rgba(255, 69, 96, 0.12) !important;
+  border: 1px solid #ff4560 !important;
+  color: #ff4560 !important;
+  font-family: var(--ff-poppins);
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 6px !important;
+  border-radius: 4px;
+  margin-left: 6px;
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 1 !important;
+  user-select: none;
+}
+
+/* Hide old inline star picker from comment rows */
+.comment-submission-utilities-row #comment-star-selector {
+  display: none !important;
+}
+
+/* Scoped Genre Vault Styles Overriding Global Contamination */
+      .genre-scroll-selector-vault {
+        background: #0b1416 !important;
+        border: 1px solid #243337 !important;
+        border-radius: 6px !important;
+        padding: 15px !important;
+        max-height: 240px !important;
+        overflow-y: auto !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 15px !important;
+      }
+
+      .genre-category-title {
+        color: var(--citrine) !important;
+        font-size: 11px !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.8px !important;
+        margin-bottom: 8px !important;
+        font-weight: 700 !important;
+        border-bottom: 1px solid #1a282d !important;
+        padding-bottom: 4px !important;
+      }
+
+      /* Clean grid wrapper for checkboxes */
+      .genre-grid-row {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important;
+        gap: 8px !important;
+        width: 100% !important;
+      }
+
+      /* Clean clickable row design */
+      .genre-item-label {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        background: #132226 !important;
+        border: 1px solid #1a282d !important;
+        padding: 6px 10px !important;
+        border-radius: 4px !important;
+        color: #cfd8dc !important;
+        font-size: 12px !important;
+        font-weight: 500 !important;
+        cursor: pointer !important;
+        transition: background 0.15s, border-color 0.15s, color 0.15s !important;
+        text-align: left !important;
+        width: 100% !important;
+        margin: 0 !important;
+        line-height: 1.2 !important;
+        user-select: none !important;
+      }
+
+      .genre-item-label:hover {
+        background: rgba(229, 184, 0, 0.05) !important;
+        border-color: rgba(229, 184, 0, 0.3) !important;
+        color: white !important;
+      }
+
+      /* Fix the shrinking checkbox element */
+      .genre-checkbox-item {
+        width: 15px !important;
+        height: 15px !important;
+        margin: 0 !important;
+        margin-right: 8px !important;
+        cursor: pointer !important;
+        accent-color: var(--citrine) !important;
+        flex-shrink: 0 !important;
+        display: inline-block !important;
+      }
+
+      /* Visual highlight when checked */
+      .genre-item-label:has(.genre-checkbox-item:checked) {
+        background: rgba(229, 184, 0, 0.1) !important;
+        border-color: var(--citrine) !important;
+        color: var(--citrine) !important;
+      }
+
+      /*--------------------------------------------------*\
+ * #IMDb HEADER & ALIGNMENT OVERRIDES
+\*--------------------------------------------------*/
+
+/* 1. Fix the top title header split alignment layout */
+.imdb-title-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important; /* Vertically centers rating component with movie title */
+  margin-bottom: 25px !important;
+  gap: 24px !important;
+  width: 100% !important;
+}
+
+/* 2. Fix sub-metadata item flex row tracking */
+.imdb-sub-meta {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 12px !important;
+  flex-wrap: wrap !important;
+}
+
+/* 3. FIX: Prevents views icon, count, and text from stacking vertically */
+#detail-view-counter-pill {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  white-space: nowrap !important; /* Strictly blocks text lines from dropping down */
+  color: var(--citrine) !important;
+  font-weight: 600 !important;
+}
+
+#detail-view-counter-pill ion-icon {
+  font-size: 16px !important;
+  margin: 0 !important;
+  display: inline-block !important;
+}
+
+/* 4. Fix rating display structural alignment box */
+.imdb-ratings-right {
+  display: flex !important;
+  align-items: center !important;
+  gap: 20px !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  padding: 12px 20px !important;
+  border-radius: 8px !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  flex-shrink: 0 !important;
+}
+
+.rating-stat-box {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.rating-stat-box .stat-label {
+  font-size: 11px !important;
+  color: #667788 !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.8px !important;
+  margin-bottom: 4px !important;
+}
+
+.rating-stat-box .stat-val {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  font-size: 18px !important;
+  line-height: 1 !important;
+  height: 24px !important;
+}
+
+/* Align inline star-icons within pickers */
+.interactive-header-stars {
+  display: flex !important;
+  align-items: center !important;
+  gap: 3px !important;
+}
+
+.interactive-header-stars ion-icon {
+  font-size: 20px !important;
+  display: inline-block !important;
+  margin: 0 !important;
+}
+
+/*--------------------------------------------------*\
+       * #CUSTOM SUCCESS NOTIFICATION MODAL
+      \*--------------------------------------------------*/
+      .custom-alert-overlay {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(11, 20, 22, 0.85) !important;
+        display: none; /* Controlled via script.js toggles */
+        justify-content: center; align-items: center;
+        z-index: 10000;
+        backdrop-filter: blur(4px);
+      }
+      
+      .custom-alert-overlay.active {
+        display: flex !important;
+      }
+      
+      .custom-alert-card {
+        background: #132226 !important;
+        border: 1px solid #243337 !important;
+        border-top: 4px solid var(--citrine) !important;
+        width: 100%; max-width: 360px;
+        padding: 35px 30px !important;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+        animation: alertScaleIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      }
+      
+      @keyframes alertScaleIn {
+        from { transform: scale(0.85); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+      }
+      
+      .success-icon-circle {
+        width: 65px; height: 60px;
+        background: rgba(229, 184, 0, 0.08);
+        border-radius: 50%;
+        display: flex; justify-content: center; align-items: center;
+        margin: 0 auto 18px;
+        color: var(--citrine);
+      }
+      
+      .success-icon-circle ion-icon {
+        font-size: 38px !important;
+      }
+      
+      .custom-alert-card h3 {
+        color: white !important; font-size: 22px; font-weight: 700; margin-bottom: 8px; font-family: var(--ff-poppins);
+      }
+      
+      .custom-alert-card p {
+        color: #cfd8dc !important; font-size: 13.5px; margin-bottom: 24px; line-height: 1.5; font-family: var(--ff-poppins);
+      }
+      
+      #success-alert-btn {
+        background: var(--citrine); color: black !important;
+        border: none; padding: 12px 30px;
+        font-size: 12px; font-weight: 700;
+        text-transform: uppercase; letter-spacing: 1px;
+        border-radius: 4px; cursor: pointer;
+        transition: background 0.15s;
+        width: 100%;
+        font-family: var(--ff-poppins);
+      }
+      
+      #success-alert-btn:hover {
+        background: #c59b00 !important;
+      }
+
+      .custom-alert-overlay {
+  display: none;
+}
+.custom-alert-overlay[style*="display: flex"] .custom-alert-card {
+  animation: alertScaleIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+

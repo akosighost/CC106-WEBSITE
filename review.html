@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Review Thread - Filmlane</title>
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  </head>
+  <body class="reddit-dark-theme-page">
+
+    <header class="header active" data-header>
+      <div class="container">
+        <a href="./index.html" class="logo">
+          <img src="./assets/images/svg.svg" alt="Filmlane logo" />
+        </a>
+        <div class="header-actions" style="display: flex; gap: 15px; align-items: center;">
+          <button class="btn btn-primary" id="back-to-feed-btn" onclick="window.location.href='index.html'" style="padding: 10px 20px; font-size: 12px;">
+            <ion-icon name="arrow-back-outline" style="display: inline-block; vertical-align: middle;"></ion-icon>
+            <span style="display: inline-block; vertical-align: middle;">Back to Feed</span>
+          </button>
+          
+          <button id="signin-btn" style="display: block;"></button>
+        </div>
+      </div>
+    </header>
+
+    <main class="review-page-main-content">
+      <div class="container full-page-thread-wrapper">
+        
+        <div class="detail-poster-column">
+          <div class="detail-poster-frame edit-poster-hover-wrapper">
+            <img src="" id="detail-movie-poster" alt="Movie Poster" />
+            <input type="file" id="edit-movie-image-input" accept="image/*" style="display: none;" />
+            <div class="poster-edit-overlay" id="poster-edit-overlay-btn">
+              <ion-icon name="camera-outline"></ion-icon>
+              <span>Change Poster</span>
+            </div>
+          </div>
+          
+          <div class="detail-view-counter">
+            <ion-icon name="eye-outline"></ion-icon>
+            <span><strong id="detail-view-count">0</strong> Views</span>
+          </div>
+
+          <div class="owner-admin-buttons-row" style="width: 100%; display: flex; flex-direction: column; gap: 8px;">
+            <button id="detail-edit-review-btn" class="detail-edit-btn" style="display: none;">
+              <ion-icon name="create-outline"></ion-icon>
+              <span>Edit Review</span>
+            </button>
+            <button id="detail-delete-review-btn" class="detail-delete-btn" style="display: none;">
+              <ion-icon name="trash-outline"></ion-icon>
+              <span>Delete Review</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="detail-content-column">
+          <div class="detail-header-block">
+            <div id="title-view-wrapper">
+              <h2 id="detail-movie-title" class="detail-main-title">Movie Title</h2>
+            </div>
+            <div id="title-edit-wrapper" style="display: none; margin-bottom: 10px;">
+              <input type="text" id="edit-movie-name-field" class="login-input" style="padding-left: 15px;" />
+            </div>
+
+            <div class="detail-average-rating-container" id="detail-average-rating-box"></div>
+
+            <div class="detail-meta-row" style="margin-top: 10px;">
+              <div id="date-view-wrapper">
+                <span id="detail-movie-date" class="detail-date-badge">Published Date</span>
+              </div>
+              <div id="date-edit-wrapper" style="display: none;">
+                <input type="text" id="edit-movie-date-field" class="login-input" style="padding: 6px 12px; height: auto;" />
+              </div>
+              <span id="detail-upload-time" class="detail-time-stamp-label"></span>
+              <span class="detail-author-badge"><ion-icon name="person-outline"></ion-icon> Author: <span id="detail-movie-author">Username</span></span>
+            </div>
+          </div>
+
+          <div class="detail-review-body-box">
+            <h4 class="detail-section-label">Review Summary Text</h4>
+            <div id="text-view-wrapper">
+              <p id="detail-review-text" class="detail-paragraph-content">Review text reads here...</p>
+            </div>
+            <div id="text-edit-wrapper" style="display: none;">
+              <textarea id="edit-movie-text-field" class="login-input review-textarea-field" style="padding-left: 15px; margin-bottom: 15px; min-height: 120px;"></textarea>
+            </div>
+          </div>
+
+          <div id="edit-actions-utilities-bar" style="display: none; justify-content: flex-end; gap: 12px; margin-bottom: 20px; border-bottom: 1px solid var(--gunmetal-1); padding-bottom: 15px;">
+            <button id="edit-cancel-btn" class="upcoming filter-btn" style="padding: 8px 20px; background: transparent; cursor: pointer; border: 1px solid var(--gunmetal-1); color: white;">Cancel</button>
+            <button id="edit-save-btn" class="signin-submit-btn" style="width: auto; margin-top: 0; padding: 8px 24px; border-radius: 50px;">Save Changes</button>
+          </div>
+
+          <div class="detail-comments-section" id="detail-modal-comments-block-wrapper">
+            <h3 class="detail-section-label">Discussion Feed</h3>
+            <div class="comments-scroll-vault-fullpage" id="modal-comments-list"></div>
+
+            <form id="detail-comment-form" class="detail-comment-form-box">
+              <div class="comment-input-wrapper">
+                <textarea id="comment-field-text" placeholder="Add an analytical comment thought..." required class="login-input comment-textarea" style="min-height: 60px; padding: 10px 15px !important;"></textarea>
+              </div>
+              <div class="comment-submission-utilities-row">
+                <div class="interactive-star-selector" id="comment-star-selector">
+                  <span class="selector-label">Your Rating:</span>
+                  <div class="star-nodes">
+                    <ion-icon name="star-outline" data-value="1"></ion-icon>
+                    <ion-icon name="star-outline" data-value="2"></ion-icon>
+                    <ion-icon name="star-outline" data-value="3"></ion-icon>
+                    <ion-icon name="star-outline" data-value="4"></ion-icon>
+                    <ion-icon name="star-outline" data-value="5"></ion-icon>
+                  </div>
+                </div>
+                <button type="submit" class="signin-submit-btn comment-submit-btn-override" style="width: auto; margin-top: 0; padding: 8px 20px; font-size: 12px;">Post Comment</button>
+              </div>
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </main>
+
+    <div style="display:none;">
+      <div id="title-view-wrapper"></div>
+      <div id="title-edit-wrapper"><input id="edit-movie-name-field"/></div>
+      <div id="date-view-wrapper"></div>
+      <div id="date-edit-wrapper"><input id="edit-movie-date-field"/></div>
+      <div id="comment-star-selector"></div>
+    </div>
+
+    <script src="./assets/js/script.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+  </body>
+</html>

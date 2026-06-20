@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>View Review - REAV-ON</title>
+    <link rel="shortcut icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      /* IMDb/Netflix UI Structure Utility Rules in Current Colors */
+      .imdb-layout-wrapper { background: #0b1416; color: var(--white); min-height: 100vh; padding-top: 100px; padding-bottom: 60px; }
+      .imdb-title-header { display: flex !important; justify-content: space-between !important; align-items: center !important; margin-bottom: 25px !important; gap: 24px !important; width: 100% !important; }
+      .imdb-title-left h1 { font-size: 42px; font-weight: 700; color: var(--white); margin-bottom: 6px; letter-spacing: -0.5px; }
+      .imdb-sub-meta { display: flex !important; flex-direction: row !important; align-items: center !important; gap: 12px !important; flex-wrap: wrap !important; }
+      .imdb-sub-meta .cert-badge { border: 1px solid #243337; padding: 1px 6px; border-radius: 4px; background: #132226; color: var(--citrine); font-weight: 700; }
+      
+      #detail-view-counter-pill { display: inline-flex !important; align-items: center !important; gap: 5px !important; white-space: nowrap !important; color: var(--citrine) !important; font-weight: 600 !important; }
+      #detail-view-counter-pill ion-icon { font-size: 16px !important; margin: 0 !important; display: inline-block !important; }
+
+      .imdb-ratings-right { display: flex !important; align-items: center !important; gap: 20px !important; background: rgba(255, 255, 255, 0.02) !important; padding: 12px 20px !important; border-radius: 8px !important; border: 1px solid rgba(255, 255, 255, 0.05) !important; flex-shrink: 0 !important; }
+      .rating-stat-box { display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; }
+      .rating-stat-box .stat-label { font-size: 11px !important; color: #667788 !important; font-weight: 700 !important; letter-spacing: 0.8px !important; margin-bottom: 4px !important; }
+      .rating-stat-box .stat-val { display: flex !important; align-items: center !important; justify-content: center !important; gap: 6px !important; font-size: 18px !important; line-height: 1 !important; height: 24px !important; }
+
+      .interactive-header-stars { display: flex !important; align-items: center !important; gap: 3px !important; }
+      .interactive-header-stars ion-icon { font-size: 20px !important; display: inline-block !important; margin: 0 !important; }
+
+      .imdb-media-grid { display: grid; grid-template-columns: 280px 1fr; gap: 24px; margin-bottom: 30px; }
+      .imdb-poster-frame { position: relative; border-radius: 8px; overflow: hidden; border: 1px solid #243337; background: #132226; aspect-ratio: 2/3; }
+      .imdb-poster-frame img { width: 100%; height: 100%; object-fit: cover; }
+      .imdb-backdrop-box { background: #132226; border: 1px solid #243337; border-radius: 8px; padding: 30px; display: flex; flex-direction: column; justify-content: space-between; position: relative; }
+      
+      .imdb-meta-row { border-top: 1px solid #1a282d; padding: 15px 0; display: flex; gap: 15px; font-size: 15px; align-items: center; }
+      .imdb-meta-row strong { color: var(--citrine); width: 140px; flex-shrink: 0; font-weight: 600; }
+      .imdb-meta-row p, .imdb-meta-row span { color: var(--gainsboro); margin: 0; }
+
+      .imdb-genre-pill { background: rgba(229,184,0,0.08); border: 1px solid rgba(229,184,0,0.2); color: var(--citrine); padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; }
+      
+      /* Inline Form Elements configuration layout */
+      .edit-field-item { display: flex; flex-direction: column; gap: 6px; }
+      .edit-field-label { color: #667788; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+
+      @media (max-width: 768px) {
+        .imdb-media-grid { grid-template-columns: 1fr; }
+        .imdb-title-header { flex-direction: column; align-items: flex-start !important; }
+      }
+    </style>
+  </head>
+  <body>
+
+    <header class="header active" style="background: #0b1416; border-bottom: 1px solid #132226;">
+      <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+        <a href="./index.html" class="logo"><img src="./assets/images/svg.svg" alt="Filmlane logo" /></a>
+        <div class="header-actions" style="display: flex; gap: 15px; align-items: center;">
+          <button class="btn btn-primary" onclick="window.location.href='index.html'" style="padding: 10px 20px; font-size: 12px; background: #132226; border-color: #243337;">
+            <ion-icon name="arrow-back-outline" style="display: inline-block; vertical-align: middle; margin-right: 5px;"></ion-icon>
+            <span style="display: inline-block; vertical-align: middle;">Back to Home</span>
+          </button>
+          <button id="signin-btn" style="display: block;"></button>
+        </div>
+      </div>
+    </header>
+
+    <div class="imdb-layout-wrapper">
+      <div class="container">
+        
+        <div class="imdb-title-header">
+          <div class="imdb-title-left">
+            <div id="title-view-wrapper">
+              <h1 id="detail-movie-title">Loading Movie Title...</h1>
+            </div>
+            <div class="imdb-sub-meta">
+              <span class="cert-badge">TV-MA</span>
+              <span>1h 34m</span>
+              <span>•</span>
+              <span id="detail-view-counter-pill"><ion-icon name="eye-outline"></ion-icon><span id="detail-view-count">0</span> Views</span>
+            </div>
+          </div>
+
+          <div class="imdb-ratings-right" id="detail-average-rating-box"></div>
+        </div>
+
+        <div class="imdb-media-grid full-page-thread-wrapper">
+          <div class="imdb-poster-frame edit-poster-hover-wrapper">
+            <img src="" id="detail-movie-poster" alt="Poster Image" />
+            <input type="file" id="edit-movie-image-input" accept="image/*" style="display: none;" />
+            <div class="poster-edit-overlay" id="poster-edit-overlay-btn">
+              <ion-icon name="camera-outline"></ion-icon><span>Change Thumbnail</span>
+            </div>
+          </div>
+
+          <div class="imdb-backdrop-box">
+            <div style="width: 100%;">
+              <h4 style="font-size: 12px; text-transform: uppercase; color: #667788; font-weight: 700; letter-spacing: 1px; margin-bottom: 12px;">Review Workspace</h4>
+              
+              <div id="text-view-wrapper">
+                <p id="detail-review-text" style="font-size: 16px; line-height: 1.6; color: #cfd8dc;">Review summary text loading here...</p>
+              </div>
+
+              <div id="text-edit-wrapper" style="display: none; flex-direction: column; gap: 18px; margin-top: 5px;">
+                <div id="title-edit-wrapper" class="edit-field-item">
+                  <label class="edit-field-label">Movie / Project Title</label>
+                  <input type="text" id="edit-movie-name-field" class="login-input" style="padding-left: 15px; background: #0b1416 !important; border-color: #243337 !important; color: white !important; width: 100%;" />
+                </div>
+
+                <div id="date-edit-wrapper" class="edit-field-item">
+                  <label class="edit-field-label">Date Published / Released</label>
+                  <input type="text" id="edit-movie-date-field" class="login-input" style="padding-left: 15px; background: #0b1416 !important; border-color: #243337 !important; color: white !important; width: 100%;" />
+                </div>
+
+                <div class="edit-field-item">
+                  <label class="edit-field-label">Review Narrative Content</label>
+                  <textarea id="edit-movie-text-field" class="login-input review-textarea-field" style="padding: 12px 15px !important; width: 100%; min-height: 140px; background: #0b1416 !important; border-color: #243337 !important; color: white !important; resize: vertical;"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="owner-admin-buttons-row" style="display: flex; gap: 10px; margin-top: 20px;">
+              <button id="detail-edit-review-btn" class="detail-edit-btn" style="display: none; background: transparent; border: 1px solid #243337; color: var(--citrine); padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+                <ion-icon name="create-outline"></ion-icon> <span style="margin-left: 5px;">Edit Post</span>
+              </button>
+              <button id="detail-delete-review-btn" class="detail-delete-btn" style="display: none; background: transparent; border: 1px solid rgba(255,69,96,0.2); color: #ff4560; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+                <ion-icon name="trash-outline"></ion-icon> <span style="margin-left: 5px;">Delete Post</span>
+              </button>
+            </div>
+
+            <div id="edit-actions-utilities-bar" style="display: none; justify-content: flex-end; gap: 12px; margin-top: 20px;">
+              <button id="edit-cancel-btn" class="upcoming filter-btn" style="padding: 8px 20px; background: transparent; color: white; border: 1px solid #243337; cursor: pointer; border-radius: 4px;">Cancel</button>
+              <button id="edit-save-btn" class="signin-submit-btn" style="width: auto; margin-top: 0; padding: 8px 24px; border-radius: 4px; background: var(--citrine); color: black; font-weight: 700; border: none; cursor: pointer;">Save Changes</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 40px;">
+          <div class="imdb-meta-row">
+            <strong>Genres</strong>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="detail-movie-genres"></div>
+          </div>
+          
+          <div class="imdb-meta-row" id="date-view-wrapper">
+            <strong>Date Published</strong>
+            <span id="detail-movie-date" style="font-weight: 500; color: #cfd8dc;">Loading date metrics...</span>
+          </div>
+
+          <div class="imdb-meta-row">
+            <strong>Author Profile</strong>
+            <span id="detail-movie-author" style="color: var(--citrine); font-weight: 600;">Username</span>
+          </div>
+          
+          <div class="imdb-meta-row">
+            <strong>Upload Timeline</strong>
+            <span id="detail-upload-time" style="color: #667788;">Loading timestamp metrics...</span>
+          </div>
+        </div>
+
+        <div class="detail-comments-section" id="detail-modal-comments-block-wrapper" style="background: #132226; border: 1px solid #243337; padding: 30px; border-radius: 8px;">
+          <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 20px; border-bottom: 1px solid #243337; padding-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--white);">Discussion Forum Feed</h3>
+          
+          <div class="comments-scroll-vault" id="modal-comments-list" style="margin-bottom: 25px;"></div>
+
+          <form id="detail-comment-form" class="detail-comment-form-box" style="border-top: 1px solid #243337; padding-top: 20px;">
+            <div class="comment-input-wrapper" style="margin-bottom: 15px;">
+              <textarea id="comment-field-text" placeholder="Add an analytical community comment thought..." required class="login-input comment-textarea" style="min-height: 80px; padding: 12px 15px !important; background: #0b1416 !important; border-color: #243337 !important; color: white !important; width: 100%; border-radius: 6px;"></textarea>
+            </div>
+
+            <div class="form-field-item" id="comment-progress-wrapper" style="display: none; margin-bottom: 15px; background: rgba(255,255,255,0.01); border: 1px solid #243337; padding: 12px; border-radius: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <span style="color: #667788; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Sending Comment Packets</span>
+                <span id="comment-progress-percent" style="color: var(--citrine); font-size: 12px; font-weight: 700;">0%</span>
+              </div>
+              <div style="width: 100%; height: 4px; background: #0b1416; border-radius: 10px; overflow: hidden; border: 1px solid #1a282d;">
+                <div id="comment-progress-bar" style="width: 0%; height: 100%; background: var(--citrine); border-radius: 10px; transition: width 0.1s linear;"></div>
+              </div>
+            </div>
+
+            <div class="comment-submission-utilities-row" style="display: flex; justify-content: flex-end;">
+              <button type="submit" class="signin-submit-btn comment-submit-btn-override" style="width: auto; margin-top: 0; padding: 10px 24px; font-size: 13px; font-weight: 700; background: var(--citrine); color: black; border-radius: 4px; border: none; cursor: pointer;">Post Comment</button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="custom-alert-overlay" id="edit-success-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 20, 22, 0.85); display: none; justify-content: center; align-items: center; z-index: 10000; backdrop-filter: blur(4px);">
+      <div class="custom-alert-card" style="background: #132226; border: 1px solid #243337; border-top: 4px solid var(--citrine); width: 100%; max-width: 360px; padding: 35px 30px; border-radius: 8px; text-align: center; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);">
+        <div class="success-icon-circle" style="width: 60px; height: 60px; background: rgba(229, 184, 0, 0.08); border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 18px; color: var(--citrine);"><ion-icon name="checkmark-circle-outline" style="font-size: 34px;"></ion-icon></div>
+        <h3 style="color: white; font-size: 22px; font-weight: 700; margin-bottom: 8px;">Changes Saved</h3>
+        <p id="edit-success-message" style="color: #cfd8dc; font-size: 13.5px; margin-bottom: 24px; line-height: 1.5;">Movie review updated successfully!</p>
+        <button type="button" id="edit-success-btn" style="background: var(--citrine); color: black; border: none; padding: 12px 30px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-radius: 4px; cursor: pointer; width: 100%;">OK</button>
+      </div>
+    </div>
+
+    <div class="custom-alert-overlay" id="review-delete-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 20, 22, 0.85); display: none; justify-content: center; align-items: center; z-index: 10001; backdrop-filter: blur(4px);">
+      <div class="custom-alert-card" style="background: #132226; border: 1px solid #243337; border-top: 4px solid #ff4560; width: 100%; max-width: 360px; padding: 35px 30px; border-radius: 8px; text-align: center; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);">
+        <div class="success-icon-circle" style="width: 60px; height: 60px; background: rgba(255, 69, 96, 0.08); border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 18px; color: #ff4560;"><ion-icon name="alert-circle-outline" style="font-size: 34px;"></ion-icon></div>
+        <h3 style="color: white; font-size: 22px; font-weight: 700; margin-bottom: 8px;">Delete Review?</h3>
+        <p style="color: #cfd8dc; font-size: 13.5px; margin-bottom: 24px; line-height: 1.5;">Are you sure you want to permanently delete this review post? All community discussion comments and ratings will be lost.</p>
+        <div style="display: flex; gap: 12px;">
+          <button type="button" id="review-delete-cancel-btn" style="background: transparent; color: white; border: 1px solid #243337; padding: 12px; border-radius: 4px; cursor: pointer; flex: 1; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Cancel</button>
+          <button type="button" id="review-delete-confirm-btn" style="background: #ff4560; color: white; border: none; padding: 12px; border-radius: 4px; cursor: pointer; flex: 1; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="custom-alert-overlay" id="delete-confirm-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 20, 22, 0.85); display: none; justify-content: center; align-items: center; z-index: 10000; backdrop-filter: blur(4px);">
+      <div class="custom-alert-card" style="background: #132226; border: 1px solid #243337; border-top: 4px solid #ff4560; width: 100%; max-width: 360px; padding: 35px 30px; border-radius: 8px; text-align: center; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);">
+        <div class="success-icon-circle" style="width: 60px; height: 60px; background: rgba(255, 69, 96, 0.08); border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 18px; color: #ff4560;"><ion-icon name="trash-outline" style="font-size: 32px;"></ion-icon></div>
+        <h3 style="color: white; font-size: 22px; font-weight: 700; margin-bottom: 8px;">Remove Comment?</h3>
+        <p style="color: #cfd8dc; font-size: 13.5px; margin-bottom: 24px; line-height: 1.5;">Are you sure you want to permanently delete this comment? This action cannot be undone.</p>
+        <div style="display: flex; gap: 12px;">
+          <button type="button" id="delete-cancel-btn" style="background: transparent; color: white; border: 1px solid #243337; padding: 12px; border-radius: 4px; cursor: pointer; flex: 1; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Cancel</button>
+          <button type="button" id="delete-confirm-btn" style="background: #ff4560; color: white; border: none; padding: 12px; border-radius: 4px; cursor: pointer; flex: 1; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: none;"><div id="comment-star-selector"></div></div>
+
+    <script src="./assets/js/script.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+  </body>
+</html>
