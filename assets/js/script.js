@@ -1088,9 +1088,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /// 3. FULL-STACK PROFILE DETAILS RENDERING & INTERACTIVE EDIT SUBSYSTEM
   async function openReviewDetailsViewport(reviewId) {
-    const loader = document.getElementById('loading-overlay');
-    if (loader) loader.style.display = 'flex';
-    
     if (!document.getElementById('detail-movie-title')) return;
     currentActiveReviewId = reviewId;
     const userEmail = localStorage.getItem("userEmail") || "";
@@ -1100,7 +1097,7 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleEditFormState(false);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/reviews/details/${reviewId}?email=${encodeURIComponent(userEmail)}`);
+      const response = await fetch(`http://localhost:5000/api/reviews/details/${reviewId}?email=${encodeURIComponent(userEmail)}`);
       if (!response.ok) throw new Error("Packet unresolved.");
       const data = await response.json();
 
@@ -1335,10 +1332,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
     } catch (err) {
-        console.error("Error:", err);
-    } finally {
-      // 2. Hide the loading screen whether it succeeds or fails
-        if (loader) loader.style.display = 'none';
+      console.error("Error contacting dataset detail endpoint nodes:", err);
+    }
   }
 
   // Helper visibility layout control switcher
