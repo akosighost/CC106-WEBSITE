@@ -151,298 +151,24 @@
 
         <section class="upcoming reveal">
           <div class="container">
-            <div class="flex-wrapper">
-              <div class="title-wrapper">
-                <h2 class="h2 section-title">Community</h2>
+            <div class="flex-wrapper" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 35px; gap: 20px; flex-wrap: wrap;">
+              <div class="title-wrapper" style="text-align: left;">
+                <h2 class="h2 section-title" style="text-align: left; margin-bottom: 0;">Community Thoughts Feed</h2>
               </div>
-              <ul class="filter-list">
-                <li><button class="filter-btn active" data-sort="highest">Highest Rated</button></li>
-                <li><button class="filter-btn" data-sort="lowest">Lowest Rated</button></li>
-              </ul>
-            </div>
-
-            <div class="review-grid">
-              <div class="review-card card-blue" data-rating="5" data-review-file="princes.txt">
-                <div class="card-top-row">
-                  <div class="review-header">
-                    <div class="avatar">
-                      <img src="./assets/review-photos/princes.jpg" alt="User" />
-                    </div>
-                    <div class="user-info">
-                      <h3 class="username">Princes</h3>
-                      <div class="rating-wrapper">
-                        <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
-                        <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
-                        <ion-icon name="star"></ion-icon>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="card-movie-meta-row">
-                    <div class="card-movie-poster">
-                      <img src="./assets/images/bf.jpg" alt="Movie Poster" />
-                    </div>
-                    <div class="card-movie-details">
-                      <h4 class="card-movie-title">Die Beautiful</h4>
-                      <span class="card-movie-release">2016</span>
-                    </div>
-                  </div>
-                </div>
-
-                <p class="review-text">Loading review...</p>
-                
-                <div class="card-footer">
-                  <button class="see-more-btn">See More</button>
-                  <div class="card-actions-row">
-                    <div class="left-interactions">
-                      <div class="interaction-item">
-                        <button class="action-btn card-like-btn" title="Like Review">
-                          <ion-icon name="heart-outline"></ion-icon>
-                        </button>
-                        <span class="interaction-count">24</span>
-                      </div>
-                      <div class="interaction-item">
-                        <button class="action-btn card-comment-btn" title="View Comments">
-                          <ion-icon name="chatbubble-outline"></ion-icon>
-                        </button>
-                        <span class="interaction-count">12</span>
-                      </div>
-                    </div>
-
-                    <div class="right-utilities">
-                      <button class="action-btn expand-btn" title="Read Full Review"><ion-icon name="expand-outline"></ion-icon></button>
-                      <button class="action-btn copy-btn" title="Copy Review"><ion-icon name="copy-outline"></ion-icon></button>
-                      <button class="action-btn share-btn" title="Share Review"><ion-icon name="share-social-outline"></ion-icon></button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="review-card card-blue" data-rating="4" data-review-file="yesha.txt">
-                <div class="review-header">
-                  <div class="avatar">
-                    <img src="./assets/review-photos/yesha.jpg" alt="User" />
-                  </div>
-                  <div class="user-info">
-                    <h3 class="username">Yesha</h3>
-                    <div class="rating-wrapper">
-                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
-                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
-                      <ion-icon name="star"></ion-icon>
-                    </div>
-                  </div>
-                </div>
-                <p class="review-text">Loading review...</p>
-                <div class="card-footer">
-                  <button class="see-more-btn">See More</button>
-                  <div class="card-actions">
-                    <button class="action-btn expand-btn" title="Read Full Review"><ion-icon name="expand-outline"></ion-icon></button>
-                    <button class="action-btn copy-btn" title="Copy Review"><ion-icon name="copy-outline"></ion-icon></button>
-                    <button class="action-btn share-btn" title="Share Review"><ion-icon name="share-social-outline"></ion-icon></button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="review-card card-blue" data-rating="4.5" data-review-file="joehanne.txt">
-                <div class="review-header">
-                  <div class="avatar">
-                    <img src="./assets/review-photos/joehan.jpg" alt="User" />
-                  </div>
-                  <div class="user-info">
-                    <h3 class="username">Joehanne</h3>
-                    <div class="rating-wrapper">
-                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
-                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
-                      <ion-icon name="star"></ion-icon>
-                    </div>
-                  </div>
-                </div>
-                <p class="review-text">Loading review...</p>
-                <div class="card-footer">
-                  <button class="see-more-btn">See More</button>
-                  <div class="card-actions">
-                    <button class="action-btn expand-btn" title="Read Full Review"><ion-icon name="expand-outline"></ion-icon></button>
-                    <button class="action-btn copy-btn" title="Copy Review"><ion-icon name="copy-outline"></ion-icon></button>
-                    <button class="action-btn share-btn" title="Share Review"><ion-icon name="share-social-outline"></ion-icon></button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="review-card card-blue" data-rating="4" data-review-file="king.txt">
-                <div class="review-header">
-                  <div class="avatar">
-                    <img src="./assets/review-photos/king.jpg" alt="User" />
-                  </div>
-                  <div class="user-info">
-                    <h3 class="username">King Acel</h3>
-                    <div class="rating-wrapper">
-                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
-                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
-                      <ion-icon name="star"></ion-icon>
-                    </div>
-                  </div>
-                </div>
-                <p class="review-text">Loading review...</p>
-                <div class="card-footer">
-                  <button class="see-more-btn">See More</button>
-                  <div class="card-actions">
-                    <button class="action-btn expand-btn" title="Read Full Review"><ion-icon name="expand-outline"></ion-icon></button>
-                    <button class="action-btn copy-btn" title="Copy Review"><ion-icon name="copy-outline"></ion-icon></button>
-                    <button class="action-btn share-btn" title="Share Review"><ion-icon name="share-social-outline"></ion-icon></button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="review-card card-blue" data-rating="4" data-review-file="kyleen.txt">
-                <div class="review-header">
-                  <div class="avatar">
-                    <img src="./assets/review-photos/kyleen.jpg" alt="User" />
-                  </div>
-                  <div class="user-info">
-                    <h3 class="username">Kyleen</h3>
-                    <div class="rating-wrapper">
-                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
-                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
-                      <ion-icon name="star"></ion-icon>
-                    </div>
-                  </div>
-                </div>
-                <p class="review-text">Loading review...</p>
-                <div class="card-footer">
-                  <button class="see-more-btn">See More</button>
-                  <div class="card-actions">
-                    <button class="action-btn expand-btn" title="Read Full Review"><ion-icon name="expand-outline"></ion-icon></button>
-                    <button class="action-btn copy-btn" title="Copy Review"><ion-icon name="copy-outline"></ion-icon></button>
-                    <button class="action-btn share-btn" title="Share Review"><ion-icon name="share-social-outline"></ion-icon></button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="review-card card-blue" data-rating="4" data-review-file="joana.txt">
-                <div class="review-header">
-                  <div class="avatar">
-                    <img src="./assets/review-photos/joana.jpg" alt="User" />
-                  </div>
-                  <div class="user-info">
-                    <h3 class="username">Joana</h3>
-                    <div class="rating-wrapper">
-                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
-                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
-                      <ion-icon name="star"></ion-icon>
-                    </div>
-                  </div>
-                </div>
-                <p class="review-text">Loading review...</p>
-                <div class="card-footer">
-                  <button class="see-more-btn">See More</button>
-                  <div class="card-actions">
-                    <button class="action-btn expand-btn" title="Read Full Review"><ion-icon name="expand-outline"></ion-icon></button>
-                    <button class="action-btn copy-btn" title="Copy Review"><ion-icon name="copy-outline"></ion-icon></button>
-                    <button class="action-btn share-btn" title="Share Review"><ion-icon name="share-social-outline"></ion-icon></button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="review-card card-blue" data-rating="3.8" data-review-file="dennis.txt">
-                <div class="review-header">
-                  <div class="avatar">
-                    <img src="./assets/review-photos/dennis.jpg" alt="User" />
-                  </div>
-                  <div class="user-info">
-                    <h3 class="username">Dennis</h3>
-                    <div class="rating-wrapper">
-                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
-                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
-                      <ion-icon name="star"></ion-icon>
-                    </div>
-                  </div>
-                </div>
-                <p class="review-text">Loading review...</p>
-                <div class="card-footer">
-                  <button class="see-more-btn">See More</button>
-                  <div class="card-actions">
-                    <button class="action-btn expand-btn" title="Read Full Review"><ion-icon name="expand-outline"></ion-icon></button>
-                    <button class="action-btn copy-btn" title="Copy Review"><ion-icon name="copy-outline"></ion-icon></button>
-                    <button class="action-btn share-btn" title="Share Review"><ion-icon name="share-social-outline"></ion-icon></button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="review-card card-blue" data-rating="4" data-review-file="adrian.txt">
-                <div class="review-header">
-                  <div class="avatar">
-                    <img src="./assets/review-photos/adrian.jpg" alt="User" />
-                  </div>
-                  <div class="user-info">
-                    <h3 class="username">Adrian Nico</h3>
-                    <div class="rating-wrapper">
-                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
-                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
-                      <ion-icon name="star"></ion-icon>
-                    </div>
-                  </div>
-                </div>
-                <p class="review-text">Loading review...</p>
-                <div class="card-footer">
-                  <button class="see-more-btn">See More</button>
-                  <div class="card-actions">
-                    <button class="action-btn expand-btn" title="Read Full Review"><ion-icon name="expand-outline"></ion-icon></button>
-                    <button class="action-btn copy-btn" title="Copy Review"><ion-icon name="copy-outline"></ion-icon></button>
-                    <button class="action-btn share-btn" title="Share Review"><ion-icon name="share-social-outline"></ion-icon></button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="review-card card-blue" data-rating="4.89" data-review-file="johnpaul.txt">
-                <div class="review-header">
-                  <div class="avatar">
-                    <img src="./assets/review-photos/john paul.jpg" alt="User" />
-                  </div>
-                  <div class="user-info">
-                    <h3 class="username">John Paul</h3>
-                    <div class="rating-wrapper">
-                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
-                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
-                      <ion-icon name="star"></ion-icon>
-                    </div>
-                  </div>
-                </div>
-                <p class="review-text">Loading review...</p>
-                <div class="card-footer">
-                  <button class="see-more-btn">See More</button>
-                  <div class="card-actions">
-                    <button class="action-btn expand-btn" title="Read Full Review"><ion-icon name="expand-outline"></ion-icon></button>
-                    <button class="action-btn copy-btn" title="Copy Review"><ion-icon name="copy-outline"></ion-icon></button>
-                    <button class="action-btn share-btn" title="Share Review"><ion-icon name="share-social-outline"></ion-icon></button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="review-card card-blue" data-rating="3.5" data-review-file="jhayr.txt">
-                <div class="review-header">
-                  <div class="avatar">
-                    <img src="./assets/review-photos/jhayr.jpg" alt="User" />
-                  </div>
-                  <div class="user-info">
-                    <h3 class="username">Jhayr</h3>
-                    <div class="rating-wrapper">
-                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
-                      <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon>
-                      <ion-icon name="star"></ion-icon>
-                    </div>
-                  </div>
-                </div>
-                <p class="review-text">Loading review...</p>
-                <div class="card-footer">
-                  <button class="see-more-btn">See More</button>
-                  <div class="card-actions">
-                    <button class="action-btn expand-btn" title="Read Full Review"><ion-icon name="expand-outline"></ion-icon></button>
-                    <button class="action-btn copy-btn" title="Copy Review"><ion-icon name="copy-outline"></ion-icon></button>
-                    <button class="action-btn share-btn" title="Share Review"><ion-icon name="share-social-outline"></ion-icon></button>
-                  </div>
-                </div>
+              
+              <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                <button type="button" class="upload-review-btn" id="community-section-upload-btn" style="margin-right: 0; padding: 10px 20px; font-size: 12px;">
+                  <ion-icon name="create-outline"></ion-icon>
+                  <span>Write a Review</span>
+                </button>
+                <ul class="filter-list" style="gap: 8px;">
+                  <li><button class="filter-btn active" data-sort="highest">Highest Rated</button></li>
+                  <li><button class="filter-btn" data-sort="lowest">Lowest Rated</button></li>
+                </ul>
               </div>
             </div>
+
+            <div class="review-grid" id="dynamic-community-grid"></div>
           </div>
         </section>
 
@@ -563,25 +289,39 @@
       </div>
     </div>
 
-    <div class="review-modal-overlay" id="review-modal-overlay">
-      <div class="review-modal">
-        <button class="close-review-btn" onclick="toggleReviewModal(false)">
+    <div class="review-modal-overlay" id="upload-review-modal-overlay">
+      <div class="review-modal max-width-signin" style="padding: 30px; max-width: 480px; border-top: 4px solid #3b82f6;">
+        <button class="close-review-btn" id="close-upload-modal-btn">
           <ion-icon name="close-outline"></ion-icon>
         </button>
-        <div class="review-modal-content">
-          <div class="modal-header">
-            <div class="modal-avatar">
-              <img src="" alt="User" id="modal-user-img" />
-            </div>
-            <div class="modal-user-details">
-              <h3 id="modal-user-name">Username</h3>
-              <div class="modal-rating" id="modal-user-rating"></div>
+        
+        <h2 class="signin-modal-heading" style="font-size: 24px; text-align: center;">Community Thoughts Feed</h2>
+        <p style="color: var(--gainsboro); margin-bottom: 20px; text-align: center; font-size: 14px;">Post a discussion comment straight onto a movie forum feed</p>
+
+        <form class="signin-form" id="community-comment-feed-form">
+          
+          <div class="form-field-item">
+            <label class="form-input-label">Select Movie Target Thread</label>
+            <div class="input-group">
+              <select id="comment-target-review-id" required class="login-input" style="padding-left: 45px; padding-right: 15px; appearance: none; -webkit-appearance: none; color-scheme: dark; background: rgba(255,255,255,0.05); color: white;">
+                <option value="" disabled selected style="background: #132226; color: #678;">Choose a movie review thread...</option>
+              </select>
+              <ion-icon name="film-outline" style="top: 50%; transform: translateY(-50%);"></ion-icon>
             </div>
           </div>
-          <div class="modal-body">
-            <p id="modal-review-text">Review content goes here...</p>
+
+          <div class="form-field-item" style="margin-top: 15px;">
+            <label class="form-input-label">Your Comment Thought</label>
+            <div class="input-group">
+              <textarea id="comment-feed-message-text" placeholder="Type your community discussion thought here..." required class="login-input review-textarea-field" style="min-height: 120px; padding-top: 12px !important; resize: none;"></textarea>
+              <ion-icon name="create-outline" style="top: 20px; transform: none;"></ion-icon>
+            </div>
           </div>
-        </div>
+
+          <button type="submit" class="signin-submit-btn" style="margin-top: 15px; background: #3b82f6; border-color: #3b82f6; color: white;">
+            Post to Community Feed
+          </button>
+        </form>
       </div>
     </div>
 
@@ -883,53 +623,36 @@
     <a href="#top" class="go-top" data-go-top><ion-icon name="chevron-up"></ion-icon></a>
 
     <div class="review-modal-overlay" id="upload-review-modal-overlay">
-      <div class="review-modal max-width-signin" style="padding: 30px; max-width: 480px; border-top: 4px solid var(--citrine);">
+      <div class="review-modal max-width-signin" style="padding: 30px; max-width: 480px; border-top: 4px solid #3b82f6;">
         <button class="close-review-btn" id="close-upload-modal-btn">
           <ion-icon name="close-outline"></ion-icon>
         </button>
         
-        <h2 class="signin-modal-heading" style="font-size: 24px; text-align: center;">Upload Review</h2>
-        <p style="color: var(--gainsboro); margin-bottom: 20px; text-align: center; font-size: 14px;">Share your cinematic thoughts with the community</p>
+        <h2 class="signin-modal-heading" style="font-size: 24px; text-align: center;">Community Thoughts Feed</h2>
+        <p style="color: var(--gainsboro); margin-bottom: 20px; text-align: center; font-size: 14px;">Post a direct discussion thought straight onto a movie forum feed</p>
 
-        <form class="signin-form" id="upload-review-form">
+        <form class="signin-form" id="community-comment-feed-form">
           <div class="input-group">
-            <input type="text" id="review-movie-name" placeholder="Movie Name" required class="login-input" style="padding-left: 45px;" />
+            <select id="comment-target-review-id" required class="login-input" style="padding-left: 45px; padding-right: 15px; appearance: none; color-scheme: dark; background: rgba(255,255,255,0.05);">
+                <option value="" disabled selected style="background: #132226; color: #678;">Choose a movie review thread...</option>
+            </select>
             <ion-icon name="film-outline"></ion-icon>
           </div>
 
-          <div class="input-group">
-            <input type="text" id="review-movie-date" placeholder="Date Published (e.g., Jun 17, 2026)" required class="login-input" style="padding-left: 45px;" />
-            <ion-icon name="calendar-outline"></ion-icon>
+          <div class="input-group" style="display: none;">
+            <input type="text" id="review-movie-date" value="Jun 21, 2026" class="login-input" />
           </div>
 
           <div class="form-field-item">
-            <label class="form-input-label">Your Review</label>
+            <label class="form-input-label">Your Comment Thought</label>
             <div class="input-group">
-              <textarea id="review-movie-text" placeholder="Write your full analytical review text here..." required class="login-input review-textarea-field"></textarea>
+              <textarea id="comment-feed-message-text" placeholder="Write your full analytical comment text here..." required class="login-input review-textarea-field"></textarea>
               <ion-icon name="create-outline" style="top: 20px; transform: none;"></ion-icon>
             </div>
           </div>
 
-          <div class="form-field-item">
-            <label class="form-input-label">Movie Thumbnail / Poster</label>
-            <div class="thumbnail-upload-zone" id="thumb-upload-zone">
-              <input type="file" id="review-movie-image" accept="image/*" required style="display: none;" />
-              <div class="upload-zone-content" id="upload-zone-prompt">
-                <ion-icon name="cloud-upload-outline" style="font-size: 40px; color: var(--citrine); margin-bottom: 8px;"></ion-icon>
-                <p style="color: var(--gainsboro); font-size: 13px; font-weight: 500;">Click to select movie poster</p>
-                <p style="color: #678; font-size: 11px; margin-top: 2px;">Supports JPG, PNG, or WEBP</p>
-              </div>
-              <img src="" id="upload-preview-img" alt="Movie Preview" class="upload-preview-thumbnail" />
-            </div>
-          </div>
-
-          <div class="form-field-item" id="admin-feature-checkbox-wrapper" style="display: none; flex-direction: row; align-items: center; gap: 10px; margin-bottom: 15px; background: rgba(229, 184, 0, 0.05); padding: 10px; border: 1px solid var(--citrine); border-radius: 6px;">
-            <input type="checkbox" id="review-is-featured" style="width: 18px; height: 18px; cursor: pointer; accent-color: var(--citrine);" />
-            <label for="review-is-featured" class="form-input-label" style="margin-bottom: 0; cursor: pointer; color: var(--citrine); font-weight: 700;">Publish to "NEW ON REAV-ON" grid</label>
-          </div>
-
           <button type="submit" class="signin-submit-btn" style="margin-top: 5px;">
-            Publish Review
+            Post to Community Feed
           </button>
         </form>
       </div>

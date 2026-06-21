@@ -618,6 +618,25 @@ if (reviewCheck.rows[0].user_id !== userId && !isAdmin) {
   }
 });
 
+// ==========================================
+// 14. GET ALL COMMUNITY DISCUSSION FEED COMMENTS (GLOBAL TRACKING)
+// ==========================================
+app.get('/api/community/feed', async (req, res) => {
+  try {
+    const feedQuery = await pool.query(
+      `SELECT c.comment_id, c.comment_text, c.created_at, c.rating,
+              u.username, r.review_id, r.movie_name, r.publish_date, r.image_data
+       FROM movie_comments c
+       JOIN users u ON c.user_id = u.user_id
+       JOIN reviews r ON c.review_id = r.review_id
+       ORDER BY c.comment_id DESC`
+    );
+    res.json(feedQuery.rows);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 app.get('/', (req, res) => {
   res.send('API is running successfully!');
 });

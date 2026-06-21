@@ -787,6 +787,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const featuredGrid = document.getElementById('featured-reviews-grid');
   const recommendationsGrid = document.getElementById('recommendations-reviews-grid');
 
+  // ====== FIXED: Added local definitions for community feed anchors ======
+  const communityGrid = document.getElementById('dynamic-community-grid');
+  const communityUploadBtn = document.getElementById('community-section-upload-btn');
+
   // Movie Details & Edit UI Selectors
   const detailModal = document.getElementById('movie-detail-modal-overlay');
   const closeDetailModalBtn = document.getElementById('close-detail-modal-btn');
@@ -794,7 +798,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   let base64ImageString = ""; 
   let currentActiveReviewId = null;
-  let activeSelectedRating = 0; 
+  let activeSelectedRating = 0;
 
  // TIMESTAMP FORMATTING HELPER
   function parseSystemTimestampToLocal(isoString) {
@@ -808,8 +812,11 @@ document.addEventListener('DOMContentLoaded', () => {
   
 
   // 1. PRIVATE USER REVIEW LOADER ENGINE (ADDED BY YOU)
+  // ============================================================
+  // 1. PRIVATE USER REVIEW LOADER ENGINE (ADDED BY YOU GRID)
+  // ============================================================
   async function fetchAndRenderUserReviews() {
-    if (!reviewsGrid) return;
+    if (!reviewsGrid) return; // ✅ FIXED: Points safely to reviewsGrid instead of breaking communityGrid
     const userContainer = document.getElementById('user-reviews-container');
     const userEmail = localStorage.getItem("userEmail");
     
@@ -821,7 +828,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/api/reviews/user?email=${encodeURIComponent(userEmail)}`);
+      const response = await fetch(`${API_BASE_URL}/api/reviews/user?email=${encodeURIComponent(userEmail)}`);
       const reviews = await response.json();
 
       if (reviews.length === 0) {
@@ -829,6 +836,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      // ✅ FIXED: Renders movie posters inside reviewsGrid instead of wiping out the community feed section
       reviewsGrid.innerHTML = reviews.map(item => {
         const ratingCount = parseInt(item.rating_count) || 0;
         const avgRating = parseFloat(item.avg_rating) || 0;
@@ -853,6 +861,83 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
       console.error("Error drawing profile dashboard nodes:", err);
     }
+  }
+
+  // ============================================================
+  // 2. NEW: GLOBAL COMMUNITY FEED CORE HYDRATOR (TEXT POSTS GRID)
+  // ============================================================
+  async function fetchAndRenderCommunityFeed() {
+    if (!communityGrid) return; // ✅ Targets id="dynamic-community-grid" cleanly
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/community/feed`);
+      const comments = await response.json();
+
+      if (comments.length === 0) {
+        communityGrid.innerHTML = `<p style="color: #678; font-size: 13px; text-align: center; width: 100%; padding: 40px;">No community discussion thoughts posted yet.</p>`;
+        return;
+      }
+
+      window.cachedCommunityComments = comments;
+      renderCommunityCardsLayout(comments);
+
+    } catch (err) {
+      console.error("Error pulling live community data streams:", err);
+    }
+  }
+
+  function renderCommunityCardsLayout(items) {
+    if (!communityGrid) return;
+
+    communityGrid.innerHTML = items.map(c => {
+      const score = parseFloat(c.rating) || 4; 
+      let starHTML = '';
+      for (let i = 1; i <= 5; i++) {
+        starHTML += `<ion-icon name="${score >= i ? 'star' : 'star-outline'}"></ion-icon>`;
+      }
+
+      return `
+        <div class="review-card card-blue review-click-target-node" data-review-id="${c.review_id}" style="cursor: pointer; margin-bottom: 20px;">
+          <div class="card-top-row">
+            <div class="review-header" style="border:none; padding:0; margin:0;">
+              <div class="avatar">
+                <ion-icon name="person-circle-outline" style="font-size: 38px; color: var(--citrine);"></ion-icon>
+              </div>
+              <div class="user-info">
+                <h3 class="username">${c.username}</h3>
+                <div class="rating-wrapper">${starHTML}</div>
+              </div>
+            </div>
+
+            <div class="card-movie-meta-row">
+              <div class="card-movie-poster">
+                <img src="${c.image_data || './assets/images/obs.jpg'}" alt="Poster" />
+              </div>
+              <div class="card-movie-details">
+                <h4 class="card-movie-title">${c.movie_name}</h4>
+                <span class="card-movie-release">${c.publish_date}</span>
+              </div>
+            </div>
+          </div>
+
+          <p class="review-text" style="max-height: none; mask-image: none; -webkit-mask-image: none; font-style: normal; color: #cfd8dc;">"${c.comment_text}"</p>
+          
+          <div class="card-footer" style="margin-top: 15px; border-top: 1px solid #1a282d; padding-top: 10px; width: 100%;">
+            <div class="card-actions-row">
+              <div class="left-interactions">
+                <div class="interaction-item" style="color: #678; font-size: 12px; font-weight: 600;">
+                  <ion-icon name="chatbubbles-outline" style="color: var(--citrine); font-size: 16px;"></ion-icon>
+                  <span>Discussion Forum</span>
+                </div>
+              </div>
+              <div class="right-utilities">
+                <span style="color: #567; font-size: 11px;">${new Date(c.created_at).toLocaleDateString('en-US', {month: 'short', day: 'numeric'})}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
   }
 
 
@@ -945,6 +1030,131 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchAndRenderUserReviews();
   fetchAndRenderAudienceReviews();
   fetchAndRenderRecommendations(); // FIX: Added initialization step
+  // Fire execution cycles
+
+  // Wire up the new custom "Write a Review" button target click tracker
+  // ============================================================
+  // OPTION A: COMMUNITY FEED COMPONENT WORKSPACE ENGINE
+  // ============================================================
+  if (communityUploadBtn) {
+    communityUploadBtn.addEventListener('click', async () => {
+      const userToken = localStorage.getItem("userToken");
+      if (!userToken) {
+        alert("Please sign in to write a community comment thought!");
+        document.getElementById('signin-modal-overlay')?.classList.add('active');
+        return;
+      }
+
+      const uploadModalOverlay = document.getElementById('upload-review-modal-overlay');
+      const dropdownSelect = document.getElementById('comment-target-review-id');
+
+      if (uploadModalOverlay && dropdownSelect) {
+        try {
+          // Fetch live movies from your active backend database
+          const response = await fetch(`${API_BASE_URL}/api/reviews/all`);
+          const publicMovies = await response.json();
+          
+          const featuredResponse = await fetch(`${API_BASE_URL}/api/reviews/featured`);
+          const featuredMovies = await featuredResponse.json();
+          
+          const allAvailableMovies = [...featuredMovies, ...publicMovies];
+
+          // Re-populate options cleanly
+          dropdownSelect.innerHTML = '<option value="" disabled selected style="background: #132226; color: #678;">Choose a movie review thread...</option>';
+          
+          allAvailableMovies.forEach(movie => {
+            const opt = document.createElement('option');
+            opt.value = movie.review_id;
+            opt.textContent = movie.movie_name;
+            opt.style.background = "#132226";
+            opt.style.color = "white";
+            dropdownSelect.appendChild(opt);
+          });
+
+          uploadModalOverlay.classList.add('active');
+          document.body.classList.add('active');
+
+        } catch (err) {
+          console.error("Error populating review list dropdown:", err);
+        }
+      }
+    });
+  }
+
+  // Handle the form submission to post data straight to comments endpoint mapping
+  const communityCommentForm = document.getElementById('community-comment-feed-form');
+  if (communityCommentForm) {
+    communityCommentForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const targetReviewId = document.getElementById('comment-target-review-id').value;
+      const commentMessage = document.getElementById('comment-feed-message-text').value.trim();
+      const userEmail = localStorage.getItem("userEmail");
+      const submitBtn = this.querySelector('button[type="submit"]');
+
+      if (!targetReviewId || !commentMessage) {
+        alert("Please fill out all required workspace data fields.");
+        return;
+      }
+
+      try {
+        submitBtn.textContent = "POSTING PACKETS...";
+        submitBtn.disabled = true;
+
+        const response = await fetch(`${API_BASE_URL}/api/reviews/details/${targetReviewId}/comments`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: userEmail,
+            commentText: commentMessage,
+            rating: 4 // Set standard rating value to fulfill list sorting arrays
+          })
+        });
+
+        if (response.ok) {
+          alert("Your thought has been posted straight to the Community Feed!");
+          
+          document.getElementById('upload-review-modal-overlay').classList.remove('active');
+          document.body.classList.remove('active');
+          this.reset();
+
+          // Live hot-reload for your communitythoughts grid view context
+          if (typeof fetchAndRenderCommunityFeed === "function") {
+            await fetchAndRenderCommunityFeed();
+          } else {
+            window.location.reload();
+          }
+        } else {
+          const errData = await response.json();
+          alert(errData.message || "Failed posting your thought.");
+        }
+
+      } catch (err) {
+        console.error("Submission failed:", err);
+        alert("Network fault attempting to log comment onto database server.");
+      } finally {
+        if (submitBtn) {
+          submitBtn.textContent = "Post to Community Feed";
+          submitBtn.disabled = false;
+        }
+      }
+    });
+  }
+
+  // Automatically check URL parameters and build data if sitting on view-review.html
+  if (window.location.pathname.includes('view-review.html')) {
+    const pageUrlParams = new URLSearchParams(window.location.search);
+    const activeRouteId = pageUrlParams.get('id');
+    if (activeRouteId) {
+      openReviewDetailsViewport(activeRouteId);
+    }
+  }
+
+  // Around line 750 in your script.js:
+  fetchAndRenderFeaturedReviews();
+  fetchAndRenderUserReviews();
+  fetchAndRenderAudienceReviews();
+  fetchAndRenderRecommendations();
 
   // 2. GLOBAL AUDIENCE REVIEWS LOADER ENGINE
   async function fetchAndRenderAudienceReviews() {
@@ -986,8 +1196,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Trigger on load alongside your other active grids
+  fetchAndRenderFeaturedReviews();
   fetchAndRenderUserReviews();
   fetchAndRenderAudienceReviews();
+  fetchAndRenderRecommendations(); 
+  fetchAndRenderCommunityFeed(); // ✅ ADD THIS LINE to load the feed on startup!
 
   // Helper visibility layout control switcher
   function toggleEditFormState(showEditForm) {
@@ -2078,6 +2292,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  
+
   // Automatically check URL parameters and build data if sitting on view-review.html
   if (window.location.pathname.includes('view-review.html')) {
     const pageUrlParams = new URLSearchParams(window.location.search);
@@ -2085,5 +2301,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (activeRouteId) {
       openReviewDetailsViewport(activeRouteId);
     }
-  }
+  }  
 }); // Secures main master wrapper block structure
+
