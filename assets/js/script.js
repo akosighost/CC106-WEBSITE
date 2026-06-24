@@ -4,7 +4,7 @@
 const API_BASE_URL =
   window.location.hostname === "localhost" ||
   window.location.hostname === "127.0.0.1"
-    ? "${API_BASE_URL}"
+    ? "http://localhost:5000"
     : "https://reavon-backend.onrender.com";
 
 console.log("Current API URL:", API_BASE_URL);
@@ -176,7 +176,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       try {
         const response = await fetch(
-          API_BASE_URL + "/api/auth/forgot-password",
+          "http://localhost:5000/api/auth/forgot-password",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -205,7 +205,7 @@ document.addEventListener("DOMContentLoaded", () => {
         submitBtn.textContent = "Signing In...";
         submitBtn.disabled = true;
 
-        const response = await fetch(API_BASE_URL + "/api/auth/login", {
+        const response = await fetch("http://localhost:5000/api/auth/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
@@ -246,7 +246,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const password = document.getElementById("signup-password").value;
 
       try {
-        const response = await fetch(API_BASE_URL + "/api/auth/signup", {
+        const response = await fetch("http://localhost:5000/api/auth/signup", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, email, password }),
@@ -272,7 +272,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       try {
         const response = await fetch(
-          API_BASE_URL + "/api/auth/reset-password",
+          "http://localhost:5000/api/auth/reset-password",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -1053,13 +1053,15 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="review-card card-blue community-feed-card review-click-target-node" data-review-id="${c.review_id}" data-comment-id="${c.comment_id}" style="cursor: pointer; margin-bottom: 20px; padding: 25px; background: var(--rich-black-fogra-29); border: 1px solid #1a282d; border-top: 4px solid #3b82f6; border-radius: 8px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);">
           
           <div class="card-top-row" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; width: 100%;">
-            
             <div class="review-header" style="display: flex; align-items: center; gap: 12px; border: none; padding: 0; margin: 0;">
               <div class="avatar" style="flex-shrink: 0;">
                 <ion-icon name="person-circle-outline" style="font-size: 40px; color: var(--citrine);"></ion-icon>
               </div>
+              <div class="user-info">
+                <h3 class="username" style="font-size: 15px; font-weight: 600; color: white; margin: 0;">${c.username}</h3>
+                <div class="rating-wrapper" style="display: flex; gap: 2px; color: var(--citrine); margin-top: 4px; font-size: 12px;">${starHTML}</div>
+              </div>
             </div>
-            
             <div style="display: flex; align-items: center; gap: 12px; text-align: right;">
               <div style="max-width: 180px;">
                 <h4 style="font-size: 14px; font-weight: 600; margin: 0; color: white; line-height: 1.3; white-space: normal; word-break: break-word;">${c.movie_name}</h4>
@@ -1069,7 +1071,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 <img src="${c.image_data || "./assets/images/obs.jpg"}" alt="Poster" style="width: 100%; height: 100%; object-fit: cover;" />
               </div>
             </div>
-            
           </div>
 
           <div style="margin-bottom: 12px; position: relative; text-align: left;">
@@ -1149,7 +1150,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       const response = await fetch(
-        API_BASE_URL + "/api/reviews/featured",
+        "http://localhost:5000/api/reviews/featured",
       );
       const reviews = await response.json();
 
@@ -1195,7 +1196,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!recommendationsGrid) return;
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/reviews/recommendations`);
+      const response = await fetch(
+        "http://localhost:5000/api/reviews/recommendations",
+      );
       const reviews = await response.json();
 
       if (reviews.length === 0) {
@@ -1375,7 +1378,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!audienceGrid) return;
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/reviews/all`);
+      const response = await fetch("http://localhost:5000/api/reviews/all");
       const reviews = await response.json();
 
       if (reviews.length === 0) {
@@ -1513,7 +1516,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
           const response = await fetch(
-            `${API_BASE_URL}/api/reviews/rate/${currentActiveReviewId}`,
+            `http://localhost:5000/api/reviews/rate/${currentActiveReviewId}`,
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -1523,7 +1526,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
           if (response.ok) {
             const refreshRes = await fetch(
-              `${API_BASE_URL}/api/reviews/details/${currentActiveReviewId}?email=${encodeURIComponent(userEmail)}`,
+              `http://localhost:5000/api/reviews/details/${currentActiveReviewId}?email=${encodeURIComponent(userEmail)}`,
             );
             const refreshData = await refreshRes.json();
             updateModalHeaderStars(
@@ -1554,7 +1557,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       const response = await fetch(
-        `${API_BASE_URL}/api/reviews/details/${reviewId}?email=${encodeURIComponent(userEmail)}`,
+        `http://localhost:5000/api/reviews/details/${reviewId}?email=${encodeURIComponent(userEmail)}`,
       );
       if (!response.ok) throw new Error("Packet unresolved.");
       const data = await response.json();
@@ -1694,7 +1697,7 @@ document.addEventListener("DOMContentLoaded", () => {
               saveBtn.disabled = true;
 
               const updateResponse = await fetch(
-                `${API_BASE_URL}/api/reviews/${currentActiveReviewId}`,
+                `http://localhost:5000/api/reviews/${currentActiveReviewId}`,
                 {
                   method: "PUT",
                   headers: { "Content-Type": "application/json" },
@@ -1787,7 +1790,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
               try {
                 const delResponse = await fetch(
-                  `${API_BASE_URL}/api/reviews/${currentActiveReviewId}`,
+                  `http://localhost:5000/api/reviews/${currentActiveReviewId}`,
                   {
                     method: "DELETE",
                     headers: { "Content-Type": "application/json" },
@@ -2043,7 +2046,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const xhr = new XMLHttpRequest();
         xhr.open(
           "POST",
-          `${API_BASE_URL}/api/reviews/details/${currentActiveReviewId}/comments`,
+          `http://localhost:5000/api/reviews/details/${currentActiveReviewId}/comments`,
         );
         xhr.setRequestHeader("Content-Type", "application/json");
 
@@ -2073,7 +2076,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Re-fetch clean active lists from PostgreSQL backend rows
             const refreshRes = await fetch(
-              `${API_BASE_URL}/api/reviews/details/${currentActiveReviewId}?email=${encodeURIComponent(userEmail)}`,
+              `http://localhost:5000/api/reviews/details/${currentActiveReviewId}?email=${encodeURIComponent(userEmail)}`,
             );
             const refreshData = await refreshRes.json();
 
@@ -2330,7 +2333,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
           try {
             const response = await fetch(
-              `${API_BASE_URL}/api/comments/${commentId}`,
+              `http://localhost:5000/api/comments/${commentId}`,
               {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
@@ -2340,7 +2343,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (response.ok) {
               const refreshRes = await fetch(
-                `${API_BASE_URL}/api/reviews/details/${currentActiveReviewId}?email=${encodeURIComponent(userEmail || "")}`,
+                `http://localhost:5000/api/reviews/details/${currentActiveReviewId}?email=${encodeURIComponent(userEmail || "")}`,
               );
               const refreshData = await refreshRes.json();
 
@@ -2376,7 +2379,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       try {
         const response = await fetch(
-          `${API_BASE_URL}/api/comments/like/${upvoteBtn.getAttribute("data-comment-id")}`,
+          `http://localhost:5000/api/comments/like/${upvoteBtn.getAttribute("data-comment-id")}`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -2386,7 +2389,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const data = await response.json();
         if (data.success) {
           const refreshRes = await fetch(
-            `${API_BASE_URL}/api/reviews/details/${currentActiveReviewId}?email=${encodeURIComponent(userEmail)}`,
+            `http://localhost:5000/api/reviews/details/${currentActiveReviewId}?email=${encodeURIComponent(userEmail)}`,
           );
           const refreshData = await refreshRes.json();
           // FIX: Added refreshData.is_admin here
@@ -2411,7 +2414,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       try {
         const response = await fetch(
-          `${API_BASE_URL}/api/comments/dislike/${downvoteBtn.getAttribute("data-comment-id")}`,
+          `http://localhost:5000/api/comments/dislike/${downvoteBtn.getAttribute("data-comment-id")}`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -2420,7 +2423,7 @@ document.addEventListener("DOMContentLoaded", () => {
         );
         if (response.ok) {
           const refreshRes = await fetch(
-            `${API_BASE_URL}/api/reviews/details/${currentActiveReviewId}?email=${encodeURIComponent(userEmail)}`,
+            `http://localhost:5000/api/reviews/details/${currentActiveReviewId}?email=${encodeURIComponent(userEmail)}`,
           );
           const refreshData = await refreshRes.json();
           // FIX: Added refreshData.is_admin here
@@ -2482,7 +2485,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       try {
         const response = await fetch(
-          `${API_BASE_URL}/api/reviews/details/${currentActiveReviewId}/comments`,
+          `http://localhost:5000/api/reviews/details/${currentActiveReviewId}/comments`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -2498,7 +2501,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (response.ok) {
           const refreshRes = await fetch(
-            `${API_BASE_URL}/api/reviews/details/${currentActiveReviewId}?email=${encodeURIComponent(userEmail)}`,
+            `http://localhost:5000/api/reviews/details/${currentActiveReviewId}?email=${encodeURIComponent(userEmail)}`,
           );
           const refreshData = await refreshRes.json();
           // FIX: Added refreshData.is_admin here
@@ -2610,7 +2613,7 @@ document.addEventListener("DOMContentLoaded", () => {
         saveEditBtn.disabled = true;
 
         const response = await fetch(
-          `${API_BASE_URL}/api/comments/${commentId}`,
+          `http://localhost:5000/api/comments/${commentId}`,
           {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -2624,7 +2627,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (response.ok) {
           // Re-hydrate the live forum list entries seamlessly from active datasets
           const refreshRes = await fetch(
-            `${API_BASE_URL}/api/reviews/details/${currentActiveReviewId}?email=${encodeURIComponent(userEmail || "")}`,
+            `http://localhost:5000/api/reviews/details/${currentActiveReviewId}?email=${encodeURIComponent(userEmail || "")}`,
           );
           const refreshData = await refreshRes.json();
           renderCommentsListCollection(
@@ -2653,7 +2656,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const commentId = commentVerifyBtn.getAttribute("data-comment-id");
       try {
         const response = await fetch(
-          `${API_BASE_URL}/api/comments/verify/${commentId}`,
+          `http://localhost:5000/api/comments/verify/${commentId}`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -2662,7 +2665,7 @@ document.addEventListener("DOMContentLoaded", () => {
         );
         if (response.ok) {
           const refreshRes = await fetch(
-            `${API_BASE_URL}/api/reviews/details/${currentActiveReviewId}?email=${encodeURIComponent(userEmail || "")}`,
+            `http://localhost:5000/api/reviews/details/${currentActiveReviewId}?email=${encodeURIComponent(userEmail || "")}`,
           );
           const refreshData = await refreshRes.json();
           renderCommentsListCollection(
@@ -2834,7 +2837,7 @@ document.addEventListener("DOMContentLoaded", () => {
           statusText.textContent = "Connecting to upload stream node...";
 
         const xhr = new XMLHttpRequest();
-        xhr.open("POST", API_BASE_URL + "/api/reviews/upload");
+        xhr.open("POST", "http://localhost:5000/api/reviews/upload");
         xhr.setRequestHeader("Content-Type", "application/json");
 
         xhr.upload.addEventListener("progress", (event) => {
