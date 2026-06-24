@@ -17,7 +17,6 @@
     <script>
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
 </script>
-<script defer src="/<unique-path>/script.js"></script>
   </head>
 
   <body id="top">
@@ -81,11 +80,16 @@
           </div>
 
           <ul class="navbar-list">
-            <li><a href="./index.html" class="navbar-link">Home</a></li>
-            <li><a href="#" class="navbar-link" id="recommendations-link" data-i18n="recommendations">Recommendations</a></li>
-            <li><a href="#" class="navbar-link" id="added-by-user-link" data-i18n="added-by-user">Added by You</a></li>
-            <li><a href="#" class="navbar-link" id="members-link" data-i18n="members">About Us</a></li>
-          </ul>
+  <li><a href="./index.html" class="navbar-link">Home</a></li>
+  
+  <!-- Change href to target the recommendations container -->
+  <li><a href="#recommendations-container" class="navbar-link" id="recommendations-link" data-i18n="recommendations">Recommendations</a></li>
+  
+  <!-- Change href to target the user reviews container -->
+  <li><a href="#user-reviews-container" class="navbar-link" id="added-by-user-link" data-i18n="added-by-user">Added by You</a></li>
+  
+  <li><a href="#" class="navbar-link" id="members-link" data-i18n="members">About Us</a></li>
+</ul>
 
           <ul class="navbar-social-list">
             <li><a href="#" class="navbar-social-link"><ion-icon name="logo-twitter"></ion-icon></a></li>
@@ -113,7 +117,7 @@
             <div class="movie-row-grid" id="featured-reviews-grid"></div>
           </div>
 
-          <div class="container">
+          <div class="container" id="recommendations-container">
             <div class="trending-header">
               <h2 class="trending-title">RECOMMENDATIONS</h2>
               <span class="activity-link">
@@ -655,6 +659,79 @@
             Post to Community Feed
           </button>
         </form>
+      </div>
+    </div>
+
+    <div class="review-modal-overlay" id="community-view-modal-overlay">
+      <div class="review-modal" style="padding: 30px; width: 100%; max-width: 600px; background: #0b1416; border: 1px solid #243337; border-radius: 14px; color: white; position: relative; max-height: 85vh; display: flex; flex-direction: column;">
+        
+        <button class="close-review-btn" id="close-community-view-modal-btn" style="background: rgba(255, 255, 255, 0.05); border: none; color: #818384; font-size: 20px; position: absolute; top: 20px; right: 20px; cursor: pointer; width: 34px; height: 34px; border-radius: 50%; display: flex; justify-content: center; align-items: center; z-index: 10;">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+        
+        <div class="review-header" style="border: none; padding: 0; margin-bottom: 20px; display: flex; align-items: center; gap: 14px;">
+          <div class="avatar" style="width: 50px; height: 50px; border-radius: 50%; overflow: hidden; background: #1a282d; display: flex; justify-content: center; align-items: center; border: 2px solid var(--citrine); flex-shrink: 0;">
+            <ion-icon name="person-circle-outline" style="font-size: 50px; color: var(--citrine);"></ion-icon>
+          </div>
+          <div class="user-info">
+            <h3 id="comm-modal-username" style="font-size: 16px; font-weight: 700; margin: 0; color: white; font-family: var(--ff-poppins);"></h3>
+            <div id="comm-modal-stars" class="rating-wrapper" style="display: flex; gap: 3px; color: var(--citrine); margin-top: 4px; font-size: 12px;"></div>
+          </div>
+        </div>
+
+        <div class="modal-body" style="overflow-y: auto; padding-right: 8px; flex-grow: 1; display: flex; flex-direction: column; gap: 20px;">
+          
+          <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 8px; border: px solid rgba(255,255,255,0.05);">
+            <p id="comm-modal-text" style="font-size: 14px; line-height: 1.6; color: #cfd8dc; font-style: normal; margin: 0; white-space: pre-wrap; font-family: var(--ff-poppins); word-break: break-word;"></p>
+          </div>
+
+          <div style="height: 1px; background: #1a282d; margin-block: 5px;"></div>
+
+          <div>
+            <h4 style="font-size: 14px; font-weight: 600; color: white; margin-bottom: 12px; font-family: var(--ff-poppins);">Discussion Sub-Replies</h4>
+            <div id="comm-modal-replies-list" style="display: flex; flex-direction: column; gap: 12px;">
+              </div>
+          </div>
+
+        </div>
+
+        <div style="margin-top: 20px; border-top: 1px solid #1a282d; padding-top: 15px; width: 100%;">
+          <form id="comm-modal-reply-form" style="display: flex; gap: 10px; align-items: center;">
+            <input type="text" id="comm-modal-reply-input" placeholder="Write a public response reply..." required 
+                   style="flex-grow: 1; background: #132226; border: 1px solid #243337; padding: 10px 15px; border-radius: 20px; color: white; font-size: 13px; font-family: var(--ff-poppins); outline: none;" />
+            <button type="submit" style="background: var(--citrine); border: none; color: black; padding: 10px 20px; font-weight: 700; border-radius: 20px; font-size: 12px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; transition: opacity 0.2s;">
+              Reply
+            </button>
+          </form>
+        </div>
+        
+      </div>
+    </div>
+
+
+    <!-- sucess pop up -->
+
+    <div class="custom-popup-overlay" id="success-overlay">
+      <div class="custom-popup-card">
+        <div class="success-icon-circle"><ion-icon name="checkmark-circle-outline" style="font-size: 34px;"></ion-icon></div>
+        <h3 id="success-title">text</h3>
+        <p id="success-message">text</p>
+        <button type="button" id="success-btn">OK</button>
+      </div>
+    </div>
+
+   
+    <div class="review-modal-overlay" id="community-delete-overlay">
+      <div class="review-modal delete-modal-box">
+        <div class="delete-modal-icon">
+          <ion-icon name="alert-circle-outline"></ion-icon>
+        </div>
+        <h3 class="delete-modal-title">text</h3>
+        <p class="delete-modal-text">text</p>
+        <div class="delete-modal-actions">
+          <button id="comm-delete-cancel-btn" class="delete-cancel-btn">CANCEL</button>
+          <button id="comm-delete-confirm-btn" class="delete-confirm-btn">DELETE</button>
+        </div>
       </div>
     </div>
 

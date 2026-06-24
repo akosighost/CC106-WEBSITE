@@ -36,6 +36,12 @@
  * #RESET
 \*-----------------------------------*/
 
+html { 
+  font-family: var(--ff-poppins); 
+  scroll-behavior: smooth; 
+  scroll-padding-top: 120px; /* Prevents the sticky header from hiding section titles */
+}
+
 *, *::before, *::after {
   margin: 0;
   padding: 0;
@@ -1816,3 +1822,276 @@ body.active { overflow: hidden; }
   animation: alertScaleIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
+/* ============================================================ */
+/* 🚀 COMMUNITY FEED INTERACTION HOVER EFFECTS                */
+/* ============================================================ */
+
+/* 1. Left Side Pill Buttons (Heart & Comment) */
+.feed-heart-btn:hover {
+  background: rgba(239, 68, 68, 0.08) !important;
+  border-color: #ef4444 !important;
+  color: #ef4444 !important;
+  transform: translateY(-1px);
+}
+
+.feed-comment-btn:hover {
+  background: rgba(59, 130, 246, 0.08) !important;
+  border-color: #3b82f6 !important;
+  color: #3b82f6 !important;
+  transform: translateY(-1px);
+}
+
+/* 2. Right Side Circular Buttons (Expand, Copy, Share) */
+.feed-expand-btn:hover,
+.feed-copy-btn:hover,
+.feed-share-btn:hover {
+  background: var(--citrine) !important; /* Bright active highlight ring from your screenshot */
+  color: var(--black) !important;
+  border-color: var(--citrine) !important;
+  transform: scale(1.1); /* Subtle grow animation when targeted */
+}
+
+/* Base smooth hardware transition layer for all feed buttons */
+.feed-interaction-btn {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
+              background-color 0.2s ease, 
+              border-color 0.2s ease, 
+              color 0.2s ease !important;
+}
+
+/* ============================================================ */
+/* ✨ COMMUNITY CARD BACKGROUND GLOW HOVER INTERACTIVE EFFECT    */
+/* ============================================================ */
+
+/* Base transition smoothness definition */
+.community-feed-card {
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
+              box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
+              background-color 0.25s ease,
+              border-color 0.25s ease !important;
+}
+
+/* Hover active state: Lifts up slightly and projects a blue ambient drop-shadow glow */
+.community-feed-card:hover {
+  transform: translateY(-4px) !important;
+  background: var(--gunmetal-2) !important; /* Shifts to a sleek dark slate background layout */
+  border-color: rgba(59, 130, 246, 0.35) !important; /* Softens side lines into the glow theme */
+  
+  /* High-fidelity blue glow shadow layout matching your #3b82f6 top bar */
+  box-shadow: 0 12px 30px rgba(59, 130, 246, 0.22), 
+              0 4px 10px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Custom sleek scrollbar layout tracker inside pop-up views */
+#community-view-modal-overlay .modal-body::-webkit-scrollbar {
+  width: 5px !important;
+}
+
+#community-view-modal-overlay .modal-body::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+#community-view-modal-overlay .modal-body::-webkit-scrollbar-thumb {
+  background: #243337 !important;
+  border-radius: 10px !important;
+}
+
+#community-view-modal-overlay .modal-body::-webkit-scrollbar-thumb:hover {
+  background: #3b82f6 !important;
+}
+
+/* Community Feed Interaction Buttons */
+.feed-delete-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid #1a282d; /* Neutral color matching your other buttons */
+  color: #78909c;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s ease;
+}
+
+
+
+.feed-delete-btn:hover {
+  background: rgba(255, 50, 50, 0.1);
+  border-color: #ff3333;
+  color: #ff3333;
+}
+
+/*-----------------------------------*\
+ * #DELETE CONFIRMATION MODAL FOR THE DELETE COMMUNITY POST
+\*-----------------------------------*/
+
+.delete-modal-box {
+  background: #0b1416 !important;
+  padding: 30px !important;
+  max-width: 400px !important;
+  text-align: center;
+  border-top: 4px solid #ff3333 !important;
+  border-radius: 12px !important;
+}
+
+.delete-modal-icon {
+  color: #ff3333;
+  font-size: 50px;
+  margin-bottom: 15px;
+}
+
+.delete-modal-title {
+  color: var(--white);
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+.delete-modal-text {
+  color: #cfd8dc;
+  margin-bottom: 25px;
+  font-size: 14px;
+}
+
+.delete-modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.delete-cancel-btn {
+  background: transparent;
+  border: 1px solid #243337;
+  color: var(--white);
+  padding: 10px 25px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: var(--transition-1);
+}
+
+.delete-cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.delete-confirm-btn {
+  background: #ff3333;
+  border: none;
+  color: var(--white);
+  padding: 10px 25px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: var(--transition-1);
+}
+
+.delete-confirm-btn:hover {
+  background: #e60000;
+  box-shadow: 0 4px 15px rgba(255, 51, 51, 0.3);
+}
+
+/*-----------------------------------*\
+ * #RED CUSTOM ALERT OVERRIDES       // FOR THE REVIEW DELETE POP UP delete comment sa baba
+\*-----------------------------------*/
+
+.delete-alert-card {
+  background: #0b1416 !important;
+  padding: 30px !important;
+  max-width: 400px !important;
+  text-align: center;
+  border-top: 4px solid #ff3333 !important;
+  border-radius: 12px !important;
+}
+
+.delete-icon-circle {
+  color: #ff3333;
+  font-size: 50px;
+  margin-bottom: 15px;
+}
+
+.alert-title {
+  color: var(--white);
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+.alert-text {
+  color: #cfd8dc;
+  margin-bottom: 25px;
+  font-size: 14px;
+}
+
+.alert-action-row{
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.alert-cancel-btn {
+  background: transparent;
+  border: 1px solid #243337;
+  color: var(--white);
+  padding: 10px 25px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: var(--transition-1);
+}
+
+.alert-cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.alert-confirm-btn {
+ background: #ff3333;
+  border: none;
+  color: var(--white);
+  padding: 10px 25px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: var(--transition-1);
+}
+
+.alert-confirm-btn:hover {
+  background: #e60000;
+  box-shadow: 0 4px 15px rgba(255, 51, 51, 0.3);
+}
+
+
+
+
+
+/* ============================================================ */
+/* 🎛️ SYNC FILTER BUTTON STYLES WITH 'WRITE A REVIEW' BUTTON  */
+/* ============================================================ */
+
+/* Inactive button state (Lowest Rated) */
+.upcoming .filter-btn {
+  background: #132226 !important; /* Dark sleek background */
+  color: var(--white) !important;
+  font-family: var(--ff-poppins);
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  padding: 10px 20px !important; /* Matches inline padding of Write a Review */
+  border-radius: 50px !important; /* Perfect pill shape */
+  border: 1px solid #243337 !important; /* Thin subtle border */
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+/* Hover effect for inactive button */
+.upcoming .filter-btn:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: #4f686f !important;
+}
+
+/* Active button state (Highest Rated) */
+.upcoming .filter-btn.active {
+  background: linear-gradient(135deg, var(--citrine) 0%, #ffcc00 100%) !important; /* Matches Write A Review gradient */
+  color: var(--rich-black-fogra-29) !important;
+  font-weight: 700 !important;
+  border: none !important; /* Remove border when active to match the yellow button */
+  box-shadow: 0 4px 15px rgba(229, 184, 0, 0.3) !important; /* Soft yellow glow */
+}

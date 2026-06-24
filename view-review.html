@@ -186,38 +186,47 @@
       </div>
     </div>
 
-    <div class="custom-alert-overlay" id="edit-success-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 20, 22, 0.85); display: none; justify-content: center; align-items: center; z-index: 10000; backdrop-filter: blur(4px);">
-      <div class="custom-alert-card" style="background: #132226; border: 1px solid #243337; border-top: 4px solid var(--citrine); width: 100%; max-width: 360px; padding: 35px 30px; border-radius: 8px; text-align: center; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);">
-        <div class="success-icon-circle" style="width: 60px; height: 60px; background: rgba(229, 184, 0, 0.08); border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 18px; color: var(--citrine);"><ion-icon name="checkmark-circle-outline" style="font-size: 34px;"></ion-icon></div>
-        <h3 style="color: white; font-size: 22px; font-weight: 700; margin-bottom: 8px;">Changes Saved</h3>
-        <p id="edit-success-message" style="color: #cfd8dc; font-size: 13.5px; margin-bottom: 24px; line-height: 1.5;">Movie review updated successfully!</p>
-        <button type="button" id="edit-success-btn" style="background: var(--citrine); color: black; border: none; padding: 12px 30px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-radius: 4px; cursor: pointer; width: 100%;">OK</button>
+    <div class="custom-alert-overlay" id="success-overlay">
+      <div class="custom-alert-card">
+        <div class="success-icon-circle"><ion-icon name="checkmark-circle-outline" style="font-size: 34px;"></ion-icon></div>
+        <h3>Changes Saved</h3>
+        <p id="success-message">Movie review updated successfully!</p>
+        <button type="button" id="success-btn">OK</button>
       </div>
     </div>
 
-    <div class="custom-alert-overlay" id="review-delete-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 20, 22, 0.85); display: none; justify-content: center; align-items: center; z-index: 10001; backdrop-filter: blur(4px);">
-      <div class="custom-alert-card" style="background: #132226; border: 1px solid #243337; border-top: 4px solid #ff4560; width: 100%; max-width: 360px; padding: 35px 30px; border-radius: 8px; text-align: center; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);">
-        <div class="success-icon-circle" style="width: 60px; height: 60px; background: rgba(255, 69, 96, 0.08); border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 18px; color: #ff4560;"><ion-icon name="alert-circle-outline" style="font-size: 34px;"></ion-icon></div>
-        <h3 style="color: white; font-size: 22px; font-weight: 700; margin-bottom: 8px;">Delete Review?</h3>
-        <p style="color: #cfd8dc; font-size: 13.5px; margin-bottom: 24px; line-height: 1.5;">Are you sure you want to permanently delete this review post? All community discussion comments and ratings will be lost.</p>
-        <div style="display: flex; gap: 12px;">
-          <button type="button" id="review-delete-cancel-btn" style="background: transparent; color: white; border: 1px solid #243337; padding: 12px; border-radius: 4px; cursor: pointer; flex: 1; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Cancel</button>
-          <button type="button" id="review-delete-confirm-btn" style="background: #ff4560; color: white; border: none; padding: 12px; border-radius: 4px; cursor: pointer; flex: 1; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Delete</button>
-        </div>
-      </div>
+    <div class="custom-alert-overlay" id="review-delete-overlay">
+  <div class="custom-alert-card delete-alert-card">
+    
+    <div class="success-icon-circle delete-icon-circle" style="background: rgba(255, 51, 51, 0.1);">
+      <ion-icon name="trash-outline"></ion-icon>
     </div>
+    <h3 class="alert-title">Delete Review?</h3>
+    <p class="alert-text">Are you sure you want to permanently delete this review post? All community discussion comments and ratings will be lost.</p>
 
-    <div class="custom-alert-overlay" id="delete-confirm-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 20, 22, 0.85); display: none; justify-content: center; align-items: center; z-index: 10000; backdrop-filter: blur(4px);">
-      <div class="custom-alert-card" style="background: #132226; border: 1px solid #243337; border-top: 4px solid #ff4560; width: 100%; max-width: 360px; padding: 35px 30px; border-radius: 8px; text-align: center; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);">
-        <div class="success-icon-circle" style="width: 60px; height: 60px; background: rgba(255, 69, 96, 0.08); border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 18px; color: #ff4560;"><ion-icon name="trash-outline" style="font-size: 32px;"></ion-icon></div>
-        <h3 style="color: white; font-size: 22px; font-weight: 700; margin-bottom: 8px;">Remove Comment?</h3>
-        <p style="color: #cfd8dc; font-size: 13.5px; margin-bottom: 24px; line-height: 1.5;">Are you sure you want to permanently delete this comment? This action cannot be undone.</p>
-        <div style="display: flex; gap: 12px;">
-          <button type="button" id="delete-cancel-btn" style="background: transparent; color: white; border: 1px solid #243337; padding: 12px; border-radius: 4px; cursor: pointer; flex: 1; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Cancel</button>
-          <button type="button" id="delete-confirm-btn" style="background: #ff4560; color: white; border: none; padding: 12px; border-radius: 4px; cursor: pointer; flex: 1; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Delete</button>
-        </div>
-      </div>
+    <div class="alert-action-row">
+      <button type="button" id="review-delete-cancel-btn" class="alert-cancel-btn">Cancel</button>
+      <button type="button" id="review-delete-confirm-btn" class="alert-confirm-btn">Delete</button>
     </div>
+    
+  </div>
+</div>
+
+    <div class="custom-alert-overlay" id="delete-confirm-overlay">
+      <div class="custom-alert-card delete-alert-card">
+    
+        <div class="success-icon-circle delete-icon-circle">
+          <ion-icon name="trash-outline"></ion-icon>
+        </div>
+        <h3 class="alert-title">Remove Comment?</h3>
+        <p class="alert-text">Are you sure you want to permanently delete this comment? This action cannot be undone.</p>
+    
+        <div class="alert-action-row">    
+          <button type="button" id="delete-cancel-btn" class="alert-cancel-btn">Cancel</button>
+          <button type="button" id="delete-confirm-btn" class="alert-confirm-btn">Delete</button>
+        </div>
+  </div>
+</div>
 
     
 

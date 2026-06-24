@@ -311,7 +311,6 @@ app.get('/api/reviews/details/:id', async (req, res) => {
     const isAdmin = userQuery.rows.length > 0 ? userQuery.rows[0].is_admin : false;
     const isOwner = currentUserId && (reviewQuery.rows[0].user_id === currentUserId);
 
-    // Get the current user's 1-time rating value if it exists
     const userRatingQuery = await pool.query('SELECT rating FROM movie_ratings WHERE review_id = $1 AND user_id = $2', [reviewId, currentUserId || 0]);
     const userRatedValue = userRatingQuery.rows.length > 0 ? userRatingQuery.rows[0].rating : null;
 
@@ -320,7 +319,9 @@ app.get('/api/reviews/details/:id', async (req, res) => {
        (SELECT COUNT(*)::INT FROM comment_likes cl WHERE cl.comment_id = c.comment_id) as upvote_score,
        EXISTS (SELECT 1 FROM comment_likes cl JOIN users lu ON cl.user_id = lu.user_id WHERE cl.comment_id = c.comment_id AND LOWER(lu.email) = LOWER($2)) as user_has_liked,
        EXISTS (SELECT 1 FROM comment_dislikes cd JOIN users lu ON cd.user_id = lu.user_id WHERE cd.comment_id = c.comment_id AND LOWER(lu.email) = LOWER($2)) as user_has_disliked
-       FROM movie_comments c JOIN users u ON c.user_id = u.user_id WHERE c.review_id = $1 ORDER BY c.comment_id ASC`,
+       FROM movie_comments c JOIN users u ON c.user_id = u.user_id 
+       WHERE c.review_id = $1 AND c.comment_type != 'community' -- ✅ FIX: Excludes global community posts!
+       ORDER BY c.comment_id ASC`,
       [reviewId, email || '']
     );
 
@@ -348,11 +349,13 @@ app.post('/api/reviews/view/:id', async (req, res) => {
 });
 
 // ==========================================
-// 9. POST NEW COMMUNITY FEED COMMENT
+// 9. POST NEW COMMUNITY FEED COMMENT OR REVIEW THREAD COMMENT
 // ==========================================
 app.post('/api/reviews/details/:id/comments', async (req, res) => {
   const reviewId = req.params.id;
-  const { email, commentText, rating, parentCommentId } = req.body;
+  
+  // ✅ FIX: Extract 'type' from the frontend
+  const { email, commentText, rating, parentCommentId, type } = req.body; 
 
   try {
     const userQuery = await pool.query('SELECT user_id FROM users WHERE LOWER(email) = LOWER($1)', [email]);
@@ -360,10 +363,16 @@ app.post('/api/reviews/details/:id/comments', async (req, res) => {
       return res.status(401).json({ message: 'Session unauthorized.' });
     }
     const userId = userQuery.rows[0].user_id;
+    
+    // ✅ FIX: Safely route the comment to the right place based on intent
+    let commentType = type || 'community';
+    if (parentCommentId) {
+      commentType = 'reply';
+    }
 
     const newComment = await pool.query(
-      'INSERT INTO movie_comments (review_id, user_id, comment_text, rating, parent_comment_id) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [reviewId, userId, commentText, rating, parentCommentId || null]
+      'INSERT INTO movie_comments (review_id, user_id, comment_text, rating, parent_comment_id, comment_type) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [reviewId, userId, commentText, rating, parentCommentId || null, commentType]
     );
 
     res.status(201).json({ message: 'Comment appended successfully!', comment: newComment.rows[0] });
@@ -512,10 +521,12 @@ app.delete('/api/comments/:id', async (req, res) => {
     const commentCheck = await pool.query('SELECT user_id FROM movie_comments WHERE comment_id = $1', [commentId]);
     if (commentCheck.rows.length === 0) return res.status(404).json({ message: 'Comment not found.' });
 
+    // ✅ PUT IT HERE: This checks authorization before allowing the DELETE query
     if (commentCheck.rows[0].user_id !== userId && !isAdmin) {
       return res.status(403).json({ message: 'Unauthorized action.' });
     }
 
+    // Now it is safe to execute the delete
     await pool.query('DELETE FROM movie_comments WHERE comment_id = $1', [commentId]);
     res.json({ message: 'Comment removed successfully!' });
   } catch (err) { res.status(500).json({ message: 'Internal database error.' }); }
@@ -619,20 +630,31 @@ if (reviewCheck.rows[0].user_id !== userId && !isAdmin) {
 });
 
 // ==========================================
-// 14. GET ALL COMMUNITY DISCUSSION FEED COMMENTS (GLOBAL TRACKING)
+// 14. GET ALL COMMUNITY DISCUSSION FEED COMMENTS
 // ==========================================
 app.get('/api/community/feed', async (req, res) => {
+  const { email } = req.query;
+
   try {
     const feedQuery = await pool.query(
       `SELECT c.comment_id, c.comment_text, c.created_at, c.rating,
-              u.username, r.review_id, r.movie_name, r.publish_date, r.image_data
+              u.username, r.review_id, r.movie_name, r.publish_date, r.image_data,
+              (SELECT COUNT(*)::INT FROM comment_likes cl WHERE cl.comment_id = c.comment_id) as likes_count,
+              (SELECT COUNT(*)::INT FROM movie_comments sub_c WHERE sub_c.parent_comment_id = c.comment_id) as comments_count,
+              EXISTS (SELECT 1 FROM comment_likes cl 
+                      JOIN users lu ON cl.user_id = lu.user_id 
+                      WHERE cl.comment_id = c.comment_id AND LOWER(lu.email) = LOWER($1)) as user_has_liked
        FROM movie_comments c
        JOIN users u ON c.user_id = u.user_id
        JOIN reviews r ON c.review_id = r.review_id
-       ORDER BY c.comment_id DESC`
+       WHERE c.comment_type = 'community' -- ✅ FIXED: This filter keeps sub-replies off the main feed!
+       ORDER BY c.comment_id DESC`,
+       [email || '']
     );
+    
     res.json(feedQuery.rows);
   } catch (err) {
+    console.error("❌ Error fetching community feed:", err.message);
     res.status(500).json({ message: err.message });
   }
 });
