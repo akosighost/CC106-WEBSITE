@@ -5,7 +5,7 @@ const API_BASE_URL =
   window.location.hostname === "localhost" ||
   window.location.hostname === "127.0.0.1"
     ? "http://localhost:5000"
-    : "https://cc-106-website.vercel.app/";
+    : "https://reavon-backend.onrender.com";
 
 console.log("Current API URL:", API_BASE_URL);
 
@@ -176,7 +176,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       try {
         const response = await fetch(
-          "http://localhost:5000/api/auth/forgot-password",
+          API_BASE_URL + "/api/auth/forgot-password",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -205,7 +205,7 @@ document.addEventListener("DOMContentLoaded", () => {
         submitBtn.textContent = "Signing In...";
         submitBtn.disabled = true;
 
-        const response = await fetch("http://localhost:5000/api/auth/login", {
+        const response = await fetch(API_BASE_URL + "/api/auth/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
@@ -246,7 +246,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const password = document.getElementById("signup-password").value;
 
       try {
-        const response = await fetch("http://localhost:5000/api/auth/signup", {
+        const response = await fetch(API_BASE_URL + "/api/auth/signup", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, email, password }),
@@ -272,7 +272,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       try {
         const response = await fetch(
-          "http://localhost:5000/api/auth/reset-password",
+          API_BASE_URL + "/api/auth/reset-password",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -1148,7 +1148,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!featuredGrid) return;
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/reviews/featured`);
+      const response = await fetch(
+        API_BASE_URL + "/api/reviews/featured",
+      );
       const reviews = await response.json();
 
       if (reviews.length === 0) {
@@ -2832,7 +2834,7 @@ document.addEventListener("DOMContentLoaded", () => {
           statusText.textContent = "Connecting to upload stream node...";
 
         const xhr = new XMLHttpRequest();
-        xhr.open("POST", "http://localhost:5000/api/reviews/upload");
+        xhr.open("POST", API_BASE_URL + "/api/reviews/upload");
         xhr.setRequestHeader("Content-Type", "application/json");
 
         xhr.upload.addEventListener("progress", (event) => {
