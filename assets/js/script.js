@@ -1,11 +1,12 @@
 "use strict";
 
 // 1. Define your base URL FIRST so the code knows what it is
+// 1. Define your base URL FIRST so the code knows what it is
 const API_BASE_URL =
   window.location.hostname === "localhost" ||
   window.location.hostname === "127.0.0.1"
-    ? '${API_BASE_URL}'
-    : "https://reavon-backend.onrender.com";
+    ? "http://localhost:5000"
+    : "https://reavon-backend.onrender.com"; // <-- Ensure this is a standard string
 
 console.log("Current API URL:", API_BASE_URL);
 
