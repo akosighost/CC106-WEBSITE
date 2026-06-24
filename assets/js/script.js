@@ -1148,9 +1148,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!featuredGrid) return;
 
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/reviews/featured",
-      );
+      const response = await fetch(`${API_BASE_URL}/api/reviews/featured`);
       const reviews = await response.json();
 
       if (reviews.length === 0) {
@@ -1195,9 +1193,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!recommendationsGrid) return;
 
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/reviews/recommendations",
-      );
+      const response = await fetch(`${API_BASE_URL}/api/reviews/recommendations`);
       const reviews = await response.json();
 
       if (reviews.length === 0) {
@@ -1377,7 +1373,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!audienceGrid) return;
 
     try {
-      const response = await fetch("http://localhost:5000/api/reviews/all");
+      const response = await fetch(`${API_BASE_URL}/api/reviews/all`);
       const reviews = await response.json();
 
       if (reviews.length === 0) {
