@@ -5,7 +5,7 @@ const API_BASE_URL =
   window.location.hostname === "localhost" ||
   window.location.hostname === "127.0.0.1"
     ? "http://localhost:5000"
-    : "https://reavon-backend.onrender.com";
+    : "https://cc-106-website.vercel.app/";
 
 console.log("Current API URL:", API_BASE_URL);
 
