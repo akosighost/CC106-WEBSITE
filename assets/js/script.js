@@ -11,7 +11,7 @@ console.log("Current API URL:", API_BASE_URL);
 
 // 2. Now you can safely use it.
 // I changed '/api/movies' to '/api/reviews/all' because that route actually exists in your server.js
-fetch(`${API_BASE_URL}/api/reviews/all`)
+fetch('${API_BASE_URL}/api/reviews/all')
   .then((response) => response.json())
   .then((data) => {
     console.log("Data from backend:", data);
