@@ -935,7 +935,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       const response = await fetch(
-        `${API_BASE_URL}/api/reviews/user?email=${encodeURIComponent(userEmail)}`,
+        `http://localhost:5000/api/reviews/user?email=${encodeURIComponent(userEmail)}`,
       );
       const reviews = await response.json();
 
