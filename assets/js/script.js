@@ -3,7 +3,7 @@
 // 1. Define your base URL FIRST so the code knows what it is
 const API_BASE_URL =
   window.location.hostname === "localhost" ||
-  window.location.hostname === "127.0.0.1"
+  window.location.hostname === "74.220.52.0/24"
     ? "http://localhost:5000"
     : "https://reavon-backend.onrender.com";
 
