@@ -9,30 +9,6 @@ const API_BASE_URL =
 
 console.log("Current API URL:", API_BASE_URL);
 
-// 2. Clear Login Handler
-async function handleLogin(email, password) {
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ email, password })
-        });
-        
-        const data = await response.json();
-        console.log("Login server response:", data);
-        
-        if (response.ok) {
-            // Handle successful login (e.g., save token, redirect)
-        } else {
-            alert(data.message || "Login failed");
-        }
-    } catch (error) {
-        console.error('Detailed connection error:', error);
-    }
-}
-
 // 3. Cleaned Initial Data Fetch (Removed the bracket typo)
 fetch(`${API_BASE_URL}/api/reviews/all`)
   .then((response) => response.json())
