@@ -1,12 +1,5 @@
-"use strict";
+"use strict"
 
-
-const cors = require('cors');
-
-// Allow your Vercel frontend to talk to this backend
-app.use(cors({
-    origin: 'https://cc-106-website.vercel.app/' // Replace with your actual Vercel URL
-}));
 // 1. Define your base URL FIRST so the code knows what it is
 const API_BASE_URL =
   window.location.hostname === "localhost" ||
