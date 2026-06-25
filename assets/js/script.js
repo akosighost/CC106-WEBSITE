@@ -198,7 +198,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       try {
         const response = await fetch(
-          '[https://reavon-backend.onrender.com/api/auth/forgot-password',
+          'https://reavon-backend.onrender.com/api/auth/forgot-password',
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -227,7 +227,7 @@ document.addEventListener("DOMContentLoaded", () => {
         submitBtn.textContent = "Signing In...";
         submitBtn.disabled = true;
 
-        const response = await fetch('[https://reavon-backend.onrender.com/api/auth/login', {
+        const response = await fetch('https://reavon-backend.onrender.com/api/auth/login', {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
@@ -268,7 +268,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const password = document.getElementById("signup-password").value;
 
       try {
-        const response = await fetch('[https://reavon-backend.onrender.com/api/auth/signup', {
+        const response = await fetch('https://reavon-backend.onrender.com/api/auth/signup', {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, email, password }),
@@ -294,7 +294,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       try {
         const response = await fetch(
-          '[https://reavon-backend.onrender.com/api/auth/reset-password',
+          'https://reavon-backend.onrender.com/api/auth/reset-password',
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -1172,7 +1172,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       const response = await fetch(
-        '[https://reavon-backend.onrender.com/api/reviews/featured',
+        'https://reavon-backend.onrender.com/api/reviews/featured',
       );
       const reviews = await response.json();
 
@@ -1219,7 +1219,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       const response = await fetch(
-        '[https://reavon-backend.onrender.com/api/reviews/recommendations',
+        'https://reavon-backend.onrender.com/api/reviews/recommendations',
       );
       const reviews = await response.json();
 
@@ -1400,7 +1400,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!audienceGrid) return;
 
     try {
-      const response = await fetch('[https://reavon-backend.onrender.com/api/reviews/all');
+      const response = await fetch('https://reavon-backend.onrender.com/api/reviews/all');
       const reviews = await response.json();
 
       if (reviews.length === 0) {
@@ -2859,7 +2859,7 @@ document.addEventListener("DOMContentLoaded", () => {
           statusText.textContent = "Connecting to upload stream node...";
 
         const xhr = new XMLHttpRequest();
-        xhr.open("POST", '[https://reavon-backend.onrender.com/api/reviews/upload');
+        xhr.open("POST", 'https://reavon-backend.onrender.com/api/reviews/upload');
         xhr.setRequestHeader("Content-Type", "application/json");
 
         xhr.upload.addEventListener("progress", (event) => {
