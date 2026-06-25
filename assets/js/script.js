@@ -1,6 +1,6 @@
 "use strict"
 
-// 1. Define your base URL FIRST so the code knows what it is
+// 1. Dynamic Environment Detection
 const API_BASE_URL =
   window.location.hostname === "localhost" ||
   window.location.hostname === "127.0.0.1"
@@ -9,12 +9,10 @@ const API_BASE_URL =
 
 console.log("Current API URL:", API_BASE_URL);
 
-// This goes in your FRONTEND Javascript file
-const BACKEND_URL = 'https://reavon-backend.onrender.com';
-
+// 2. Clear Login Handler
 async function handleLogin(email, password) {
     try {
-        const response = await fetch(`${BACKEND_URL}/api/login`, {
+        const response = await fetch(`${API_BASE_URL}/api/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -23,22 +21,25 @@ async function handleLogin(email, password) {
         });
         
         const data = await response.json();
-        console.log(data); // See the backend's response here
-        // Handle UI updates (like redirecting the user)
+        console.log("Login server response:", data);
+        
+        if (response.ok) {
+            // Handle successful login (e.g., save token, redirect)
+        } else {
+            alert(data.message || "Login failed");
+        }
     } catch (error) {
         console.error('Detailed connection error:', error);
     }
 }
 
-// 2. Now you can safely use it.
-// I changed '/api/movies' to '/api/reviews/all' because that route actually exists in your server.js
-fetch('[https://reavon-backend.onrender.com/api/reviews/all')
+// 3. Cleaned Initial Data Fetch (Removed the bracket typo)
+fetch(`${API_BASE_URL}/api/reviews/all`)
   .then((response) => response.json())
   .then((data) => {
     console.log("Data from backend:", data);
   })
-  .catch((error) => console.error("Error fetching data:", error));
-
+  .catch((error) => console.error("Initial load error:", error));
 console.log("Current API URL:", API_BASE_URL);
 
 /**
