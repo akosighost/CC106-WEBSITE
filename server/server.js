@@ -5,17 +5,15 @@ const cors = require('cors');
 const crypto = require('crypto');
 
 const app = express();
-// 1. Enable CORS so Vercel can talk to it
-app.use(cors({
-    origin: ['https://cc-106-website.vercel.app', 'http://localhost:5500']
-}));
+// Allow large incoming JSON strings (like Base64 pictures)
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use(cors());
 
-app.use(express.json());
-
-// 2. Database Connection
+// Automatically swaps to the live cloud database when deployed
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false }
+  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:password123@localhost:5432/postgres',
+  ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false // Required for cloud hosting providers
 });
 
 // Global Diagnostic Logging to catch silent background crashes
@@ -91,7 +89,7 @@ app.post('/api/auth/login', async (req, res) => {
       message: 'Login successful!',
       username: user.username,
       email: user.email.toLowerCase(), 
-      password: user.password, 
+      password: '●●●●●●●●', 
       token: 'session-jwt-token-production-abc123',
       is_admin: user.is_admin // FIX: Pass the admin boolean flag to localStorage
     });
@@ -665,8 +663,11 @@ app.get('/', (req, res) => {
   res.send('API is running successfully!');
 });
 
-// To this:
+// Render dynamically assigns an environment port, fallback to 5000 locally
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-    console.log(`Server is running securely on port ${PORT}`);
+  console.log(`\n==================================================`);
+  console.log("🚀 Diagnostic API engine initialized successfully!");
+  console.log(`🌐 Port Active Terminal: http://localhost:${PORT}`);
+  console.log(`==================================================\n`);
 });

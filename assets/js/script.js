@@ -1,21 +1,23 @@
-"use strict"
+"use strict";
 
-// 1. Dynamic Environment Detection
+// 1. Define your base URL FIRST so the code knows what it is
 const API_BASE_URL =
   window.location.hostname === "localhost" ||
   window.location.hostname === "127.0.0.1"
     ? "http://localhost:5000"
-    : "https://reavon-backend.onrender.com";
+    : "backend link";
 
 console.log("Current API URL:", API_BASE_URL);
 
-// 3. Cleaned Initial Data Fetch (Removed the bracket typo)
-fetch(`${API_BASE_URL}/api/reviews/all`)
+// 2. Now you can safely use it.
+// I changed '/api/movies' to '/api/reviews/all' because that route actually exists in your server.js
+fetch('${API_BASE_URL}/api/reviews/all')
   .then((response) => response.json())
   .then((data) => {
     console.log("Data from backend:", data);
   })
-  .catch((error) => console.error("Initial load error:", error));
+  .catch((error) => console.error("Error fetching data:", error));
+
 console.log("Current API URL:", API_BASE_URL);
 
 /**
@@ -174,7 +176,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       try {
         const response = await fetch(
-          'https://reavon-backend.onrender.com/api/auth/forgot-password',
+          '${API_BASE_URL}/api/auth/forgot-password',
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -203,7 +205,7 @@ document.addEventListener("DOMContentLoaded", () => {
         submitBtn.textContent = "Signing In...";
         submitBtn.disabled = true;
 
-        const response = await fetch('https://reavon-backend.onrender.com/api/auth/login', {
+        const response = await fetch('${API_BASE_URL}/api/auth/login', {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
@@ -244,7 +246,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const password = document.getElementById("signup-password").value;
 
       try {
-        const response = await fetch('https://reavon-backend.onrender.com/api/auth/signup', {
+        const response = await fetch('${API_BASE_URL}/api/auth/signup', {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, email, password }),
@@ -270,7 +272,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       try {
         const response = await fetch(
-          'https://reavon-backend.onrender.com/api/auth/reset-password',
+          '${API_BASE_URL}/api/auth/reset-password',
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -1148,7 +1150,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       const response = await fetch(
-        'https://reavon-backend.onrender.com/api/reviews/featured',
+        '${API_BASE_URL}/api/reviews/featured',
       );
       const reviews = await response.json();
 
@@ -1195,7 +1197,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       const response = await fetch(
-        'https://reavon-backend.onrender.com/api/reviews/recommendations',
+        '${API_BASE_URL}/api/reviews/recommendations',
       );
       const reviews = await response.json();
 
@@ -1376,7 +1378,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!audienceGrid) return;
 
     try {
-      const response = await fetch('https://reavon-backend.onrender.com/api/reviews/all');
+      const response = await fetch('${API_BASE_URL}/api/reviews/all');
       const reviews = await response.json();
 
       if (reviews.length === 0) {
@@ -2835,7 +2837,7 @@ document.addEventListener("DOMContentLoaded", () => {
           statusText.textContent = "Connecting to upload stream node...";
 
         const xhr = new XMLHttpRequest();
-        xhr.open("POST", 'https://reavon-backend.onrender.com/api/reviews/upload');
+        xhr.open("POST", '${API_BASE_URL}/api/reviews/upload');
         xhr.setRequestHeader("Content-Type", "application/json");
 
         xhr.upload.addEventListener("progress", (event) => {
