@@ -5,27 +5,17 @@ const cors = require('cors');
 const crypto = require('crypto');
 
 const app = express();
-// Allow large incoming JSON strings (like Base64 pictures)
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
-// Enable CORS for your specific frontend deployment
+// 1. Enable CORS so Vercel can talk to it
 app.use(cors({
-    origin: [
-        'https://cc-106-website.vercel.app/', // Put your exact Vercel live URL here
-        'http://localhost:5500',            // Keeps local testing functional
-        'http://127.0.0.1:5500'
-    ],
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    origin: ['https://cc-106-website.vercel.app', 'http://localhost:5500']
 }));
 
-app.use(express.json()); // Ensures your server can read incoming JSON data
+app.use(express.json());
 
-// Automatically swaps to the live cloud database when deployed
+// 2. Database Connection
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:password123@localhost:5432/postgres',
-  ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false // Required for cloud hosting providers
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
 });
 
 // Global Diagnostic Logging to catch silent background crashes

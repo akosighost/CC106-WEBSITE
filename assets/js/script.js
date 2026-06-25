@@ -9,6 +9,27 @@ const API_BASE_URL =
 
 console.log("Current API URL:", API_BASE_URL);
 
+// This goes in your FRONTEND Javascript file
+const BACKEND_URL = 'https://reavon-backend.onrender.com';
+
+async function handleLogin(email, password) {
+    try {
+        const response = await fetch(`${BACKEND_URL}/api/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email, password })
+        });
+        
+        const data = await response.json();
+        console.log(data); // See the backend's response here
+        // Handle UI updates (like redirecting the user)
+    } catch (error) {
+        console.error('Detailed connection error:', error);
+    }
+}
+
 // 2. Now you can safely use it.
 // I changed '/api/movies' to '/api/reviews/all' because that route actually exists in your server.js
 fetch('[https://reavon-backend.onrender.com/api/reviews/all')
