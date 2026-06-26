@@ -11,7 +11,7 @@ console.log("Current API URL:", API_BASE_URL);
 
 // 2. Now you can safely use it.
 // I changed '/api/movies' to '/api/reviews/all' because that route actually exists in your server.js
-fetch('${API_BASE_URL}/api/reviews/all')
+fetch(`${API_BASE_URL}/api/reviews/all`)
   .then((response) => response.json())
   .then((data) => {
     console.log("Data from backend:", data);
@@ -176,7 +176,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       try {
         const response = await fetch(
-          '${API_BASE_URL}/api/auth/forgot-password',
+          `${API_BASE_URL}/api/auth/forgot-password`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -205,7 +205,7 @@ document.addEventListener("DOMContentLoaded", () => {
         submitBtn.textContent = "Signing In...";
         submitBtn.disabled = true;
 
-        const response = await fetch('${API_BASE_URL}/api/auth/login', {
+        const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
@@ -246,7 +246,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const password = document.getElementById("signup-password").value;
 
       try {
-        const response = await fetch('${API_BASE_URL}/api/auth/signup', {
+        const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, email, password }),
@@ -272,7 +272,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       try {
         const response = await fetch(
-          '${API_BASE_URL}/api/auth/reset-password',
+          `${API_BASE_URL}/api/auth/reset-password`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -1150,7 +1150,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       const response = await fetch(
-        '${API_BASE_URL}/api/reviews/featured',
+        `${API_BASE_URL}/api/reviews/featured`,
       );
       const reviews = await response.json();
 
@@ -1197,7 +1197,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       const response = await fetch(
-        '${API_BASE_URL}/api/reviews/recommendations',
+        `${API_BASE_URL}/api/reviews/recommendations`,
       );
       const reviews = await response.json();
 
@@ -1378,7 +1378,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!audienceGrid) return;
 
     try {
-      const response = await fetch('${API_BASE_URL}/api/reviews/all');
+      const response = await fetch(`${API_BASE_URL}/api/reviews/all`);
       const reviews = await response.json();
 
       if (reviews.length === 0) {
@@ -2837,7 +2837,7 @@ document.addEventListener("DOMContentLoaded", () => {
           statusText.textContent = "Connecting to upload stream node...";
 
         const xhr = new XMLHttpRequest();
-        xhr.open("POST", '${API_BASE_URL}/api/reviews/upload');
+        xhr.open("POST", `${API_BASE_URL}/api/reviews/upload`);
         xhr.setRequestHeader("Content-Type", "application/json");
 
         xhr.upload.addEventListener("progress", (event) => {

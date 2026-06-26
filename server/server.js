@@ -6,13 +6,13 @@ const crypto = require('crypto');
 
 const app = express();
 // Allow large incoming JSON strings (like Base64 pictures)
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use(express.json({ limit: '20mb' }));
+app.use(express.urlencoded({ limit: '20mb', extended: true }));
 app.use(cors());
 
 // Automatically swaps to the live cloud database when deployed
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:password123@localhost:5432/postgres',
+  connectionString: process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_Y9FPZOxHqjc5@ep-nameless-smoke-ao3zxj7h-pooler.c-2.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require',
   ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false // Required for cloud hosting providers
 });
 
