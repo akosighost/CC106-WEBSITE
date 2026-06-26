@@ -44,9 +44,48 @@
       .edit-field-item { display: flex; flex-direction: column; gap: 6px; }
       .edit-field-label { color: #667788; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 
+      /* ======================================================= */
+      /* 📱 MOBILE VIEW RESPONSIVENESS OVERRIDES                 */
+      /* ======================================================= */
       @media (max-width: 768px) {
         .imdb-media-grid { grid-template-columns: 1fr; }
-        .imdb-title-header { flex-direction: column; align-items: flex-start !important; }
+        .imdb-title-header { flex-direction: column; align-items: flex-start !important; gap: 15px !important; }
+        
+        /* 1. Scale down massive desktop titles */
+        .imdb-title-left h1 { font-size: 28px !important; line-height: 1.2; }
+        
+        /* 2. Stop the ratings box from squeezing side-by-side */
+        .imdb-ratings-right { 
+          flex-direction: column !important; 
+          align-items: flex-start !important; 
+          width: 100% !important; 
+          gap: 15px !important; 
+          padding: 16px !important;
+        }
+
+        /* 3. Clean up the inner injected Javascript layout blocks */
+        .rating-display-row { flex-wrap: wrap; gap: 8px !important; }
+        .interactive-user-rating-line { 
+          margin-top: 0 !important; 
+          width: 100% !important; 
+          justify-content: space-between !important; 
+        }
+        
+        /* 4. Convert the header button to a compact icon-only button to save space */
+        .header-actions .btn-primary { padding: 10px 12px !important; border-radius: 8px !important; }
+        .header-actions .btn-primary span { display: none !important; }
+        .header-actions .btn-primary ion-icon { margin-right: 0 !important; font-size: 22px !important; }
+        
+        /* 5. Adjust Poster size & meta rows so it fits on a mobile screen */
+        .imdb-poster-frame { width: 100%; max-width: 220px; margin: 0 auto; }
+        .imdb-backdrop-box { padding: 20px; }
+        .imdb-meta-row { flex-direction: column; align-items: flex-start; gap: 5px; }
+
+        /* 👉 ADD THIS NEW FIX HERE: Stack the admin buttons on mobile */
+        .owner-admin-buttons-row { 
+          flex-direction: column !important; 
+          gap: 12px !important; 
+        }
       }
     </style>
   </head>
@@ -58,7 +97,7 @@
         <div class="header-actions" style="display: flex; gap: 15px; align-items: center;">
           <button class="btn btn-primary" onclick="window.location.href='index.html'" style="padding: 10px 20px; font-size: 12px; background: #132226; border-color: #243337;">
             <ion-icon name="arrow-back-outline" style="display: inline-block; vertical-align: middle; margin-right: 5px;"></ion-icon>
-            <span style="display: inline-block; vertical-align: middle;">Back to Home</span>
+            <span style="display: inline-block; vertical-align: middle; color: var(--citrine);">Back to Home</span>
           </button>
           <button id="signin-btn" style="display: block;"></button>
         </div>
@@ -120,11 +159,11 @@
             </div>
 
             <div class="owner-admin-buttons-row" style="display: flex; gap: 10px; margin-top: 20px;">
-              <button id="detail-edit-review-btn" class="detail-edit-btn" style="display: none; background: transparent; border: 1px solid #243337; color: var(--citrine); padding: 8px 16px; border-radius: 4px; cursor: pointer;">
-                <ion-icon name="create-outline"></ion-icon> <span style="margin-left: 5px;">Edit Post</span>
+              <button id="detail-edit-review-btn" class="detail-edit-btn" style="display: none;">
+                <ion-icon name="create-outline"></ion-icon> <span>Edit Post</span>
               </button>
-              <button id="detail-delete-review-btn" class="detail-delete-btn" style="display: none; background: transparent; border: 1px solid rgba(255,69,96,0.2); color: #ff4560; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
-                <ion-icon name="trash-outline"></ion-icon> <span style="margin-left: 5px;">Delete Post</span>
+              <button id="detail-delete-review-btn" class="detail-delete-btn" style="display: none;">
+                <ion-icon name="trash-outline"></ion-icon> <span>Delete Post</span>
               </button>
             </div>
 
@@ -189,7 +228,7 @@
     <div class="custom-alert-overlay" id="success-overlay">
       <div class="custom-alert-card">
         <div class="success-icon-circle"><ion-icon name="checkmark-circle-outline" style="font-size: 34px;"></ion-icon></div>
-        <h3>Changes Saved</h3>
+        <h3 id="success-title">Changes Saved</h3>
         <p id="success-message">Movie review updated successfully!</p>
         <button type="button" id="success-btn">OK</button>
       </div>

@@ -34,28 +34,6 @@
             <ion-icon name="search-outline"></ion-icon>
           </button>
 
-          <div class="lang-wrapper">
-            <label for="language">
-              <ion-icon name="globe-outline"></ion-icon>
-            </label>
-
-            <div class="lang-dropdown">
-              <button class="lang-dropdown-btn" id="lang-toggle">
-                <span id="current-lang-text">EN</span>
-                <ion-icon name="chevron-down-outline"></ion-icon>
-              </button>
-
-              <ul class="lang-dropdown-list" id="lang-list">
-                <li class="lang-item active" data-lang="EN">EN</li>
-                <li class="lang-item" data-lang="AU">AU</li>
-                <li class="lang-item" data-lang="AR">AR</li>
-                <li class="lang-item" data-lang="TU">TU</li>
-              </ul>
-            </div>
-          </div>
-
-          
-
           <button class="upload-review-btn" id="upload-review-btn">
             <ion-icon name="cloud-upload-outline"></ion-icon>
             <span>Upload Review</span>
@@ -79,17 +57,18 @@
             </button>
           </div>
 
-          <ul class="navbar-list">
-  <li><a href="./index.html" class="navbar-link">Home</a></li>
-  
-  <!-- Change href to target the recommendations container -->
-  <li><a href="#recommendations-container" class="navbar-link" id="recommendations-link" data-i18n="recommendations">Recommendations</a></li>
-  
-  <!-- Change href to target the user reviews container -->
-  <li><a href="#user-reviews-container" class="navbar-link" id="added-by-user-link" data-i18n="added-by-user">Added by You</a></li>
-  
-  <li><a href="#" class="navbar-link" id="members-link" data-i18n="members">About Us</a></li>
-</ul>
+          <ul class="navbar-list" style="display: flex; flex-direction: column; flex-grow: 1; padding: 10px 15px; gap: 5px; border: none;">
+            <li><a href="./index.html" class="navbar-link"><ion-icon name="home-outline"></ion-icon> <span>Home</span></a></li>
+            <li><a href="#recommendations-container" class="navbar-link" id="recommendations-link"><ion-icon name="compass-outline"></ion-icon> <span>Recommendations</span></a></li>
+            <li><a href="#user-reviews-container" class="navbar-link" id="added-by-user-link"><ion-icon name="library-outline"></ion-icon> <span>Added by You</span></a></li>
+            <li><a href="#" class="navbar-link" id="members-link"><ion-icon name="information-circle-outline"></ion-icon> <span>About Us</span></a></li>
+            
+            <li style="margin-top: auto; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05);">
+              <a href="#" class="navbar-link" id="mobile-signin-btn" style="color: var(--citrine); font-weight: 700;">
+                <ion-icon name="log-in-outline"></ion-icon> <span>Sign In</span>
+              </a>
+            </li>
+          </ul>
 
           <ul class="navbar-social-list">
             <li><a href="#" class="navbar-social-link"><ion-icon name="logo-twitter"></ion-icon></a></li>
@@ -175,52 +154,6 @@
             <div class="review-grid" id="dynamic-community-grid"></div>
           </div>
         </section>
-
-        <section class="service">
-          <div class="container">
-            <div class="service-banner">
-              <figure>
-                <img src="./assets/images/bf.jpg" alt="Die Beautiful - HD 4k resolution" />
-              </figure>
-              <a href="#" class="service-btn" download>
-                <span>Download</span>
-                <ion-icon name="download-outline"></ion-icon>
-              </a>
-            </div>
-
-            <div class="service-content">
-              <p class="service-subtitle">Our Services</p>
-              <h2 class="h2 service-title">Download Die Beautiful.</h2>
-              <p class="service-text">
-                Trisha, a Filipino transgender woman, suddenly dies while being crowned in a beauty pageant. Her last wish was to be presented as a different celebrity on each night of her wake, but her conservative father wants to bury her as a man.
-              </p>
-              <ul class="service-list">
-                <li>
-                  <div class="service-card">
-                    <div class="card-icon"><ion-icon name="tv"></ion-icon></div>
-                    <div class="card-content">
-                      <h3 class="h3 card-title">Enjoy on Your TV.</h3>
-                      <p class="card-text">
-                        Watch on Smart TVs, PlayStation, Xbox, Chromecast, Apple TV, Blu-ray players, and more. See every vibrant makeup transformation on the big screen.
-                      </p>
-                    </div>
-                  </div>
-                </li>
-                <li>
-                  <div class="service-card">
-                    <div class="card-icon"><ion-icon name="videocam"></ion-icon></div>
-                    <div class="card-content">
-                      <h3 class="h3 card-title">Watch Everywhere.</h3>
-                      <p class="card-text">
-                        Stream unlimited movies and TV shows on your phone, tablet, laptop, and other devices. Take your favorite stories with you on your commute or travel without using data.
-                      </p>
-                    </div>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </section>
       </article>
     </main>
 
@@ -250,7 +183,7 @@
       <div class="footer-bottom">
         <div class="container">
           <p class="copyright">
-            &copy; 2022 <a href="#">codewithjiar</a>. All Rights Reserved.
+            &copy; 2022 <a href="#">code with jiar</a>. All Rights Reserved.
           </p>
         </div>
       </div>
@@ -329,66 +262,6 @@
       </div>
     </div>
 
-    <div class="review-modal-overlay" id="about-modal-overlay">
-      <div class="review-modal">
-        <button class="close-review-btn" id="close-about-btn">
-          <ion-icon name="close-outline"></ion-icon>
-        </button>
-        <div class="review-modal-content">
-          <div class="modal-header">
-            <div class="modal-user-details">
-              <h3 class="modal-custom-title">DIE BEAUTIFUL (2016)</h3>
-              <p class="modal-custom-subtitle">Directed by: Jun Robles Lana</p>
-            </div>
-          </div>
-          <div class="modal-body">
-            <h4 class="modal-section-heading">Synopsis:</h4>
-            <p class="modal-section-paragraph">
-              Trisha, a transgender woman and beauty queen, dies unexpectedly after winning a contest. Her last wish is to be made up as different celebrities during the seven nights of her wake. As her friends mourn and reminisce about her sudden passing after winning Binibining Gay Pilipinas, Trisha's life story plays out through a non-linear narrative. In these fragmented slices of life, we witness Trisha's journey from her traumatic childhood and high school life, to her tragedy and triumphs as a struggling beauty queen.
-            </p>
-            <h4 class="modal-section-heading">Background:</h4>
-            <p class="modal-section-paragraph">
-              Directed by Jun Robles Lana, “Die Beautiful” is one of the few movies that explores themes such as happiness, day-to-day challenges of being a transgender in the Philippines, as well as discrimination towards the queer community. The movie focuses on Trisha Echevarria, played by Paolo Ballesteros, a transgender woman who dreams of becoming a crowned beauty queen. When she finally won the title, Trisha unexpectedly died due to a ruptured aneurysm.
-            </p>
-            <p class="modal-section-paragraph no-margin">
-              Following Trisha’s story as she faces prejudice and challenges while discovering love, loyalty, and the courage to live happily on her own way, the film bravely raises the voice of the Philippines’ often suppressed transgender minority. It seeks to show her complexity, humanity, and dignity. The outstanding performance of Paolo Ballesteros as Trisha and Christian Bables as Barbs, which won Best Actor and Best Supporting Actor at the 2016 Metro Manila Film Festival, respectively, undoubtedly conveys the story’s nuanced and real emotions.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="review-modal-overlay" id="references-modal-overlay">
-      <div class="review-modal">
-        <button class="close-review-btn" id="close-references-btn">
-          <ion-icon name="close-outline"></ion-icon>
-        </button>
-        <div class="review-modal-content">
-          <div class="modal-header">
-            <div class="modal-user-details">
-              <h3 class="modal-custom-title">References</h3>
-            </div>
-          </div>
-          <div class="modal-body">
-            <ul class="references-list-wrapper">
-              <li>
-                <p>Die Beautiful (2016). (2025, September 1). <em>Letterboxd</em>.</p>
-                <a href="https://letterboxd.com/film/die-beautiful/" target="_blank">https://letterboxd.com/film/die-beautiful/</a>
-              </li>
-              <li>
-                <p>Ph, E., & Ph, E. (2025, July 24). DIE BEAUTIFULLY: How Trisha Echevarria dazzled in life, and death? <em>Explained PH</em>.</p>
-                <a href="https://explained.ph/die-beautifully-how-trisha-echevarria-dazzled-in-life-and-death/" target="_blank">https://explained.ph/die-beautifully-how-trisha-echevarria-dazzled-in-life-and-death/</a>
-              </li>
-              <li>
-                <p>Prudente, J. (2024, September 7). Die Beautiful - Film review | SINEGANG.ph. <em>SINEGANG.ph</em>.</p>
-                <a href="https://www.sinegang.ph/filmreviews/die-beautiful-jp" target="_blank">https://www.sinegang.ph/filmreviews/die-beautiful-jp</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div class="review-modal-overlay" id="members-modal-overlay">
       <div class="review-modal">
         <button class="close-review-btn" id="close-members-btn">
@@ -398,50 +271,42 @@
           <div class="modal-header">
             <div class="modal-user-details">
               <h3 class="modal-custom-title">About Us / Members</h3>
-              <p class="modal-subtitle-alt">BC5MD Group 1</p>
+              <p class="modal-subtitle-alt">BC5MD</p>
             </div>
           </div>
           <div class="modal-body">
             <div class="members-grid">
               <div class="member-item">
                 <div class="member-avatar"><img src="./assets/review-photos/john paul.jpg" alt="John Paul" /></div>
-                <div class="member-info"><h4>Abella, John Paul</h4><p>BC5MD <span class="role">| Leader</span></p></div>
+                <div class="member-info"><h4>Abella, John Paul</h4></div>
               </div>
-              <div class="member-item">
+              <!-- <div class="member-item">
                 <div class="member-avatar"><img src="./assets/review-photos/dennis.jpg" alt="Dennis" /></div>
-                <div class="member-info"><h4>Alde, Dennis</h4><p>BC5MD <span class="role">| Movie Reviewer</span></p></div>
-              </div>
-              <div class="member-item">
-                <div class="member-avatar"><img src="./assets/review-photos/adrian.jpg" alt="Adrian" /></div>
-                <div class="member-info"><h4>Aquino, Adrian Nico</h4><p>BC5MD <span class="role">| Movie Reviewer</span></p></div>
-              </div>
+                <div class="member-info"><h4>Alde, Dennis</h4></div>
+              </div> -->
               <div class="member-item">
                 <div class="member-avatar"><img src="./assets/review-photos/princes.jpg" alt="Princes" /></div>
-                <div class="member-info"><h4>Baluarte, Princes Mae</h4><p>BC5MD <span class="role">|Website Designer</span></p></div>
+                <div class="member-info"><h4>Baluarte, Princes Mae</h4></div>
               </div>
               <div class="member-item">
                 <div class="member-avatar"><img src="./assets/review-photos/kyleen.jpg" alt="Kyleen" /></div>
-                <div class="member-info"><h4>Co, Kylene</h4><p>BC5MD <span class="role">| Movie Reviewer</span></p></div>
+                <div class="member-info"><h4>Co, Kyleen</h4></div>
               </div>
               <div class="member-item">
                 <div class="member-avatar"><img src="./assets/review-photos/king.jpg" alt="King" /></div>
-                <div class="member-info"><h4>Encio, King Acel</h4><p>BC5MD <span class="role">| Movie Reviewer</span></p></div>
+                <div class="member-info"><h4>Encio, King Acel</h4></div>
               </div>
               <div class="member-item">
                 <div class="member-avatar"><img src="./assets/review-photos/yesha.jpg" alt="Yesha" /></div>
-                <div class="member-info"><h4>Escobar, Yeshalyn</h4><p>BC5MD <span class="role">| Movie Reviewer</span></p></div>
-              </div>
-              <div class="member-item">
-                <div class="member-avatar"><img src="./assets/review-photos/joana.jpg" alt="Joanna" /></div>
-                <div class="member-info"><h4>Magalang, Joanna</h4><p>BC5MD <span class="role">| Movie Reviewer</span></p></div>
+                <div class="member-info"><h4>Escobar, Yeshalyn</h4></div>
               </div>
               <div class="member-item">
                 <div class="member-avatar"><img src="./assets/review-photos/jhayr.jpg" alt="John Rey" /></div>
-                <div class="member-info"><h4>Natividad, John Rey</h4><p>BC5MD <span class="role">| Website Developer (VSCODE)</span></p></div>
+                <div class="member-info"><h4>Natividad, John Rey</h4></div>
               </div>
               <div class="member-item">
                 <div class="member-avatar"><img src="./assets/review-photos/joehan.jpg" alt="Joehanne" /></div>
-                <div class="member-info"><h4>Villar, Joehanne Marguirite</h4><p>BC5MD <span class="role">| Researcher</span></p></div>
+                <div class="member-info"><h4>Villar, Joehanne Marguirite</h4></div>
               </div>
             </div>
           </div>

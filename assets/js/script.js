@@ -49,6 +49,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const navCloseBtn = document.querySelector("[data-menu-close-btn]");
   const navbar = document.querySelector("[data-navbar]");
   const overlay = document.querySelector("[data-overlay]");
+  
+  // 1. Grab all the links inside the sidebar
+  const navLinks = document.querySelectorAll(".navbar-link"); 
 
   const navElemArr = [navOpenBtn, navCloseBtn, overlay];
 
@@ -60,6 +63,18 @@ document.addEventListener("DOMContentLoaded", () => {
         document.body.classList.toggle("active");
       });
     }
+  });
+
+  // 2. Auto-close sidebar and unlock scrolling when a link is clicked
+  navLinks.forEach((link) => {
+    link.addEventListener("click", () => {
+      // We don't use toggle here, we force it to remove the active state
+      if (navbar) navbar.classList.remove("active");
+      if (overlay) overlay.classList.remove("active");
+      
+      // This is the line that fixes your scrolling bug!
+      document.body.classList.remove("active"); 
+    });
   });
 });
 
@@ -120,37 +135,82 @@ document.addEventListener("DOMContentLoaded", () => {
     resetModal.classList.add("active");
   }
 
+  let returnToMobileMenu = false;
   // B. RENDER ACCOUNT STATUS MATRIX
-  if (userToken && signinBtn) {
-    signinBtn.className = "btn btn-secondary profile-nav-btn";
-    signinBtn.style.borderColor = "var(--citrine)";
-    signinBtn.style.padding = "10px 20px";
-    signinBtn.style.textTransform = "none";
-    signinBtn.innerHTML = `
-      <ion-icon name="person-circle-outline" style="font-size: 20px; color: var(--citrine); display: inline-block; vertical-align: middle; margin-right: 5px;"></ion-icon>
-      <span style="display: inline-block; vertical-align: middle;">${storedUsername}</span>
-    `;
+  const mobileSigninBtn = document.getElementById("mobile-signin-btn");
 
-    signinBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      if (profileModal) {
-        document.getElementById("profile-card-username").textContent =
-          localStorage.getItem("username");
-        document.getElementById("profile-card-email").textContent =
-          localStorage.getItem("userEmail") || "test@gmail.com";
-        document.getElementById("profile-card-password").value =
-          localStorage.getItem("userPassword") || "password123";
-        profileModal.classList.add("active");
-      }
-    });
-  } else if (signinBtn && signinModal) {
-    signinBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      signinModal.classList.add("active");
-    });
+  if (userToken) {
+    // 1. Desktop Profile Button
+    if (signinBtn) {
+      signinBtn.className = "btn btn-secondary profile-nav-btn";
+      signinBtn.style.borderColor = "var(--citrine)";
+      signinBtn.style.padding = "10px 20px";
+      signinBtn.style.textTransform = "none";
+      signinBtn.innerHTML = `
+        <ion-icon name="person-circle-outline" style="font-size: 20px; color: var(--citrine); display: inline-block; vertical-align: middle;"></ion-icon>
+      `;
+
+      signinBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        returnToMobileMenu = false; // Reset flag
+        if (profileModal) {
+          document.getElementById("profile-card-username").textContent = localStorage.getItem("username");
+          document.getElementById("profile-card-email").textContent = localStorage.getItem("userEmail") || "test@gmail.com";
+          document.getElementById("profile-card-password").value = localStorage.getItem("userPassword") || "password123";
+          profileModal.classList.add("active");
+        }
+      });
+    }
+
+    // 2. Mobile Profile Button
+    if (mobileSigninBtn) {
+      mobileSigninBtn.innerHTML = `<ion-icon name="person-circle-outline"></ion-icon> <span>${storedUsername}</span>`;
+      mobileSigninBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        returnToMobileMenu = true; // Set memory flag!
+        document.querySelector("[data-menu-close-btn]")?.click(); // Auto-close sidebar
+        if (profileModal) {
+          document.getElementById("profile-card-username").textContent = localStorage.getItem("username");
+          document.getElementById("profile-card-email").textContent = localStorage.getItem("userEmail") || "test@gmail.com";
+          document.getElementById("profile-card-password").value = localStorage.getItem("userPassword") || "password123";
+          profileModal.classList.add("active");
+        }
+      });
+    }
+
+  } else {
+    // 3. Desktop Sign In
+    if (signinBtn && signinModal) {
+      signinBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        returnToMobileMenu = false; // Reset flag
+        signinModal.classList.add("active");
+      });
+    }
+    
+    // 4. Mobile Sign In
+    if (mobileSigninBtn && signinModal) {
+      mobileSigninBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        returnToMobileMenu = true; // Set memory flag!
+        document.querySelector("[data-menu-close-btn]")?.click(); // Auto-close sidebar
+        signinModal.classList.add("active");
+      });
+    }
   }
 
   // C. MODAL TRANSITION SWITCHES & INTERACTION TRIGGERS
+  
+  // Helper Engine: Checks memory flag and restores the mobile menu
+  function checkReturnToMobileMenu() {
+    if (returnToMobileMenu) {
+      setTimeout(() => {
+        document.querySelector("[data-menu-open-btn]")?.click();
+      }, 150); // Tiny delay allows the modal to fade out smoothly first
+      returnToMobileMenu = false; // Reset the flag after using it
+    }
+  }
+
   document.querySelector(".signup-prompt a")?.addEventListener("click", (e) => {
     e.preventDefault();
     if (signinModal) signinModal.classList.remove("active");
@@ -158,31 +218,37 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   if (closeSigninBtn && signinModal) {
-    closeSigninBtn.addEventListener("click", () =>
-      signinModal.classList.remove("active"),
-    );
+    closeSigninBtn.addEventListener("click", () => {
+      signinModal.classList.remove("active");
+      checkReturnToMobileMenu();
+    });
   }
   if (closeSignupBtn && signupModal) {
-    closeSignupBtn.addEventListener("click", () =>
-      signupModal.classList.remove("active"),
-    );
+    closeSignupBtn.addEventListener("click", () => {
+      signupModal.classList.remove("active");
+      checkReturnToMobileMenu();
+    });
   }
   if (closeProfileBtn && profileModal) {
-    closeProfileBtn.addEventListener("click", () =>
-      profileModal.classList.remove("active"),
-    );
+    closeProfileBtn.addEventListener("click", () => {
+      profileModal.classList.remove("active");
+      checkReturnToMobileMenu();
+    });
   }
   if (closeResetBtn && resetModal) {
-    closeResetBtn.addEventListener("click", () =>
-      resetModal.classList.remove("active"),
-    );
+    closeResetBtn.addEventListener("click", () => {
+      resetModal.classList.remove("active");
+    });
   }
 
   // Close modals when clicking on background overlays
   [signinModal, signupModal, profileModal, resetModal].forEach((modal) => {
     if (modal) {
       modal.addEventListener("click", (e) => {
-        if (e.target === modal) modal.classList.remove("active");
+        if (e.target === modal) {
+          modal.classList.remove("active");
+          checkReturnToMobileMenu();
+        }
       });
     }
   });
@@ -978,14 +1044,14 @@ document.addEventListener("DOMContentLoaded", () => {
               : "☆☆☆☆☆";
 
           return `
-          <div class="premium-box-card review-click-target-node" data-review-id="${item.review_id}" style="cursor: pointer;">
+          <div class="premium-box-card review-click-target-node" data-review-id="${item.review_id}" style="border-bottom: 3px solid var(--citrine); style="cursor: pointer;">
             <div class="poster-wrapper">
               <img src="${item.image_data || "./assets/images/obs.jpg"}" alt="${item.movie_name}" />
             </div>
             <div class="poster-footer">
               <span class="reviewer-name">${item.movie_name}</span>
               <div class="card-meta">
-                <span class="stars-indicator" style="color: #00e054;">${starText}</span>
+                <span class="stars-indicator" style="color: var(--citrine);">${starText}</span>
                 <span class="review-date">${item.publish_date}</span>
               </div>
             </div>
@@ -1097,7 +1163,7 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
 
           <div style="margin-bottom: 12px; position: relative; text-align: left;">
-            <p class="review-text" style="font-size: 13.5px; line-height: 1.6; color: #cfd8dc; font-style: italic; margin: 0; max-height: 4.8em; overflow: hidden; text-indent: 0; text-align: left; word-break: break-word; transition: max-height 0.3s ease; -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%); mask-image: linear-gradient(to bottom, black 60%, transparent 100%);">"${c.comment_text}"</p>
+            <p class="review-text" style="white-space: pre-wrap;font-size: 13.5px; line-height: 1.6; color: #cfd8dc; font-style: italic; margin: 0; max-height: 4.8em; overflow: hidden; text-indent: 0; text-align: left; word-break: break-word; transition: max-height 0.3s ease; -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%); mask-image: linear-gradient(to bottom, black 60%, transparent 100%);">"${c.comment_text}"</p>
             <span class="see-more-btn" style="color: var(--citrine); font-size: 13px; font-weight: 700; display: inline-block; margin-top: 6px; text-decoration: underline; transition: opacity 0.2s;">See More</span>
           </div>
 
@@ -1240,7 +1306,7 @@ document.addEventListener("DOMContentLoaded", () => {
             "☆".repeat(5 - Math.round(avgRating));
 
           return `
-          <div class="premium-box-card review-click-target-node" data-review-id="${item.review_id}" style="cursor: pointer;">
+          <div class="premium-box-card review-click-target-node" data-review-id="${item.review_id}" style="border-bottom: 3px solid var(--citrine); style="cursor: pointer;">
             <div class="poster-wrapper">
               <img src="${item.image_data || "./assets/images/obs.jpg"}" alt="${item.movie_name}" />
             </div>
@@ -1248,7 +1314,7 @@ document.addEventListener("DOMContentLoaded", () => {
               <span class="reviewer-name">${item.movie_name}</span>
               <span style="color: #678; font-size: 11px; margin-top: -2px; font-weight: 500;">Posted By: ${item.username}</span>
               <div class="card-meta">
-                <span class="stars-indicator" style="color: #00e054;">${starText}</span>
+                <span class="stars-indicator" style="color: var(--citrine)">${starText}</span>
                 <span class="review-date">${item.publish_date}</span>
               </div>
             </div>
@@ -1471,18 +1537,16 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!ratingBox) return;
 
     const averageScore = parseFloat(avgRating) || 0;
-    let ratingHTML = `<div class="rating-display-row" style="display: flex; align-items: center; gap: 4px;">`;
+    let ratingHTML = `<div class="rating-display-row" style="display: flex; align-items: center;">`;
 
     for (let i = 1; i <= 5; i++) {
-      if (averageScore >= i)
-        ratingHTML +=
-          "<img src=\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><path fill='%23e5b800' d='M256 39.37l68.75 139.32 153.75 22.33-111.25 108.45 26.25 153.13-137.5-72.29-137.5 72.29 26.25-153.13-111.25-108.45 153.75-22.33L256 39.37z'/></svg>\" style=\"width:16px; height:16px;\" />";
-      else if (averageScore >= i - 0.5)
-        ratingHTML +=
-          "<img src=\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><path fill='%23e5b800' d='M256 39.37l68.75 139.32 153.75 22.33-111.25 108.45 26.25 153.13-137.5-72.29V39.37z'/></svg>\" style=\"width:16px; height:16px;\" />";
-      else
-        ratingHTML +=
-          "<img src=\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><path fill='none' stroke='%23667788' stroke-width='32' d='M256 39.37l68.75 139.32 153.75 22.33-111.25 108.45 26.25 153.13-137.5-72.29-137.5 72.29 26.25-153.13-111.25-108.45 153.75-22.33L256 39.37z'/></svg>\" style=\"width:16px; height:16px;\" />";
+      if (averageScore >= i) {
+        ratingHTML += '<ion-icon name="star" style="color: var(--citrine); font-size: 16px; margin: 0;"></ion-icon>';
+      } else if (averageScore >= i - 0.5) {
+        ratingHTML += '<ion-icon name="star-half" style="color: var(--citrine); font-size: 16px; margin: 0;"></ion-icon>';
+      } else {
+        ratingHTML += '<ion-icon name="star-outline" style="color: #667788; font-size: 16px; margin: 0;"></ion-icon>';
+      }
     }
 
     ratingHTML += `
@@ -1748,11 +1812,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 const editBtn = document.getElementById("success-btn");
 
                 if (editOverlay && editBtn) {
-                  if (editMsgText)
-                    editMsgText.textContent =
-                      updateData.message ||
-                      "Movie review updated successfully!";
-                  editTitle.textContent = "Updated!";
+                  if (editMsgText) {
+                    editMsgText.textContent =updateData.message ||"Movie review updated successfully!";
+                  }
+                    
+                  if (editTitle) {
+                    editTitle.textContent = "Updated!";
+                  }
+                  
                   editOverlay.style.display = "flex";
                   editBtn.onclick = function () {
                     editOverlay.style.display = "none";
@@ -2791,11 +2858,48 @@ document.addEventListener("DOMContentLoaded", () => {
       const file = this.files[0];
       if (file) {
         const reader = new FileReader();
-        reader.addEventListener("load", function () {
-          previewImg.src = this.result;
-          previewImg.style.display = "block";
-          uploadPrompt.style.opacity = "0";
-          base64ImageString = this.result;
+        reader.addEventListener("load", function (e) {
+          
+          // Create a temporary image object to hold the original file
+          const img = new Image();
+          img.onload = function () {
+            // 1. Set maximum dimensions for a web poster
+            const MAX_WIDTH = 800;
+            const MAX_HEIGHT = 1200;
+            let width = img.width;
+            let height = img.height;
+
+            // 2. Calculate the new dimensions while keeping the exact aspect ratio
+            if (width > height) {
+              if (width > MAX_WIDTH) {
+                height = Math.round((height * MAX_WIDTH) / width);
+                width = MAX_WIDTH;
+              }
+            } else {
+              if (height > MAX_HEIGHT) {
+                width = Math.round((width * MAX_HEIGHT) / height);
+                height = MAX_HEIGHT;
+              }
+            }
+
+            // 3. Draw the resized image onto a hidden virtual canvas
+            const canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, width, height);
+
+            // 4. Compress the image to JPEG format at 70% quality
+            const compressedBase64 = canvas.toDataURL("image/jpeg", 0.7);
+
+            // 5. Update the UI and save the tiny compressed string for upload!
+            previewImg.src = compressedBase64;
+            previewImg.style.display = "block";
+            uploadPrompt.style.opacity = "0";
+            base64ImageString = compressedBase64; 
+          };
+          img.src = e.target.result;
+          
         });
         reader.readAsDataURL(file);
       }
@@ -2814,7 +2918,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("review-movie-date").value;
       const reviewText = document
         .getElementById("review-movie-text")
-        .value.trim();
+        // .value.trim();
 
       const userEmail = localStorage.getItem("userEmail");
       const submitBtn = this.querySelector('button[type="submit"]');
