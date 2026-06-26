@@ -125,6 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const userToken = localStorage.getItem("userToken");
   const storedUsername = localStorage.getItem("username") || "User";
+  
 
   // A. URL PARAMS CHECK FOR RESET TOKEN
   const urlParams = new URLSearchParams(window.location.search);
