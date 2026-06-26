@@ -6,11 +6,32 @@ const API_BASE_URL =
   window.location.hostname === "127.0.0.1"
     ? "http://localhost:5000"
     : "https://reav-on-api.onrender.com";
-
+    
 console.log("Current API URL:", API_BASE_URL);
+
+// --- PASTE THE SPINNER RIGHT HERE ---
+// A reusable loading spinner for the data grids
+const loadingSpinnerHTML = `
+  <div style="grid-column: 1 / -1; display: flex; justify-content: center; padding: 60px 0;">
+    <div style="width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.05); border-top-color: var(--citrine); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+  </div>
+  <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+`;
+// ------------------------------------
+
+// --- FULL SCREEN PAGE TRANSITION POPUP ---
+const pageTransitionOverlay = document.createElement("div");
+pageTransitionOverlay.style.cssText = "position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(11, 20, 22, 0.85); backdrop-filter: blur(5px); z-index: 9999; display: none; justify-content: center; align-items: center; flex-direction: column;";
+pageTransitionOverlay.innerHTML = `
+  <div style="width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.05); border-top-color: var(--citrine); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+  <p style="color: var(--citrine); margin-top: 20px; font-weight: 600; font-size: 14px; letter-spacing: 1px;">LOADING MOVIE...</p>
+`;
+document.body.appendChild(pageTransitionOverlay);
+// -----------------------------------------
 
 // 2. Now you can safely use it.
 // I changed '/api/movies' to '/api/reviews/all' because that route actually exists in your server.js
+
 fetch(`${API_BASE_URL}/api/reviews/all`)
   .then((response) => response.json())
   .then((data) => {
@@ -934,6 +955,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
+      reviewsGrid.innerHTML = loadingSpinnerHTML;
       const response = await fetch(
         `${API_BASE_URL}/api/reviews/user?email=${encodeURIComponent(userEmail)}`,
       );
@@ -983,6 +1005,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!communityGrid) return;
 
     try {
+      if (communityGrid) communityGrid.innerHTML = loadingSpinnerHTML;
       // ✅ FIX: Force check localStorage dynamically during call execution if forcedEmail isn't provided
       const userEmail = forcedEmail || localStorage.getItem("userEmail") || "";
 
@@ -1149,6 +1172,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!featuredGrid) return;
 
     try {
+      if (featuredGrid) featuredGrid.innerHTML = loadingSpinnerHTML;
       const response = await fetch(
         `${API_BASE_URL}/api/reviews/featured`,
       );
@@ -1196,6 +1220,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!recommendationsGrid) return;
 
     try {
+      if (recommendationsGrid) recommendationsGrid.innerHTML = loadingSpinnerHTML;
       const response = await fetch(
         `${API_BASE_URL}/api/reviews/recommendations`,
       );
@@ -1256,6 +1281,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (uploadModalOverlay && dropdownSelect) {
         try {
+          if (audienceGrid) audienceGrid.innerHTML = loadingSpinnerHTML;
           // Fetch live movies from your active backend database
           const response = await fetch(`${API_BASE_URL}/api/reviews/all`);
           const publicMovies = await response.json();
@@ -1378,6 +1404,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!audienceGrid) return;
 
     try {
+      if (audienceGrid) audienceGrid.innerHTML = loadingSpinnerHTML;
       const response = await fetch(`${API_BASE_URL}/api/reviews/all`);
       const reviews = await response.json();
 
@@ -2954,20 +2981,26 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // ==========================================
-  // 8. SECURE FULL-PAGE ROUTING & HYDRATION (IMDb PAGE ROUTER)
-  // ==========================================
-  // ✅ FIXED: Removed communityGrid from this loop array list!
+  // Removed communityGrid from this loop array list!
   [featuredGrid, recommendationsGrid, reviewsGrid, audienceGrid].forEach(
     (grid) => {
       if (grid) {
         grid.addEventListener("click", async (e) => {
           const targetedCard = e.target.closest(".review-click-target-node");
-          if (targetedCard) {
+          
+          // Guard: Ensure they didn't accidentally click a share/copy button inside the card
+          if (targetedCard && !e.target.closest("button")) {
             const id = targetedCard.getAttribute("data-review-id");
+            
+            // 1. Instantly show the full-screen loading popup!
+            pageTransitionOverlay.style.display = "flex";
+            
+            // 2. Wait for the database to register the +1 view count
             await fetch(`${API_BASE_URL}/api/reviews/view/${id}`, {
               method: "POST",
             }).catch((err) => console.error(err));
+            
+            // 3. Move to the details page
             window.location.href = `view-review.html?id=${id}`;
           }
         });
