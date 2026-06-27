@@ -2168,3 +2168,36 @@ body.active { overflow: hidden; }
     display: none !important; /* Hide mobile signin button on desktop */
   }
 }
+
+/* MAINTENANCE MODE STYLES */
+.maintenance-overlay {
+  position: fixed; inset: 0;
+  background: var(--rich-black-fogra-29); /* Matches background */
+  display: none; /* Hidden by default */
+  justify-content: center; align-items: center;
+  z-index: 99999; /* Highest layer to block everything */
+}
+
+.maintenance-card {
+  text-align: center;
+  padding: 40px;
+  max-width: 400px;
+}
+
+.maintenance-icon {
+  font-size: 60px;
+  color: var(--citrine); /* Uses your brand accent color */
+  margin-bottom: 20px;
+}
+
+.maintenance-card h3 {
+  color: var(--white);
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.maintenance-card p {
+  color: var(--gainsboro);
+  line-height: 1.6;
+}
+

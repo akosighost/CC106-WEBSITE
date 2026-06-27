@@ -41,6 +41,23 @@ fetch(`${API_BASE_URL}/api/reviews/all`)
 
 console.log("Current API URL:", API_BASE_URL);
 
+// --- MAINTENANCE MODE TOGGLE ---
+const IS_MAINTENANCE_MODE = true; // Set to true when you need maintenance
+
+document.addEventListener("DOMContentLoaded", () => {
+  // Check if user is an admin
+  const isAdmin = localStorage.getItem("isAdmin") === "true";
+
+  // Only show maintenance if mode is ON AND user is NOT an admin
+  if (IS_MAINTENANCE_MODE && !isAdmin) {
+    const maintenanceModal = document.getElementById("maintenance-modal");
+    if (maintenanceModal) {
+      maintenanceModal.style.display = "flex";
+      document.body.style.overflow = "hidden"; // Disable scroll
+    }
+  }
+});
+
 /**
  * Navbar Toggle Logic Controller
  */
@@ -122,6 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const profilePasswordToggle = document.getElementById(
     "profile-password-toggle-icon",
   );
+  
 
   const userToken = localStorage.getItem("userToken");
   const storedUsername = localStorage.getItem("username") || "User";
@@ -961,6 +979,11 @@ document.addEventListener("DOMContentLoaded", function () {
  * #J. UPLOAD MOVIE REVIEW MASTER CONTROLLER & PREVIEW LAYER
 \*-----------------------------------*/
 document.addEventListener("DOMContentLoaded", () => {
+  // MAINTENANCE POP UP
+  
+
+
+
   const uploadReviewBtn = document.getElementById("upload-review-btn");
   const uploadModal = document.getElementById("upload-review-modal-overlay");
   const closeUploadBtn = document.getElementById("close-upload-modal-btn");
