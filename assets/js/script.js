@@ -9,6 +9,28 @@ const API_BASE_URL =
     
 console.log("Current API URL:", API_BASE_URL);
 
+// --- GLOBAL CLOUDINARY IMAGE UPLOADER ---
+const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dlienxiay/image/upload";
+const CLOUDINARY_PRESET = "na9nfwgv";
+
+
+async function uploadImageToCloud(base64Data) {
+  // If it's already a clean URL or empty, skip it
+  if (!base64Data || !base64Data.startsWith("data:image")) return base64Data; 
+  
+  const formData = new FormData();
+  formData.append("file", base64Data);
+  formData.append("upload_preset", CLOUDINARY_PRESET);
+
+  const response = await fetch(CLOUDINARY_URL, {
+    method: "POST",
+    body: formData
+  });
+  const data = await response.json();
+  return data.secure_url; // Returns the tiny URL link!
+}
+// ----------------------------------------
+
 // --- PASTE THE SPINNER RIGHT HERE ---
 // A reusable loading spinner for the data grids
 const loadingSpinnerHTML = `
@@ -217,10 +239,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
+  const saveAvatarBtn = document.getElementById("save-avatar-btn");
+  let pendingAvatarBase64 = null; // Holds the image temporarily before saving
+
   if (avatarContainer && avatarUpload) {
-    // Trigger file picker on click
+    // 1. Trigger file picker on click
     avatarContainer.addEventListener("click", () => avatarUpload.click());
 
+    // 2. Just SHOW the preview when a file is picked (Don't upload yet)
     avatarUpload.addEventListener("change", function () {
       const file = this.files[0];
       if (file) {
@@ -228,9 +254,9 @@ document.addEventListener("DOMContentLoaded", () => {
         reader.onload = function (e) {
           const img = new Image();
           img.onload = function () {
-            // Compress the image to save localStorage space!
+            // Compress the image
             const canvas = document.createElement("canvas");
-            const MAX_SIZE = 300; // Small size perfect for avatars
+            const MAX_SIZE = 300; 
             let width = img.width;
             let height = img.height;
 
@@ -253,15 +279,70 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const compressedBase64 = canvas.toDataURL("image/jpeg", 0.8);
             
-            // Save to browser memory and instantly refresh the UI
-            localStorage.setItem("userAvatar", compressedBase64);
-            window.loadUserAvatar();
+            // Show the preview in the circle
+            if (avatarImg) {
+              avatarImg.src = compressedBase64;
+              avatarImg.style.display = "block";
+            }
+            if (defaultIcon) defaultIcon.style.display = "none";
+
+            // Store the string temporarily and reveal the Save Button!
+            pendingAvatarBase64 = compressedBase64;
+            if (saveAvatarBtn) saveAvatarBtn.style.display = "block";
           };
           img.src = e.target.result;
         };
         reader.readAsDataURL(file);
       }
     });
+
+    // 3. Upload to Cloudinary, THEN Database
+    if (saveAvatarBtn) {
+      saveAvatarBtn.addEventListener("click", async function() {
+        if (!pendingAvatarBase64) return;
+        
+        const userEmail = localStorage.getItem("userEmail");
+        if (userEmail) {
+          try {
+            this.textContent = "Uploading to Cloud...";
+            this.disabled = true;
+
+            // A. Send the giant image to Cloudinary to get the tiny URL
+            const finalImageUrl = await uploadImageToCloud(pendingAvatarBase64);
+
+            this.textContent = "Saving...";
+
+            // B. Save only the tiny URL to the database
+            const response = await fetch(`${API_BASE_URL}/api/users/avatar`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email: userEmail, avatarData: finalImageUrl })
+            });
+            
+            if (response.ok) {
+              localStorage.setItem("userAvatar", finalImageUrl);
+              window.loadUserAvatar(); 
+              
+              this.textContent = "Saved!";
+              setTimeout(() => {
+                this.style.display = "none";
+                this.textContent = "Save Picture";
+                this.disabled = false;
+              }, 2000);
+            } else {
+              alert("Failed to sync avatar to database.");
+              this.textContent = "Save Picture";
+              this.disabled = false;
+            }
+          } catch (err) {
+            console.error("Network error syncing avatar:", err);
+            alert("Network error: Could not reach the server.");
+            this.textContent = "Save Picture";
+            this.disabled = false;
+          }
+        }
+      });
+    }
   }
 
   // Helper function to load and display the bio
@@ -274,6 +355,30 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       bioTextDisplay.textContent = "Add a bio";
       bioTextDisplay.style.opacity = "0.5"; // Fades it out to look like a placeholder
+    }
+  };
+
+  // Helper function to load live stats from the database
+  window.loadUserStats = async function() {
+    const userEmail = localStorage.getItem("userEmail");
+    if (!userEmail) return;
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/users/stats?email=${encodeURIComponent(userEmail)}`);
+      if (response.ok) {
+        const stats = await response.json();
+        
+        // Inject the numbers into the HTML IDs we just created
+        const reviewsElem = document.getElementById("stat-reviews-count");
+        const likesElem = document.getElementById("stat-likes-count");
+        const commentsElem = document.getElementById("stat-comments-count");
+
+        if (reviewsElem) reviewsElem.textContent = stats.reviews || 0;
+        if (likesElem) likesElem.textContent = stats.likes || 0;
+        if (commentsElem) commentsElem.textContent = stats.comments || 0;
+      }
+    } catch (err) {
+      console.error("Failed to load user stats:", err);
     }
   };
 
@@ -292,14 +397,47 @@ document.addEventListener("DOMContentLoaded", () => {
       bioDisplayWrapper.style.display = "flex";
     });
 
-    // 3. Save to LocalStorage and Update UI
-    saveBioBtn.addEventListener("click", () => {
+    // 3. Save to live Database, show Loading State, and Update UI
+    saveBioBtn.addEventListener("click", async () => {
       const newBio = editBioInput.value.trim();
-      localStorage.setItem("userBio", newBio);
-      
-      window.loadUserBio();
-      bioEditWrapper.style.display = "none";
-      bioDisplayWrapper.style.display = "flex";
+      const userEmail = localStorage.getItem("userEmail");
+
+      if (!userEmail) return;
+
+      // A. Trigger Loading State
+      const originalText = saveBioBtn.textContent;
+      saveBioBtn.textContent = "SAVING...";
+      saveBioBtn.style.opacity = "0.7";
+      saveBioBtn.disabled = true;
+
+      try {
+        // B. Send the new bio to the Render backend
+        const response = await fetch(`${API_BASE_URL}/api/users/bio`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: userEmail, bio: newBio })
+        });
+
+        if (response.ok) {
+          // C. Save to browser memory so it stays on screen
+          localStorage.setItem("userBio", newBio);
+          window.loadUserBio();
+
+          // D. Hide the edit box and show the text
+          bioEditWrapper.style.display = "none";
+          bioDisplayWrapper.style.display = "flex";
+        } else {
+          alert("Failed to sync bio to database.");
+        }
+      } catch (err) {
+        console.error("Bio sync error:", err);
+        alert("Network error: Could not reach the server.");
+      } finally {
+        // E. Always restore the button back to normal
+        saveBioBtn.textContent = originalText;
+        saveBioBtn.style.opacity = "1";
+        saveBioBtn.disabled = false;
+      }
     });
   }
 
@@ -314,15 +452,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const mobileSigninBtn = document.getElementById("mobile-signin-btn");
 
   if (userToken) {
-    // 1. Desktop Profile Button
+    // 1. Desktop Profile Button (Styling)
     if (signinBtn) {
       signinBtn.className = "btn btn-secondary profile-nav-btn";
       signinBtn.style.borderColor = "var(--citrine)";
       signinBtn.style.padding = "10px 20px";
       signinBtn.style.textTransform = "none";
-      signinBtn.innerHTML = `
-        <ion-icon name="person-circle-outline" style="font-size: 20px; color: var(--citrine); display: inline-block; vertical-align: middle;"></ion-icon>
-      `;
 
       signinBtn.addEventListener("click", (e) => {
         e.preventDefault();
@@ -331,16 +466,19 @@ document.addEventListener("DOMContentLoaded", () => {
           document.getElementById("profile-card-username").textContent = localStorage.getItem("username");
           document.getElementById("profile-card-email").textContent = localStorage.getItem("userEmail") || "test@gmail.com";
           document.getElementById("profile-card-password").value = localStorage.getItem("userPassword") || "password123";
+          
+          // These 3 lines load your dynamic profile data
           if (typeof window.loadUserBio === "function") window.loadUserBio();
           if (typeof window.loadUserAvatar === "function") window.loadUserAvatar();
+          if (typeof window.loadUserStats === "function") window.loadUserStats(); 
+          
           profileModal.classList.add("active");
         }
       });
     }
 
-    // 2. Mobile Profile Button
+    // 2. Mobile Profile Button (Click Logic)
     if (mobileSigninBtn) {
-      mobileSigninBtn.innerHTML = `<ion-icon name="person-circle-outline"></ion-icon> <span>${storedUsername}</span>`;
       mobileSigninBtn.addEventListener("click", (e) => {
         e.preventDefault();
         returnToMobileMenu = true; // Set memory flag!
@@ -352,6 +490,11 @@ document.addEventListener("DOMContentLoaded", () => {
           profileModal.classList.add("active");
         }
       });
+    }
+
+    // 3. NEW: Instantly inject the saved Avatar and Username into the Nav Buttons!
+    if (typeof window.loadUserAvatar === "function") {
+      window.loadUserAvatar();
     }
 
   } else {
@@ -482,9 +625,15 @@ document.addEventListener("DOMContentLoaded", () => {
           localStorage.setItem("username", data.username);
           localStorage.setItem("userEmail", data.email);
           localStorage.setItem("userPassword", data.password);
-
-          // FIX: Ensure this line exists to save your role to the browser session!
           localStorage.setItem("isAdmin", data.is_admin);
+          
+          // NEW: Catch the avatar and bio from the server on login
+          if (data.user_avatar) {
+            localStorage.setItem("userAvatar", data.user_avatar);
+          }
+          if (data.bio) {
+            localStorage.setItem("userBio", data.bio);
+          }
 
           window.location.reload();
         } else {
@@ -1401,8 +1550,11 @@ document.addEventListener("DOMContentLoaded", () => {
           
           <div class="card-top-row" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; width: 100%;">
             <div class="review-header" style="display: flex; align-items: center; gap: 12px; border: none; padding: 0; margin: 0;">
-              <div class="avatar" style="flex-shrink: 0;">
-                <ion-icon name="person-circle-outline" style="font-size: 40px; color: var(--citrine);"></ion-icon>
+              <div class="avatar" style="width: 40px; height: 40px; flex-shrink: 0; border-radius: 50%; overflow: hidden; display: flex; justify-content: center; align-items: center; background: #1a282d; border: 1px solid var(--citrine);">
+                ${c.user_avatar 
+                  ? `<img src="${c.user_avatar}" style="width: 100%; height: 100%; object-fit: cover;" />` 
+                  : `<ion-icon name="person-circle-outline" style="font-size: 40px; color: var(--citrine);"></ion-icon>`
+                }
               </div>
               <div class="user-info">
                 <h3 class="username" style="font-size: 15px; font-weight: 600; color: white; margin: 0;">${c.username}</h3>
@@ -2053,8 +2205,13 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             try {
-              saveBtn.textContent = "Saving Changes...";
+              saveBtn.textContent = "Uploading new image...";
               saveBtn.disabled = true;
+
+              // 1. Upload the new image to Cloudinary if they changed it
+              const finalEditPosterUrl = await uploadImageToCloud(temporaryBase64PosterString);
+
+              saveBtn.textContent = "Saving Changes...";
 
               const updateResponse = await fetch(
                 `${API_BASE_URL}/api/reviews/${currentActiveReviewId}`,
@@ -2066,7 +2223,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     movieName: updatedName,
                     publishDate: updatedDate,
                     reviewText: updatedText,
-                    imageData: temporaryBase64PosterString || null,
+                    imageData: finalEditPosterUrl || null, // <--- SAVING URL TO DB
                   }),
                 },
               );
@@ -2074,7 +2231,6 @@ document.addEventListener("DOMContentLoaded", () => {
               const updateData = await updateResponse.json();
 
               if (updateResponse.ok) {
-                // Select custom edit success alert component nodes
                 const editOverlay = document.getElementById("success-overlay");
                 const editTitle = document.getElementById("success-title");
                 const editMsgText = document.getElementById("success-message");
@@ -2082,9 +2238,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if (editOverlay && editBtn) {
                   if (editMsgText) {
-                    editMsgText.textContent =updateData.message ||"Movie review updated successfully!";
+                    editMsgText.textContent = updateData.message || "Movie review updated successfully!";
                   }
-                    
                   if (editTitle) {
                     editTitle.textContent = "Updated!";
                   }
@@ -2095,13 +2250,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     window.location.reload();
                   };
                 } else {
-                  alert("Error");
                   window.location.reload();
                 }
               } else {
-                alert(
-                  updateData.message || "Failed updating record parameters.",
-                );
+                alert(updateData.message || "Failed updating record parameters.");
                 saveBtn.textContent = "Save Changes";
                 saveBtn.disabled = false;
               }
@@ -3186,8 +3338,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const rawDateSelected =
         document.getElementById("review-movie-date").value;
       const reviewText = document
-        .getElementById("review-movie-text")
-        // .value.trim();
+        .getElementById("review-movie-text").value.trim();
 
       const userEmail = localStorage.getItem("userEmail");
       const submitBtn = this.querySelector('button[type="submit"]');
@@ -3227,14 +3378,18 @@ document.addEventListener("DOMContentLoaded", () => {
       const statusText = document.getElementById("upload-status-text");
 
       try {
-        submitBtn.textContent = "Processing...";
+        submitBtn.textContent = "Uploading Image...";
         submitBtn.disabled = true;
 
         if (progressWrapper) progressWrapper.style.display = "block";
         if (progressBar) progressBar.style.width = "0%";
         if (progressPercent) progressPercent.textContent = "0%";
-        if (statusText)
-          statusText.textContent = "Connecting to upload stream node...";
+        if (statusText) statusText.textContent = "Uploading Poster to Cloudinary...";
+
+        // 1. Send poster to Cloudinary FIRST
+        const finalPosterUrl = await uploadImageToCloud(base64ImageString);
+
+        if (statusText) statusText.textContent = "Saving Review to Database...";
 
         const xhr = new XMLHttpRequest();
         xhr.open("POST", `${API_BASE_URL}/api/reviews/upload`);
@@ -3242,21 +3397,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         xhr.upload.addEventListener("progress", (event) => {
           if (event.lengthComputable) {
-            const percentComplete = Math.round(
-              (event.loaded / event.total) * 100,
-            );
+            const percentComplete = Math.round((event.loaded / event.total) * 100);
             if (progressBar) progressBar.style.width = `${percentComplete}%`;
-            if (progressPercent)
-              progressPercent.textContent = `${percentComplete}%`;
-
-            if (percentComplete < 50) {
-              if (statusText)
-                statusText.textContent = "Streaming payload binary packets...";
-            } else {
-              if (statusText)
-                statusText.textContent =
-                  "Completing data payload file transfer...";
-            }
+            if (progressPercent) progressPercent.textContent = `${percentComplete}%`;
           }
         });
 
@@ -3267,12 +3410,8 @@ document.addEventListener("DOMContentLoaded", () => {
           try {
             const data = JSON.parse(xhr.responseText);
             if (xhr.status >= 200 && xhr.status < 300) {
-              const successOverlay = document.getElementById(
-                "success-alert-overlay",
-              );
-              const successMsg = document.getElementById(
-                "success-alert-message",
-              );
+              const successOverlay = document.getElementById("success-alert-overlay");
+              const successMsg = document.getElementById("success-alert-message");
               const successBtn = document.getElementById("success-alert-btn");
 
               if (successOverlay && successBtn) {
@@ -3301,9 +3440,9 @@ document.addEventListener("DOMContentLoaded", () => {
           JSON.stringify({
             email: userEmail,
             movieName: movieName,
-            publishDate: formattedPublishDateString, // Passes cleanly parsed readable date strings to DB indexes
+            publishDate: formattedPublishDateString, 
             reviewText: reviewText,
-            imageData: base64ImageString,
+            imageData: finalPosterUrl, // <--- SENDING THE TINY URL TO THE DB
             isFeatured: isFeaturedChecked,
             genres: checkedGenrePills,
           }),

@@ -12,7 +12,7 @@ app.use(cors());
 
 // Automatically swaps to the live cloud database when deployed
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_Y9FPZOxHqjc5@ep-nameless-smoke-ao3zxj7h-pooler.c-2.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require',
+  connectionString: process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_92EhzoygYGJV@ep-twilight-bird-aongdonv-pooler.c-2.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require',
   ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false // Required for cloud hosting providers
 });
 
@@ -57,6 +57,31 @@ app.put('/api/users/avatar', async (req, res) => {
   } catch (err) {
     console.error("Database update error:", err);
     res.status(500).json({ message: "Server error updating avatar." });
+  }
+});
+
+// PUT: Update user bio
+app.put('/api/users/bio', async (req, res) => {
+  const { email, bio } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ message: "Missing email data." });
+  }
+
+  try {
+    const result = await pool.query(
+      'UPDATE users SET bio = $1 WHERE LOWER(email) = LOWER($2)',
+      [bio, email]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    res.json({ success: true, message: "Bio synced to database!" });
+  } catch (err) {
+    console.error("Database update error:", err);
+    res.status(500).json({ message: "Server error updating bio." });
   }
 });
 
@@ -128,7 +153,9 @@ app.post('/api/auth/login', async (req, res) => {
       email: user.email.toLowerCase(), 
       password: '●●●●●●●●', 
       token: 'session-jwt-token-production-abc123',
-      is_admin: user.is_admin // FIX: Pass the admin boolean flag to localStorage
+      is_admin: user.is_admin,
+      user_avatar: user.user_avatar, // NEW: Send the picture back!
+      bio: user.bio                  // NEW: Send the bio back!
     });
 
   } catch (err) {
@@ -675,7 +702,7 @@ app.get('/api/community/feed', async (req, res) => {
   try {
     const feedQuery = await pool.query(
       `SELECT c.comment_id, c.comment_text, c.created_at, c.rating,
-              u.username, r.review_id, r.movie_name, r.publish_date, r.image_data,
+              u.username, u.user_avatar, r.review_id, r.movie_name, r.publish_date, r.image_data,
               (SELECT COUNT(*)::INT FROM comment_likes cl WHERE cl.comment_id = c.comment_id) as likes_count,
               (SELECT COUNT(*)::INT FROM movie_comments sub_c WHERE sub_c.parent_comment_id = c.comment_id) as comments_count,
               EXISTS (SELECT 1 FROM comment_likes cl 
@@ -692,6 +719,47 @@ app.get('/api/community/feed', async (req, res) => {
     res.json(feedQuery.rows);
   } catch (err) {
     console.error("❌ Error fetching community feed:", err.message);
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// ==========================================
+// 15. GET USER STATS (REVIEWS, LIKES, COMMENTS)
+// ==========================================
+app.get('/api/users/stats', async (req, res) => {
+  const { email } = req.query;
+  if (!email) return res.status(400).json({ message: "Email required." });
+
+  try {
+    const userQuery = await pool.query('SELECT user_id FROM users WHERE LOWER(email) = LOWER($1)', [email]);
+    if (userQuery.rows.length === 0) return res.status(404).json({ message: 'User not found.' });
+    const userId = userQuery.rows[0].user_id;
+
+    // 1. Count Total Reviews Posted
+    const reviewsRes = await pool.query('SELECT COUNT(*) FROM reviews WHERE user_id = $1', [userId]);
+    const reviewsCount = parseInt(reviewsRes.rows[0].count, 10);
+
+    // 2. Count Total Comments/Replies Made
+    const commentsRes = await pool.query('SELECT COUNT(*) FROM movie_comments WHERE user_id = $1', [userId]);
+    const commentsCount = parseInt(commentsRes.rows[0].count, 10);
+
+    // 3. Count Total Likes Received on Community Posts
+    const likesRes = await pool.query(`
+      SELECT COUNT(*) 
+      FROM comment_likes cl
+      JOIN movie_comments mc ON cl.comment_id = mc.comment_id
+      WHERE mc.user_id = $1 AND mc.comment_type = 'community'
+    `, [userId]);
+    const likesCount = parseInt(likesRes.rows[0].count, 10);
+
+    // Send the package back to the frontend
+    res.json({
+      reviews: reviewsCount,
+      comments: commentsCount,
+      likes: likesCount
+    });
+  } catch (err) {
+    console.error("Error fetching user stats:", err);
     res.status(500).json({ message: err.message });
   }
 });

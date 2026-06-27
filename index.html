@@ -411,7 +411,6 @@
             <div class="avatar-badge-indicator">
               <ion-icon name="camera-outline"></ion-icon>
             </div>
-            
           </div>
           <input type="file" id="profile-avatar-upload" accept="image/*" style="display: none;" />
         </div>
@@ -442,15 +441,15 @@
 
           <div class="profile-stats-grid">
             <div class="stat-item">
-              <span class="stat-number">0</span>
+              <span class="stat-number" id="stat-reviews-count">0</span>
               <span class="stat-label">Reviews</span>
             </div>
             <div class="stat-item">
-              <span class="stat-number">0</span>
+              <span class="stat-number" id="stat-likes-count">0</span>
               <span class="stat-label">Likes (Community)</span>
             </div>
             <div class="stat-item">
-              <span class="stat-number">0</span>
+              <span class="stat-number" id="stat-comments-count">0</span>
               <span class="stat-label">Comments</span>
             </div>
           </div>
@@ -470,9 +469,19 @@
               </div>
             </div>
           </div>
+          
+          <style>
+            #save-avatar-btn:hover {
+              background: var(--citrine) !important;
+              color: black !important;
+            }
+          </style>
+          <button id="save-avatar-btn" class="profile-card-signout" style="display: none; border-color: var(--citrine); color: var(--citrine); margin-bottom: 12px; transition: all 0.3s ease;">
+            SAVE NEW PICTURE
+          </button>
 
           <button id="profile-signout-btn" class="profile-card-signout">
-            Sign Out Account
+            SIGN OUT ACCOUNT
           </button>
         </div>
       </div>
