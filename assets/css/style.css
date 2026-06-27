@@ -1833,6 +1833,21 @@ body.active { overflow: hidden; }
         background: #c59b00 !important;
       }
 
+      #whats-new-btn {
+  background: var(--citrine);
+  color: var(--black);
+  border: none;
+  padding: 12px 30px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 10px;
+}
+
       .custom-alert-overlay {
   display: none;
 }
