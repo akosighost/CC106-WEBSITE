@@ -328,7 +328,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 this.style.display = "none";
                 this.textContent = "Save Picture";
                 this.disabled = false;
-              }, 2000);
+              }, 1000);
             } else {
               alert("Failed to sync avatar to database.");
               this.textContent = "Save Picture";
