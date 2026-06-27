@@ -34,6 +34,43 @@ process.on('uncaughtException', (err) => {
   console.error('❌ Uncaught Exception thrown:', err.message);
 });
 
+// Add this route to your server.js
+app.put('/api/users/avatar', async (req, res) => {
+  const { email, avatarData } = req.body;
+
+  if (!email || !avatarData) {
+    return res.status(400).json({ message: "Missing email or avatar data." });
+  }
+
+  try {
+    // This updates the column you showed in your database screenshot
+    const result = await pool.query(
+      'UPDATE users SET user_avatar = $1 WHERE email = $2',
+      [avatarData, email]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    res.json({ success: true, message: "Avatar synced to database!" });
+  } catch (err) {
+    console.error("Database update error:", err);
+    res.status(500).json({ message: "Server error updating avatar." });
+  }
+});
+
+// GET: Fetch user profile (including avatar)
+app.get('/api/users/profile/:email', async (req, res) => {
+  const { email } = req.params;
+  try {
+    const result = await pool.query('SELECT username, user_avatar, bio FROM users WHERE email = $1', [email]);
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching user data." });
+  }
+});
+
 // ==========================================
 // 1. DIAGNOSTIC SIGN UP ENDPOINT
 // ==========================================

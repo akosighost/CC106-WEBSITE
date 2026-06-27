@@ -6,7 +6,7 @@ const API_BASE_URL =
   window.location.hostname === "127.0.0.1"
     ? "http://localhost:5000"
     : "https://reav-on-api.onrender.com";
-    
+
 console.log("Current API URL:", API_BASE_URL);
 
 // --- PASTE THE SPINNER RIGHT HERE ---
@@ -21,7 +21,8 @@ const loadingSpinnerHTML = `
 
 // --- FULL SCREEN PAGE TRANSITION POPUP ---
 const pageTransitionOverlay = document.createElement("div");
-pageTransitionOverlay.style.cssText = "position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(11, 20, 22, 0.85); backdrop-filter: blur(5px); z-index: 9999; display: none; justify-content: center; align-items: center; flex-direction: column;";
+pageTransitionOverlay.style.cssText =
+  "position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(11, 20, 22, 0.85); backdrop-filter: blur(5px); z-index: 9999; display: none; justify-content: center; align-items: center; flex-direction: column;";
 pageTransitionOverlay.innerHTML = `
   <div style="width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.05); border-top-color: var(--citrine); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
   <p style="color: var(--citrine); margin-top: 20px; font-weight: 600; font-size: 14px; letter-spacing: 1px;">LOADING MOVIE...</p>
@@ -42,7 +43,7 @@ fetch(`${API_BASE_URL}/api/reviews/all`)
 console.log("Current API URL:", API_BASE_URL);
 
 // --- MAINTENANCE MODE TOGGLE ---
-const IS_MAINTENANCE_MODE = true; // Set to true when you need maintenance
+const IS_MAINTENANCE_MODE = false; // Set to true when you need maintenance
 
 document.addEventListener("DOMContentLoaded", () => {
   // Check if user is an admin
@@ -66,9 +67,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const navCloseBtn = document.querySelector("[data-menu-close-btn]");
   const navbar = document.querySelector("[data-navbar]");
   const overlay = document.querySelector("[data-overlay]");
-  
+
   // 1. Grab all the links inside the sidebar
-  const navLinks = document.querySelectorAll(".navbar-link"); 
+  const navLinks = document.querySelectorAll(".navbar-link");
 
   const navElemArr = [navOpenBtn, navCloseBtn, overlay];
 
@@ -88,9 +89,9 @@ document.addEventListener("DOMContentLoaded", () => {
       // We don't use toggle here, we force it to remove the active state
       if (navbar) navbar.classList.remove("active");
       if (overlay) overlay.classList.remove("active");
-      
+
       // This is the line that fixes your scrolling bug!
-      document.body.classList.remove("active"); 
+      document.body.classList.remove("active");
     });
   });
 });
@@ -139,15 +140,171 @@ document.addEventListener("DOMContentLoaded", () => {
   const profilePasswordToggle = document.getElementById(
     "profile-password-toggle-icon",
   );
-  
 
   const userToken = localStorage.getItem("userToken");
   const storedUsername = localStorage.getItem("username") || "User";
-  
 
   // A. URL PARAMS CHECK FOR RESET TOKEN
   const urlParams = new URLSearchParams(window.location.search);
   const resetToken = urlParams.get("token");
+
+  // --- BIO EDITING ENGINE ---
+  const bioDisplayWrapper = document.getElementById(
+    "profile-bio-display-wrapper",
+  );
+  const bioEditWrapper = document.getElementById("profile-bio-edit-wrapper");
+  const bioTextDisplay = document.getElementById("profile-card-bio");
+  const editBioBtn = document.getElementById("edit-bio-btn");
+  const saveBioBtn = document.getElementById("save-bio-btn");
+  const cancelBioBtn = document.getElementById("cancel-bio-btn");
+  const editBioInput = document.getElementById("edit-bio-input");
+
+  // --- AVATAR UPLOAD ENGINE ---
+  const avatarContainer = document.getElementById("profile-avatar-container");
+  const avatarUpload = document.getElementById("profile-avatar-upload");
+  const avatarImg = document.getElementById("profile-avatar-img");
+  const defaultIcon = document.getElementById("profile-default-icon");
+
+  window.loadUserAvatar = function () {
+    const savedAvatar = localStorage.getItem("userAvatar");
+
+    // 1. Update the Modal Avatar
+    if (savedAvatar) {
+      if (avatarImg) {
+        avatarImg.src = savedAvatar;
+        avatarImg.style.display = "block";
+      }
+      if (defaultIcon) defaultIcon.style.display = "none";
+    }
+
+    // 2. Automatically update the Desktop Header & Mobile Sidebar Buttons!
+    const desktopProfileBtn = document.getElementById("signin-btn");
+    const mobileProfileBtn = document.getElementById("mobile-signin-btn");
+    const storedName = localStorage.getItem("username") || "User";
+
+    const iconHtml = savedAvatar
+      ? `<img src="${savedAvatar}" style="width: 20px; height: 20px; border-radius: 50%; object-fit: cover; display: inline-block; vertical-align: middle; margin-right: 5px; border: 1px solid var(--citrine);" />`
+      : `<ion-icon name="person-circle-outline" style="font-size: 20px; color: var(--citrine); display: inline-block; vertical-align: middle; margin-right: 5px;"></ion-icon>`;
+
+    if (desktopProfileBtn && localStorage.getItem("userToken")) {
+      desktopProfileBtn.innerHTML = `${iconHtml} <span style="display: inline-block; vertical-align: middle;">${storedName}</span>`;
+    }
+    if (mobileProfileBtn && localStorage.getItem("userToken")) {
+      mobileProfileBtn.innerHTML = `${iconHtml} <span>${storedName}</span>`;
+    }
+  };
+
+  if (avatarContainer && avatarUpload) {
+    // Trigger file picker on click
+    avatarContainer.addEventListener("click", () => avatarUpload.click());
+
+    avatarUpload.addEventListener("change", function () {
+      const file = this.files[0];
+      if (file) {
+        // 1. START LOADING STATE
+        const badge = document.querySelector(".avatar-badge-indicator");
+        const originalBadgeContent = badge.innerHTML;
+        
+        avatarContainer.style.pointerEvents = "none";
+        avatarContainer.style.opacity = "0.6";
+        badge.innerHTML = '<ion-icon name="sync-outline" style="animation: spin 0.8s linear infinite;"></ion-icon>';
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const img = new Image();
+          img.onload = function () {
+            // Compress the image
+            const canvas = document.createElement("canvas");
+            const MAX_SIZE = 300; 
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+              if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
+            } else {
+              if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, width, height);
+
+            const compressedBase64 = canvas.toDataURL("image/jpeg", 0.8);
+            
+            // Save to localStorage
+            localStorage.setItem("userAvatar", compressedBase64);
+            
+            // 2. SYNC TO BACKEND
+            const userEmail = localStorage.getItem("userEmail");
+            fetch(`${API_BASE_URL}/api/users/avatar`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email: userEmail, avatarData: compressedBase64 }),
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                console.log("Avatar synced:", data);
+                alert("Profile picture uploaded successfully!");
+              })
+              .catch((err) => {
+                console.error("Database sync failed", err);
+                alert("Error: Profile picture saved locally but failed to sync to server.");
+              })
+              .finally(() => {
+                // 3. RESET UI STATE
+                avatarContainer.style.pointerEvents = "auto";
+                avatarContainer.style.opacity = "1";
+                badge.innerHTML = originalBadgeContent;
+                window.loadUserAvatar();
+              });
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
+  // Helper function to load and display the bio
+  window.loadUserBio = function () {
+    if (!bioTextDisplay) return;
+    const savedBio = localStorage.getItem("userBio");
+    if (savedBio && savedBio.trim() !== "") {
+      bioTextDisplay.textContent = savedBio;
+      bioTextDisplay.style.opacity = "1";
+    } else {
+      bioTextDisplay.textContent = "Add a bio";
+      bioTextDisplay.style.opacity = "0.5"; // Fades it out to look like a placeholder
+    }
+  };
+
+  if (editBioBtn && saveBioBtn && cancelBioBtn) {
+    // 1. Switch to Edit Mode
+    editBioBtn.addEventListener("click", () => {
+      bioDisplayWrapper.style.display = "none";
+      bioEditWrapper.style.display = "flex";
+      editBioInput.value = localStorage.getItem("userBio") || "";
+      editBioInput.focus();
+    });
+
+    // 2. Cancel Editing
+    cancelBioBtn.addEventListener("click", () => {
+      bioEditWrapper.style.display = "none";
+      bioDisplayWrapper.style.display = "flex";
+    });
+
+    // 3. Save to LocalStorage and Update UI
+    saveBioBtn.addEventListener("click", () => {
+      const newBio = editBioInput.value.trim();
+      localStorage.setItem("userBio", newBio);
+
+      window.loadUserBio();
+      bioEditWrapper.style.display = "none";
+      bioDisplayWrapper.style.display = "flex";
+    });
+  }
+
   if (resetToken && resetModal) {
     const hiddenInput = document.getElementById("reset-token-hidden");
     if (hiddenInput) hiddenInput.value = resetToken;
@@ -173,9 +330,15 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault();
         returnToMobileMenu = false; // Reset flag
         if (profileModal) {
-          document.getElementById("profile-card-username").textContent = localStorage.getItem("username");
-          document.getElementById("profile-card-email").textContent = localStorage.getItem("userEmail") || "test@gmail.com";
-          document.getElementById("profile-card-password").value = localStorage.getItem("userPassword") || "password123";
+          document.getElementById("profile-card-username").textContent =
+            localStorage.getItem("username");
+          document.getElementById("profile-card-email").textContent =
+            localStorage.getItem("userEmail") || "test@gmail.com";
+          document.getElementById("profile-card-password").value =
+            localStorage.getItem("userPassword") || "password123";
+          if (typeof window.loadUserBio === "function") window.loadUserBio();
+          if (typeof window.loadUserAvatar === "function")
+            window.loadUserAvatar();
           profileModal.classList.add("active");
         }
       });
@@ -189,14 +352,16 @@ document.addEventListener("DOMContentLoaded", () => {
         returnToMobileMenu = true; // Set memory flag!
         document.querySelector("[data-menu-close-btn]")?.click(); // Auto-close sidebar
         if (profileModal) {
-          document.getElementById("profile-card-username").textContent = localStorage.getItem("username");
-          document.getElementById("profile-card-email").textContent = localStorage.getItem("userEmail") || "test@gmail.com";
-          document.getElementById("profile-card-password").value = localStorage.getItem("userPassword") || "password123";
+          document.getElementById("profile-card-username").textContent =
+            localStorage.getItem("username");
+          document.getElementById("profile-card-email").textContent =
+            localStorage.getItem("userEmail") || "test@gmail.com";
+          document.getElementById("profile-card-password").value =
+            localStorage.getItem("userPassword") || "password123";
           profileModal.classList.add("active");
         }
       });
     }
-
   } else {
     // 3. Desktop Sign In
     if (signinBtn && signinModal) {
@@ -206,7 +371,7 @@ document.addEventListener("DOMContentLoaded", () => {
         signinModal.classList.add("active");
       });
     }
-    
+
     // 4. Mobile Sign In
     if (mobileSigninBtn && signinModal) {
       mobileSigninBtn.addEventListener("click", (e) => {
@@ -219,7 +384,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // C. MODAL TRANSITION SWITCHES & INTERACTION TRIGGERS
-  
+
   // Helper Engine: Checks memory flag and restores the mobile menu
   function checkReturnToMobileMenu() {
     if (returnToMobileMenu) {
@@ -951,18 +1116,25 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 /*-----------------------------------*\
- * #SEARCH LOGIC FILTER
+ * #SEARCH LOGIC FILTER (LIVE ENGINE)
 \*-----------------------------------*/
 document.addEventListener("DOMContentLoaded", function () {
   const searchBtn = document.querySelector(".search-btn");
   const searchModal = document.getElementById("search-modal-overlay");
   const searchInput = document.getElementById("search-input");
   const closeSearchBtn = document.getElementById("close-search-btn");
+  const searchCategory = document.getElementById("search-category-select");
+  const resultsContainer = document.getElementById("search-results-container");
 
   if (searchBtn && searchModal) {
     searchBtn.addEventListener("click", () => {
       searchModal.classList.add("active");
-      if (searchInput) searchInput.focus();
+      if (searchInput) {
+        searchInput.value = ""; // Clear input on open
+        searchInput.focus();
+        resultsContainer.innerHTML =
+          '<p id="search-status" style="grid-column: 1 / -1; color: var(--gainsboro); text-align: center; font-size: 14px; margin-top: 20px;">Type a movie name to search...</p>';
+      }
       document.body.classList.add("active");
     });
   }
@@ -973,6 +1145,85 @@ document.addEventListener("DOMContentLoaded", function () {
       document.body.classList.remove("active");
     });
   }
+
+  // LIVE SEARCH EXECUTION ENGINE
+  if (searchInput && searchCategory && resultsContainer) {
+    const executeSearch = async () => {
+      const query = searchInput.value.trim().toLowerCase();
+      const category = searchCategory.value;
+
+      // If the search bar is empty, reset the screen
+      if (query.length === 0) {
+        resultsContainer.innerHTML =
+          '<p id="search-status" style="grid-column: 1 / -1; color: var(--gainsboro); text-align: center; font-size: 14px; margin-top: 20px;">Type a movie name to search...</p>';
+        return;
+      }
+
+      // Show spinner while fetching
+      resultsContainer.innerHTML = `<div style="grid-column: 1 / -1; display: flex; justify-content: center; padding: 40px;"><div style="width: 30px; height: 30px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--citrine); border-radius: 50%; animation: spin 0.8s linear infinite;"></div></div>`;
+
+      try {
+        // Determine which database endpoint to check
+        let fetchUrl = `${API_BASE_URL}/api/reviews/all`;
+        if (category === "featured")
+          fetchUrl = `${API_BASE_URL}/api/reviews/featured`;
+        if (category === "recommendations")
+          fetchUrl = `${API_BASE_URL}/api/reviews/recommendations`;
+
+        const response = await fetch(fetchUrl);
+        const data = await response.json();
+
+        // Filter the results locally by movie name
+        const filteredData = data.filter((movie) =>
+          movie.movie_name.toLowerCase().includes(query),
+        );
+
+        if (filteredData.length === 0) {
+          resultsContainer.innerHTML = `<p style="grid-column: 1 / -1; color: #ff4560; text-align: center; font-size: 14px; margin-top: 20px;">No movies found matching "${query}" in this category.</p>`;
+          return;
+        }
+
+        // Draw the found movies as clickable mini-posters
+        resultsContainer.innerHTML = filteredData
+          .map((item) => {
+            const ratingCount = parseInt(item.rating_count) || 0;
+            const avgRating = parseFloat(item.avg_rating) || 0;
+            const starText =
+              ratingCount > 0
+                ? "★".repeat(Math.round(avgRating)) +
+                  "☆".repeat(5 - Math.round(avgRating))
+                : "☆☆☆☆☆";
+
+            return `
+            <div class="premium-box-card" onclick="window.location.href='view-review.html?id=${item.review_id}'" style="border-bottom: 2px solid var(--citrine); cursor: pointer; padding: 8px; background: #132226; border-radius: 6px; transition: transform 0.2s;">
+              <div class="poster-wrapper" style="aspect-ratio: 2/3; border-radius: 4px; overflow: hidden; margin-bottom: 8px; background: #0b1416;">
+                <img src="${item.image_data || "./assets/images/obs.jpg"}" alt="${item.movie_name}" style="width: 100%; height: 100%; object-fit: cover;" />
+              </div>
+              <div class="poster-footer" style="display: flex; flex-direction: column; gap: 2px;">
+                <span style="color: white; font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.movie_name}</span>
+                <span style="color: var(--citrine); font-size: 10px;">${starText}</span>
+              </div>
+            </div>
+          `;
+          })
+          .join("");
+      } catch (err) {
+        console.error("Search Error:", err);
+        resultsContainer.innerHTML = `<p style="grid-column: 1 / -1; color: #ff4560; text-align: center; margin-top: 20px;">Error performing search.</p>`;
+      }
+    };
+
+    // DEBOUNCE TIMER: Waits 0.4 seconds after the user stops typing to execute the search
+    // This prevents your database from crashing if someone types really fast!
+    let debounceTimer;
+    searchInput.addEventListener("input", () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(executeSearch, 400);
+    });
+
+    // Auto-search again if they change the category dropdown while typing
+    searchCategory.addEventListener("change", executeSearch);
+  }
 });
 
 /*-----------------------------------*\
@@ -980,9 +1231,6 @@ document.addEventListener("DOMContentLoaded", function () {
 \*-----------------------------------*/
 document.addEventListener("DOMContentLoaded", () => {
   // MAINTENANCE POP UP
-  
-
-
 
   const uploadReviewBtn = document.getElementById("upload-review-btn");
   const uploadModal = document.getElementById("upload-review-modal-overlay");
@@ -1167,9 +1415,14 @@ document.addEventListener("DOMContentLoaded", () => {
           
           <div class="card-top-row" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; width: 100%;">
             <div class="review-header" style="display: flex; align-items: center; gap: 12px; border: none; padding: 0; margin: 0;">
-              <div class="avatar" style="flex-shrink: 0;">
-                <ion-icon name="person-circle-outline" style="font-size: 40px; color: var(--citrine);"></ion-icon>
-              </div>
+
+              <div class="avatar" style="flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: #1a282d; display: flex; justify-content: center; align-items: center;">
+  ${c.user_avatar && c.user_avatar.startsWith('data:image') 
+    ? `<img src="${c.user_avatar}" alt="${c.username}" style="width: 100%; height: 100%; object-fit: cover;" />` 
+    : `<ion-icon name="person-circle-outline" style="font-size: 40px; color: var(--citrine);"></ion-icon>`
+  }
+</div>
+              
               <div class="user-info">
                 <h3 class="username" style="font-size: 15px; font-weight: 600; color: white; margin: 0;">${c.username}</h3>
                 <div class="rating-wrapper" style="display: flex; gap: 2px; color: var(--citrine); margin-top: 4px; font-size: 12px;">${starHTML}</div>
@@ -1263,9 +1516,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       if (featuredGrid) featuredGrid.innerHTML = loadingSpinnerHTML;
-      const response = await fetch(
-        `${API_BASE_URL}/api/reviews/featured`,
-      );
+      const response = await fetch(`${API_BASE_URL}/api/reviews/featured`);
       const reviews = await response.json();
 
       if (reviews.length === 0) {
@@ -1310,7 +1561,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!recommendationsGrid) return;
 
     try {
-      if (recommendationsGrid) recommendationsGrid.innerHTML = loadingSpinnerHTML;
+      if (recommendationsGrid)
+        recommendationsGrid.innerHTML = loadingSpinnerHTML;
       const response = await fetch(
         `${API_BASE_URL}/api/reviews/recommendations`,
       );
@@ -1352,7 +1604,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   if (communityUploadBtn) {
-    communityUploadBtn.addEventListener("click", async () => {
+    communityUploadBtn.addEventListener("click", async function () {
       const userToken = localStorage.getItem("userToken");
       if (!userToken) {
         alert("Please sign in to write a community comment thought!");
@@ -1370,8 +1622,14 @@ document.addEventListener("DOMContentLoaded", () => {
       );
 
       if (uploadModalOverlay && dropdownSelect) {
+        // 1. SAVE ORIGINAL STATE AND TRIGGER LOADING UI
+        const originalHTML = this.innerHTML;
+        this.innerHTML =
+          '<ion-icon name="sync-outline" style="animation: spin 0.8s linear infinite; font-size: 16px;"></ion-icon> <span>LOADING...</span>';
+        this.style.pointerEvents = "none"; // Prevent double-clicking
+        this.style.opacity = "0.8";
+
         try {
-          if (audienceGrid) audienceGrid.innerHTML = loadingSpinnerHTML;
           // Fetch live movies from your active backend database
           const response = await fetch(`${API_BASE_URL}/api/reviews/all`);
           const publicMovies = await response.json();
@@ -1400,6 +1658,12 @@ document.addEventListener("DOMContentLoaded", () => {
           document.body.classList.add("active");
         } catch (err) {
           console.error("Error populating review list dropdown:", err);
+          alert("Network error: Could not load the movie list.");
+        } finally {
+          // 2. RESTORE THE BUTTON ONCE MODAL OPENS (OR IF IT FAILS)
+          this.innerHTML = originalHTML;
+          this.style.pointerEvents = "auto";
+          this.style.opacity = "1";
         }
       }
     });
@@ -1565,11 +1829,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     for (let i = 1; i <= 5; i++) {
       if (averageScore >= i) {
-        ratingHTML += '<ion-icon name="star" style="color: var(--citrine); font-size: 16px; margin: 0;"></ion-icon>';
+        ratingHTML +=
+          '<ion-icon name="star" style="color: var(--citrine); font-size: 16px; margin: 0;"></ion-icon>';
       } else if (averageScore >= i - 0.5) {
-        ratingHTML += '<ion-icon name="star-half" style="color: var(--citrine); font-size: 16px; margin: 0;"></ion-icon>';
+        ratingHTML +=
+          '<ion-icon name="star-half" style="color: var(--citrine); font-size: 16px; margin: 0;"></ion-icon>';
       } else {
-        ratingHTML += '<ion-icon name="star-outline" style="color: #667788; font-size: 16px; margin: 0;"></ion-icon>';
+        ratingHTML +=
+          '<ion-icon name="star-outline" style="color: #667788; font-size: 16px; margin: 0;"></ion-icon>';
       }
     }
 
@@ -1837,13 +2104,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if (editOverlay && editBtn) {
                   if (editMsgText) {
-                    editMsgText.textContent =updateData.message ||"Movie review updated successfully!";
+                    editMsgText.textContent =
+                      updateData.message ||
+                      "Movie review updated successfully!";
                   }
-                    
+
                   if (editTitle) {
                     editTitle.textContent = "Updated!";
                   }
-                  
+
                   editOverlay.style.display = "flex";
                   editBtn.onclick = function () {
                     editOverlay.style.display = "none";
@@ -2251,7 +2520,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (subReplyCopyBtn) {
       e.preventDefault();
       const cardNode = subReplyCopyBtn.closest(".sub-reply-card-node");
-      const textToCopy = cardNode?.querySelector("p[id^='sub-reply-text-']")?.textContent.trim();
+      const textToCopy = cardNode
+        ?.querySelector("p[id^='sub-reply-text-']")
+        ?.textContent.trim();
       if (textToCopy) {
         navigator.clipboard.writeText(textToCopy);
         alert("Sub-reply text copied to clipboard!");
@@ -2266,7 +2537,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (subReplyEditBtn) {
       e.preventDefault();
       const commentId = subReplyEditBtn.getAttribute("data-comment-id");
-      const textElement = document.getElementById(`sub-reply-text-${commentId}`);
+      const textElement = document.getElementById(
+        `sub-reply-text-${commentId}`,
+      );
       if (!textElement) return;
 
       const parentBody = textElement.parentElement;
@@ -2277,7 +2550,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const editBox = document.createElement("div");
       editBox.className = "sub-reply-inline-edit-box";
-      editBox.style = "margin-top: 10px; display: flex; flex-direction: column; gap: 8px; width: 100%;";
+      editBox.style =
+        "margin-top: 10px; display: flex; flex-direction: column; gap: 8px; width: 100%;";
       editBox.innerHTML = `
         <textarea id="sub-edit-field-${commentId}" class="login-input" style="min-height: 60px; padding: 10px !important; background: #0b1416 !important; border: 1px solid #243337 !important; color: white !important; border-radius: 4px; resize: vertical; font-family: var(--ff-poppins); font-size: 12.5px; line-height: 1.5;">${currentText}</textarea>
         <div style="display: flex; justify-content: flex-end; gap: 8px;">
@@ -2286,11 +2560,14 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       `;
       parentBody.appendChild(editBox);
-      
+
       const textarea = document.getElementById(`sub-edit-field-${commentId}`);
       if (textarea) {
         textarea.focus();
-        textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+        textarea.setSelectionRange(
+          textarea.value.length,
+          textarea.value.length,
+        );
       }
       return;
     }
@@ -2302,8 +2579,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (subEditCancelBtn) {
       e.preventDefault();
       const commentId = subEditCancelBtn.getAttribute("data-comment-id");
-      const textElement = document.getElementById(`sub-reply-text-${commentId}`);
-      
+      const textElement = document.getElementById(
+        `sub-reply-text-${commentId}`,
+      );
+
       if (textElement) textElement.style.display = "block"; // Restore text
       e.target.closest(".sub-reply-inline-edit-box")?.remove(); // Purge editor
       return;
@@ -2317,25 +2596,30 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
       const commentId = subEditSaveBtn.getAttribute("data-comment-id");
       const editField = document.getElementById(`sub-edit-field-${commentId}`);
-      
+
       if (!editField || !editField.value.trim()) return;
 
       try {
         subEditSaveBtn.textContent = "Saving...";
         subEditSaveBtn.disabled = true;
 
-        const response = await fetch(`${API_BASE_URL}/api/comments/${commentId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: userEmail,
-            commentText: editField.value.trim(),
-          }),
-        });
+        const response = await fetch(
+          `${API_BASE_URL}/api/comments/${commentId}`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: userEmail,
+              commentText: editField.value.trim(),
+            }),
+          },
+        );
 
         if (response.ok) {
           // Instantly update the DOM so it feels snappy without requiring a reload
-          const textElement = document.getElementById(`sub-reply-text-${commentId}`);
+          const textElement = document.getElementById(
+            `sub-reply-text-${commentId}`,
+          );
           if (textElement) {
             textElement.textContent = editField.value.trim();
             textElement.style.display = "block";
@@ -2883,7 +3167,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (file) {
         const reader = new FileReader();
         reader.addEventListener("load", function (e) {
-          
           // Create a temporary image object to hold the original file
           const img = new Image();
           img.onload = function () {
@@ -2920,10 +3203,9 @@ document.addEventListener("DOMContentLoaded", () => {
             previewImg.src = compressedBase64;
             previewImg.style.display = "block";
             uploadPrompt.style.opacity = "0";
-            base64ImageString = compressedBase64; 
+            base64ImageString = compressedBase64;
           };
           img.src = e.target.result;
-          
         });
         reader.readAsDataURL(file);
       }
@@ -2940,9 +3222,8 @@ document.addEventListener("DOMContentLoaded", () => {
         .value.trim();
       const rawDateSelected =
         document.getElementById("review-movie-date").value;
-      const reviewText = document
-        .getElementById("review-movie-text")
-        // .value.trim();
+      const reviewText = document.getElementById("review-movie-text");
+      // .value.trim();
 
       const userEmail = localStorage.getItem("userEmail");
       const submitBtn = this.querySelector('button[type="submit"]');
@@ -3115,19 +3396,19 @@ document.addEventListener("DOMContentLoaded", () => {
       if (grid) {
         grid.addEventListener("click", async (e) => {
           const targetedCard = e.target.closest(".review-click-target-node");
-          
+
           // Guard: Ensure they didn't accidentally click a share/copy button inside the card
           if (targetedCard && !e.target.closest("button")) {
             const id = targetedCard.getAttribute("data-review-id");
-            
+
             // 1. Instantly show the full-screen loading popup!
             pageTransitionOverlay.style.display = "flex";
-            
+
             // 2. Wait for the database to register the +1 view count
             await fetch(`${API_BASE_URL}/api/reviews/view/${id}`, {
               method: "POST",
             }).catch((err) => console.error(err));
-            
+
             // 3. Move to the details page
             window.location.href = `view-review.html?id=${id}`;
           }
@@ -3533,6 +3814,84 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ==========================================
+  // 8. "SEE MORE" PAGE DYNAMIC RENDERER
+  // ==========================================
+  if (window.location.pathname.includes("see-more.html")) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const category = urlParams.get("category");
+    const grid = document.getElementById("see-more-grid");
+    const pageTitle = document.getElementById("see-more-page-title");
+    const userEmail = localStorage.getItem("userEmail") || "";
+
+    if (grid && pageTitle) {
+      grid.innerHTML = loadingSpinnerHTML; // Show spinner immediately
+
+      // 1. Determine Title and API Endpoint
+      let fetchUrl = `${API_BASE_URL}/api/reviews/all`;
+
+      if (category === "featured") {
+        pageTitle.textContent = "NEW ON REAV-ON";
+        fetchUrl = `${API_BASE_URL}/api/reviews/featured`;
+      } else if (category === "recommendations") {
+        pageTitle.textContent = "RECOMMENDATIONS";
+        fetchUrl = `${API_BASE_URL}/api/reviews/recommendations`;
+      } else if (category === "user") {
+        pageTitle.textContent = "ADDED BY YOU";
+        if (!userEmail) {
+          grid.innerHTML = `<p style="color: #678; font-size: 14px; grid-column: 1 / -1; text-align: center; padding: 40px;">Please sign in to view your reviews.</p>`;
+          return;
+        }
+        fetchUrl = `${API_BASE_URL}/api/reviews/user?email=${encodeURIComponent(userEmail)}`;
+      } else if (category === "audience") {
+        pageTitle.textContent = "AUDIENCE REVIEWS";
+        fetchUrl = `${API_BASE_URL}/api/reviews/all`;
+      }
+
+      // 2. Fetch the Data and Render the Cards
+      fetch(fetchUrl)
+        .then((response) => response.json())
+        .then((data) => {
+          if (!data || data.length === 0) {
+            grid.innerHTML = `<p style="color: #678; font-size: 14px; grid-column: 1 / -1; text-align: center; padding: 40px;">No movies found in this category.</p>`;
+            return;
+          }
+
+          grid.innerHTML = data
+            .map((item) => {
+              const ratingCount = parseInt(item.rating_count) || 0;
+              const avgRating = parseFloat(item.avg_rating) || 0;
+              const starText =
+                ratingCount > 0
+                  ? "★".repeat(Math.round(avgRating)) +
+                    "☆".repeat(5 - Math.round(avgRating))
+                  : "☆☆☆☆☆";
+
+              return `
+              <div class="premium-box-card review-click-target-node" data-review-id="${item.review_id}" style="border-bottom: 3px solid var(--citrine); cursor: pointer;">
+                <div class="poster-wrapper">
+                  <img src="${item.image_data || "./assets/images/obs.jpg"}" alt="${item.movie_name}" />
+                </div>
+                <div class="poster-footer">
+                  <span class="reviewer-name">${item.movie_name}</span>
+                  <span style="color: var(--citrine); font-size: 11px; margin-top: -2px; font-weight: 500;">By: ${item.username}</span>
+                  <div class="card-meta">
+                    <span class="stars-indicator" style="color: var(--citrine);">${starText}</span>
+                    <span class="review-date">${item.publish_date}</span>
+                  </div>
+                </div>
+              </div>
+            `;
+            })
+            .join("");
+        })
+        .catch((err) => {
+          console.error("Error loading category data:", err);
+          grid.innerHTML = `<p style="color: #ff4560; font-size: 14px; grid-column: 1 / -1; text-align: center; padding: 40px;">Error loading database connection.</p>`;
+        });
+    }
+  }
+
+  // ==========================================
   // 🚀 CORE GRID RUNNERS & INITIALIZERS
   // ==========================================
   fetchAndRenderFeaturedReviews();
@@ -3552,4 +3911,69 @@ document.addEventListener("DOMContentLoaded", () => {
       openReviewDetailsViewport(activeRouteId);
     }
   }
+});
+
+/*-----------------------------------*\
+ * #DYNAMIC "SEE MORE" GRID CONTROLLER
+\*-----------------------------------*/
+document.addEventListener("DOMContentLoaded", () => {
+  const activityLinks = document.querySelectorAll(".activity-link");
+
+  // 1. Handle the Click (Expand / Collapse)
+  activityLinks.forEach((link) => {
+    link.addEventListener("click", function (e) {
+      e.preventDefault();
+
+      const container = this.closest(".container");
+      const grid = container.querySelector(".movie-row-grid");
+
+      if (grid) {
+        // Toggle the expansion class we added in CSS
+        grid.classList.toggle("show-all");
+
+        if (grid.classList.contains("show-all")) {
+          // Change to SEE LESS with an up arrow
+          this.innerHTML =
+            '<ion-icon name="chevron-up-outline" style="margin-right:4px; font-size:16px;"></ion-icon> SEE LESS';
+        } else {
+          // Change back to SEE MORE with a down arrow
+          this.innerHTML =
+            '<ion-icon name="chevron-down-outline" style="margin-right:4px; font-size:16px;"></ion-icon> SEE MORE';
+
+          // Smoothly scroll back to the section title so the user doesn't get lost at the bottom of the page!
+          container.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }
+    });
+  });
+
+  // 2. Auto-Hide Tracker (Runs automatically when database data arrives)
+  const observer = new MutationObserver(() => {
+    document.querySelectorAll(".movie-row-grid").forEach((grid) => {
+      const container = grid.closest(".container");
+      const seeMoreBtn = container?.querySelector(".activity-link");
+
+      if (seeMoreBtn) {
+        const cards = grid.querySelectorAll(".premium-box-card");
+
+        // If there are 6 or fewer movies, completely hide the SEE MORE button
+        if (cards.length > 0 && cards.length <= 6) {
+          seeMoreBtn.style.display = "none";
+        }
+        // If there are MORE than 6 movies, show it and inject the default down arrow
+        else if (
+          cards.length > 6 &&
+          !seeMoreBtn.hasAttribute("data-initialized")
+        ) {
+          seeMoreBtn.style.display = "flex";
+          seeMoreBtn.innerHTML =
+            '<ion-icon name="chevron-down-outline" style="margin-right:4px; font-size:16px;"></ion-icon> SEE MORE';
+          seeMoreBtn.setAttribute("data-initialized", "true"); // Prevent infinite loops
+        }
+      }
+    });
+  });
+
+  // Start observing the page for database injections
+  observer.observe(document.body, { childList: true, subtree: true });
 });

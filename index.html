@@ -88,9 +88,7 @@
           <div class="container">
             <div class="trending-header">
               <h2 class="trending-title">NEW ON REAV-ON</h2>
-              <span class="activity-link">
-                <ion-icon></ion-icon> SEE MORE
-              </span>
+              <a href="see-more.html?category=featured" class="activity-link" style="cursor: pointer;">SEE MORE <ion-icon name="chevron-forward-outline"></ion-icon></a>
             </div>
 
             <div class="movie-row-grid" id="featured-reviews-grid"></div>
@@ -100,7 +98,7 @@
             <div class="trending-header">
               <h2 class="trending-title">RECOMMENDATIONS</h2>
               <span class="activity-link">
-                <ion-icon name="flash-outline"></ion-icon> RECENT ACTIVITY
+                <ion-icon></ion-icon> SEE MORE
               </span>
             </div>
 
@@ -110,9 +108,7 @@
           <div class="container" id="user-reviews-container" style="margin-bottom: 40px;">
             <div class="trending-header">
               <h2 class="trending-title">ADDED BY YOU</h2>
-              <span class="activity-link">
-                <ion-icon name="flash-outline"></ion-icon> RECENT ACTIVITY
-              </span>
+              <a href="see-more.html?category=featured" class="activity-link" style="cursor: pointer;">SEE MORE <ion-icon name="chevron-forward-outline"></ion-icon></a>
             </div>
 
             <div class="movie-row-grid" id="user-reviews-grid">
@@ -122,9 +118,7 @@
           <div class="container">
             <div class="trending-header">
               <h2 class="trending-title">AUDIENCE REVIEWS</h2>
-              <span class="activity-link">
-                <ion-icon name="flash-outline"></ion-icon> GLOBAL ACTIVITY
-              </span>
+              <a href="see-more.html?category=featured" class="activity-link" style="cursor: pointer;">SEE MORE <ion-icon name="chevron-forward-outline"></ion-icon></a>
             </div>
 
             <div class="movie-row-grid" id="audience-reviews-grid">
@@ -377,14 +371,28 @@
 
     <div class="review-modal-overlay" id="search-modal-overlay">
       <div class="review-modal search-modal-layout">
-        <div class="search-modal-header">
-          <ion-icon name="search-outline" class="search-modal-icon"></ion-icon>
-          <input type="text" id="search-input" placeholder="Search for a movie..." />
-          <button id="close-search-btn"><ion-icon name="close-outline"></ion-icon></button>
+        
+        <div class="search-modal-header" style="display: flex; flex-direction: column; padding: 15px 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+          <div style="display: flex; align-items: center; width: 100%;">
+            <ion-icon name="search-outline" class="search-modal-icon"></ion-icon>
+            <input type="text" id="search-input" placeholder="Search for a movie..." style="flex-grow: 1; background: transparent; border: none; color: white; font-size: 18px; outline: none;" />
+            <button id="close-search-btn" style="background: none; border: none; color: var(--gainsboro); font-size: 24px; cursor: pointer;"><ion-icon name="close-outline"></ion-icon></button>
+          </div>
+          
+          <div style="margin-top: 15px; display: flex; align-items: center; gap: 10px; width: 100%;">
+            <ion-icon name="options-outline" style="color: var(--citrine); font-size: 20px;"></ion-icon>
+            <select id="search-category-select" style="flex-grow: 1; padding: 10px 15px; background: rgba(0,0,0,0.2); color: var(--gainsboro); border: 1px solid #243337; border-radius: 6px; outline: none; font-family: var(--ff-poppins); font-size: 13px; cursor: pointer;">
+              <option value="audience" style="background: #132226; color: white;">All Movies (Audience Reviews)</option>
+              <option value="featured" style="background: #132226; color: white;">New on REAV-ON</option>
+              <option value="recommendations" style="background: #132226; color: white;">Recommendations</option>
+            </select>
+          </div>
         </div>
-        <div class="modal-body search-modal-body">
-          <p id="search-status">Type to search...</p>
+
+        <div class="modal-body search-modal-body" id="search-results-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; padding: 20px; max-height: 60vh; overflow-y: auto;">
+          <p id="search-status" style="grid-column: 1 / -1; color: var(--gainsboro); text-align: center; font-size: 14px; margin-top: 20px;">Type a movie name to search...</p>
         </div>
+
       </div>
     </div>
 
@@ -397,16 +405,37 @@
         <div class="profile-card-banner"></div>
 
         <div class="profile-card-avatar-wrapper">
-          <div class="profile-card-avatar">
-            <ion-icon name="person-outline"></ion-icon>
+          <div class="profile-card-avatar" id="profile-avatar-container" style="cursor: pointer; position: relative;">
+            <ion-icon name="person-outline" id="profile-default-icon"></ion-icon>
+            <img src="" id="profile-avatar-img" style="width: 100%; height: 100%; object-fit: cover; display: none; position: absolute; inset: 0; border-radius: 50%;" />
+            <div class="avatar-badge-indicator">
+              <ion-icon name="camera-outline"></ion-icon>
+            </div>
+            
           </div>
+          <input type="file" id="profile-avatar-upload" accept="image/*" style="display: none;" />
         </div>
 
         <div class="profile-card-content">
           <h3 id="profile-card-username" class="profile-display-name">Username</h3>
-          <p class="profile-display-role">Website Developer (VSCODE)</p>
+          
+          <div id="profile-bio-display-wrapper" style="margin-bottom: 20px; display: flex; justify-content: center; align-items: center; gap: 8px;">
+            <p id="profile-card-bio" class="profile-display-role" style="color: var(--gainsboro); font-size: 13px; line-height: 1.5; font-style: italic; margin: 0;"></p>
+            <button id="edit-bio-btn" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--citrine); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 6px; border-radius: 50%; transition: 0.2s;">
+              <ion-icon name="create-outline" style="font-size: 14px; pointer-events: none;"></ion-icon>
+            </button>
+          </div>
 
-          <div class="profile-action-row">
+          <div id="profile-bio-edit-wrapper" style="display: none; flex-direction: column; gap: 10px; margin-bottom: 20px; width: 100%;">
+            <textarea id="edit-bio-input" placeholder="Write something about yourself..." class="login-input" style="min-height: 60px; padding: 10px !important; font-size: 12px; resize: vertical; text-align: center; font-style: italic; font-family: var(--ff-poppins);"></textarea>
+            <div style="display: flex; justify-content: center; gap: 10px;">
+              <button id="cancel-bio-btn" style="background: transparent; color: var(--gainsboro); border: 1px solid var(--gunmetal-1); padding: 6px 16px; font-size: 11px; border-radius: 4px; cursor: pointer; font-family: var(--ff-poppins);">Cancel</button>
+              <button id="save-bio-btn" style="background: var(--citrine); color: black; border: none; padding: 6px 16px; font-size: 11px; font-weight: 700; border-radius: 4px; cursor: pointer; font-family: var(--ff-poppins); text-transform: uppercase;">Save</button>
+            </div>
+          </div>
+
+          <!-- 2. Hidden Connect & Message buttons for future use -->
+          <div class="profile-action-row" style="display: none;">
             <button class="action-row-btn active"><ion-icon name="people-outline"></ion-icon> Connect</button>
             <button class="action-row-btn"><ion-icon name="chatbubble-ellipses-outline"></ion-icon> Message</button>
           </div>
@@ -431,7 +460,9 @@
               <label>Email Address</label>
               <p id="profile-card-email">email@example.com</p>
             </div>
-            <div class="field-item">
+            
+            <!-- 3. Hidden Password Field (Prevents JavaScript Errors) -->
+            <div class="field-item" style="display: none;">
               <label>Database Account Password</label>
               <div class="input-group">
                 <input type="password" id="profile-card-password" readonly value="******" class="login-input" />

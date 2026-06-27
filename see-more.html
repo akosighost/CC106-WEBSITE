@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>View All - REAV-ON</title>
+    <link rel="shortcut icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  </head>
+
+  <body id="top">
+    <header class="header active" style="background: #0b1416; border-bottom: 1px solid #132226;">
+      <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+        <a href="./index.html" class="logo"><img src="./assets/images/svg.svg" alt="Filmlane logo" /></a>
+        <div class="header-actions" style="display: flex; gap: 15px; align-items: center;">
+          <button class="btn btn-primary" onclick="window.location.href='index.html'" style="padding: 10px 20px; font-size: 12px; background: #132226; border-color: #243337;">
+            <ion-icon name="arrow-back-outline" style="display: inline-block; vertical-align: middle; margin-right: 5px;"></ion-icon>
+            <span style="display: inline-block; vertical-align: middle;">Back to Home</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main style="padding-top: 100px; min-height: 80vh; background: #14181c;">
+      <div class="container">
+        <div class="trending-header" style="margin-top: 30px;">
+          <h2 class="trending-title" id="see-more-page-title" style="font-size: 24px; color: var(--citrine);">LOADING CATEGORY...</h2>
+        </div>
+        
+        <div class="movie-row-grid" id="see-more-grid"></div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-bottom">
+        <div class="container">
+          <p class="copyright" style="text-align: center;">&copy; 2026 code with jiar. All Rights Reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="./assets/js/script.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+  </body>
+</html>
