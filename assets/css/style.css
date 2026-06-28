@@ -743,6 +743,7 @@ body.active { overflow: hidden; }
   align-items: center;
 }
 
+
 .form-field-item {
   display: flex;
   flex-direction: column;
@@ -2277,4 +2278,487 @@ body.active { overflow: hidden; }
 .avatar-badge-indicator ion-icon {
   font-size: 16px !important;
   color: var(--black) !important;
+}
+
+/* NEW: Image Loading Animation */
+      .image-loader-container { position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; background: #132226; z-index: 5; }
+      .img-uiverse-loader { width: 64px; height: 64px; position: relative; background: #1a282d; border-radius: 4px; overflow: hidden; }
+      .img-uiverse-loader:before { content: ""; position: absolute; left: 0; bottom: 0; width: 40px; height: 40px; transform: rotate(45deg) translate(30%, 40%); background: rgba(229, 184, 0, 0.2); box-shadow: 32px -34px 0 5px rgba(229, 184, 0, 0.05); animation: img-slide 2s infinite ease-in-out alternate; }
+      .img-uiverse-loader:after { content: ""; position: absolute; left: 10px; top: 10px; width: 16px; height: 16px; border-radius: 50%; background: var(--citrine); transform: rotate(0deg); transform-origin: 35px 145px; animation: img-rotate 2s infinite ease-in-out; }
+      
+      @keyframes img-slide { 0%, 100% { bottom: -35px } 25%, 75% { bottom: -2px } 20%, 80% { bottom: 2px } }
+      @keyframes img-rotate { 0% { transform: rotate(-15deg) } 25%, 75% { transform: rotate(0deg) } 100% { transform: rotate(25deg) } }
+
+
+
+
+
+      /* =========================================================
+   #ANIMATED INTERACTIVE STAR RATING WIDGET
+========================================================= */
+.animated-star-radio {
+  display: flex;
+  flex-direction: row-reverse; /* Reverses DOM to allow cascading CSS hover */
+  justify-content: center;
+  gap: 8px;
+}
+
+.animated-star-radio > input {
+  position: absolute;
+  appearance: none;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.animated-star-radio > label {
+  cursor: pointer;
+  position: relative;
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+.animated-star-radio > label > svg {
+  fill: #667788;
+  transition: fill 0.3s ease, filter 0.3s ease;
+}
+
+/* Particle Explosion Dots */
+.animated-star-radio > label::before,
+.animated-star-radio > label::after {
+  content: "";
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background-color: var(--citrine);
+  border-radius: 50%;
+  opacity: 0;
+  transform: translateX(-50%) scale(0);
+  transition: transform 0.4s ease, opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.animated-star-radio > label::before { top: -10px; left: 50%; }
+.animated-star-radio > label::after { bottom: -10px; left: 50%; }
+
+/* Hover Animations */
+.animated-star-radio > label:hover::before,
+.animated-star-radio > label:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) scale(1.5);
+  animation: star-particle-explosion 0.6s ease-out;
+}
+
+.animated-star-radio > label:hover {
+  transform: scale(1.2);
+  animation: star-pulse 0.6s infinite alternate;
+}
+
+.animated-star-radio > label:hover > svg {
+  fill: var(--citrine);
+  filter: drop-shadow(0 0 10px rgba(229, 184, 0, 0.8));
+  animation: star-shimmer 1s ease infinite alternate;
+}
+
+/* CSS Magic Fill Logic (Cascades right-to-left in DOM, which is left-to-right visually) */
+.animated-star-radio > input:checked ~ label > svg {
+  fill: var(--citrine);
+  filter: drop-shadow(0 0 10px rgba(229, 184, 0, 0.6));
+}
+
+.animated-star-radio > input:checked + label > svg {
+  fill: var(--citrine);
+  filter: drop-shadow(0 0 15px rgba(229, 184, 0, 1));
+  animation: star-pulse 0.8s infinite alternate;
+}
+
+.animated-star-radio > label:hover ~ label > svg {
+  fill: var(--citrine);
+}
+
+/* Keyframes */
+@keyframes star-pulse {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.15); }
+}
+
+@keyframes star-particle-explosion {
+  0% { opacity: 0; transform: translateX(-50%) scale(0.5); }
+  50% { opacity: 1; transform: translateX(-50%) scale(1.2); }
+  100% { opacity: 0; transform: translateX(-50%) scale(0.5); }
+}
+
+@keyframes star-shimmer {
+  0% { filter: drop-shadow(0 0 5px rgba(229, 184, 0, 0.5)); }
+  100% { filter: drop-shadow(0 0 18px rgba(229, 184, 0, 1)); }
+}
+
+/* =========================================================
+   #UIVERSE COMMUNITY COMMENTS UI (DARK THEME)
+========================================================= */
+.uiverse-comment-card {
+  display: grid;
+  grid-template-columns: 45px 1fr;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.uiverse-comment-react {
+  width: 45px;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #0b1416;
+  border: 1px solid #1a282d;
+  border-radius: 8px;
+  padding: 6px 0;
+}
+
+.uiverse-comment-react button {
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  border: none;
+  color: #667788;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.uiverse-comment-react button:hover,
+.uiverse-comment-react button.upvoted-active,
+.uiverse-comment-react button.downvoted-active {
+  color: var(--citrine);
+  background: rgba(229, 184, 0, 0.1);
+}
+
+.uiverse-comment-react hr {
+  width: 60%;
+  height: 1px;
+  background-color: #1a282d;
+  margin: 4px 0;
+  border: 0;
+}
+
+.uiverse-comment-react span {
+  font-size: 13px;
+  font-weight: 700;
+  color: #cfd8dc;
+  margin: 4px 0;
+}
+
+.uiverse-comment-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.uiverse-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.uiverse-user-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #1a282d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border: 1px solid var(--citrine);
+  overflow: hidden;
+}
+
+.uiverse-user-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.uiverse-user-info span {
+  font-weight: 700;
+  font-size: 14px;
+  color: white;
+}
+
+.uiverse-user-info p {
+  font-weight: 500;
+  font-size: 11px;
+  color: #667788;
+  margin-top: 2px;
+}
+
+.uiverse-comment-content {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: #cfd8dc;
+  word-break: break-word;
+}
+
+.uiverse-comment-actions {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.uiverse-action-btn {
+  background: transparent;
+  border: none;
+  color: #667788;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.uiverse-action-btn:hover {
+  color: var(--citrine);
+}
+
+/* --- Uiverse Reply Box --- */
+.uiverse-text-box {
+  width: 100%;
+  background-color: #0b1416;
+  border: 1px solid #1a282d;
+  border-radius: 12px;
+  padding: 10px;
+  margin-top: 15px;
+  box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.uiverse-text-box textarea {
+  width: 100%;
+  min-height: 40px;
+  resize: none;
+  border: 0;
+  background: transparent;
+  color: white;
+  font-size: 13px;
+  outline: none;
+  font-family: inherit;
+}
+
+.uiverse-text-box .formatting {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.uiverse-text-box .formatting-left {
+  display: flex;
+  gap: 5px;
+}
+
+.uiverse-text-box .formatting-left ion-icon {
+  color: #667788;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.uiverse-text-box .formatting-left ion-icon:hover {
+  background: #1a282d;
+  color: white;
+}
+
+.uiverse-send-btn {
+  width: 32px;
+  height: 32px;
+  background-color: var(--citrine);
+  color: black;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  transition: transform 0.2s;
+}
+
+.uiverse-send-btn:hover {
+  transform: scale(1.1);
+}
+
+/* From Uiverse.io by wilsondesouza */ 
+ul {
+  list-style: none;
+}
+
+.example-2 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.example-2 .icon-content {
+  margin: 0 10px;
+  position: relative;
+}
+.example-2 .icon-content .tooltip {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 5px;
+  opacity: 0;
+  visibility: hidden;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+.example-2 .icon-content:hover .tooltip {
+  opacity: 1;
+  visibility: visible;
+  top: -50px;
+}
+.example-2 .icon-content a {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  color: #4d4d4d;
+  background-color: #fff;
+  transition: all 0.3s ease-in-out;
+}
+.example-2 .icon-content a:hover {
+  box-shadow: 3px 2px 45px 0px rgb(0 0 0 / 12%);
+}
+.example-2 .icon-content a svg {
+  position: relative;
+  z-index: 1;
+  width: 30px;
+  height: 30px;
+}
+.example-2 .icon-content a:hover {
+  color: white;
+}
+.example-2 .icon-content a .filled {
+  position: absolute;
+  top: auto;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  background-color: #000;
+  transition: all 0.3s ease-in-out;
+}
+.example-2 .icon-content a:hover .filled {
+  height: 100%;
+}
+
+.example-2 .icon-content a[data-social="linkedin"] .filled,
+.example-2 .icon-content a[data-social="linkedin"] ~ .tooltip {
+  background-color: #0274b3;
+}
+
+.example-2 .icon-content a[data-social="github"] .filled,
+.example-2 .icon-content a[data-social="github"] ~ .tooltip {
+  background-color: #24262a;
+}
+.example-2 .icon-content a[data-social="instagram"] .filled,
+.example-2 .icon-content a[data-social="instagram"] ~ .tooltip {
+  background: linear-gradient(
+    45deg,
+    #405de6,
+    #5b51db,
+    #b33ab4,
+    #c135b4,
+    #e1306c,
+    #fd1f1f
+  );
+}
+.example-2 .icon-content a[data-social="youtube"] .filled,
+.example-2 .icon-content a[data-social="youtube"] ~ .tooltip {
+  background-color: #ff0000;
+}
+
+
+/* =========================================================
+   #FLOATING EMOJI PICKER POPUP
+========================================================= */
+.emoji-picker-container {
+  position: absolute;
+  bottom: 35px; /* Floats directly above the happy icon */
+  left: -10px;
+  display: flex;
+  background: #191818;
+  border: 1px solid #243337;
+  border-radius: 50px;
+  padding: 6px 8px;
+  gap: 6px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 100;
+}
+
+.emoji-picker-container.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.emoji-btn {
+  position: relative;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The jump and grow animation matching your Tailwind request */
+.emoji-btn:hover {
+  transform: scale(1.3) translateY(-6px);
+  background: rgba(255,255,255,0.08);
+}
+
+/* The floating tooltip text (Like, Cheer, etc.) */
+.emoji-btn::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  color: black;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 6px;
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.2s ease;
+  pointer-events: none;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+}
+
+.emoji-btn:hover::before {
+  opacity: 1;
+  visibility: visible;
 }

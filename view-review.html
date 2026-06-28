@@ -125,13 +125,19 @@
 
         <div class="imdb-media-grid full-page-thread-wrapper">
           <div class="imdb-poster-frame edit-poster-hover-wrapper">
-            <img src="" id="detail-movie-poster" alt="Poster Image" />
+            
+            <div id="poster-image-loader" class="image-loader-container">
+              <div class="img-uiverse-loader"></div>
+            </div>
+
+            <img src="" id="detail-movie-poster" alt="Poster Image" style="opacity: 0; transition: opacity 0.3s ease;" />
+            
             <input type="file" id="edit-movie-image-input" accept="image/*" style="display: none;" />
             <div class="poster-edit-overlay" id="poster-edit-overlay-btn">
               <ion-icon name="camera-outline"></ion-icon><span>Change Thumbnail</span>
             </div>
           </div>
-
+          
           <div class="imdb-backdrop-box">
             <div style="width: 100%;">
               <h4 style="font-size: 12px; text-transform: uppercase; color: #667788; font-weight: 700; letter-spacing: 1px; margin-bottom: 12px;">Review Workspace</h4>

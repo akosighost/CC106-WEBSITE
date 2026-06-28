@@ -34,10 +34,54 @@ async function uploadImageToCloud(base64Data) {
 // --- PASTE THE SPINNER RIGHT HERE ---
 // A reusable loading spinner for the data grids
 const loadingSpinnerHTML = `
+  <style>
+    .uiverse-loader { width: 112px; height: 112px; position: relative; }
+    .uiverse-loader .box1, .uiverse-loader .box2, .uiverse-loader .box3 {
+      border: 16px solid var(--citrine); box-sizing: border-box; position: absolute; display: block;
+    }
+    .uiverse-loader .box1 { width: 112px; height: 48px; margin-top: 64px; margin-left: 0px; animation: abox1 4s 1s forwards ease-in-out infinite; }
+    .uiverse-loader .box2 { width: 48px; height: 48px; margin-top: 0px; margin-left: 0px; animation: abox2 4s 1s forwards ease-in-out infinite; }
+    .uiverse-loader .box3 { width: 48px; height: 48px; margin-top: 0px; margin-left: 64px; animation: abox3 4s 1s forwards ease-in-out infinite; }
+
+    @keyframes abox1 {
+      0% { width: 112px; height: 48px; margin-top: 64px; margin-left: 0px; }
+      12.5% { width: 48px; height: 48px; margin-top: 64px; margin-left: 0px; }
+      25% { width: 48px; height: 48px; margin-top: 64px; margin-left: 0px; }
+      37.5% { width: 48px; height: 48px; margin-top: 64px; margin-left: 0px; }
+      50% { width: 48px; height: 48px; margin-top: 64px; margin-left: 0px; }
+      62.5% { width: 48px; height: 48px; margin-top: 64px; margin-left: 0px; }
+      75% { width: 48px; height: 112px; margin-top: 0px; margin-left: 0px; }
+      87.5% { width: 48px; height: 48px; margin-top: 0px; margin-left: 0px; }
+      100% { width: 48px; height: 48px; margin-top: 0px; margin-left: 0px; }
+    }
+    @keyframes abox2 {
+      0% { width: 48px; height: 48px; margin-top: 0px; margin-left: 0px; }
+      12.5% { width: 48px; height: 48px; margin-top: 0px; margin-left: 0px; }
+      25% { width: 48px; height: 48px; margin-top: 0px; margin-left: 0px; }
+      37.5% { width: 48px; height: 48px; margin-top: 0px; margin-left: 0px; }
+      50% { width: 112px; height: 48px; margin-top: 0px; margin-left: 0px; }
+      62.5% { width: 48px; height: 48px; margin-top: 0px; margin-left: 64px; }
+      75% { width: 48px; height: 48px; margin-top: 0px; margin-left: 64px; }
+      87.5% { width: 48px; height: 48px; margin-top: 0px; margin-left: 64px; }
+      100% { width: 48px; height: 48px; margin-top: 0px; margin-left: 64px; }
+    }
+    @keyframes abox3 {
+      0% { width: 48px; height: 48px; margin-top: 0px; margin-left: 64px; }
+      12.5% { width: 48px; height: 48px; margin-top: 0px; margin-left: 64px; }
+      25% { width: 48px; height: 112px; margin-top: 0px; margin-left: 64px; }
+      37.5% { width: 48px; height: 48px; margin-top: 64px; margin-left: 64px; }
+      50% { width: 48px; height: 48px; margin-top: 64px; margin-left: 64px; }
+      62.5% { width: 48px; height: 48px; margin-top: 64px; margin-left: 64px; }
+      75% { width: 48px; height: 48px; margin-top: 64px; margin-left: 64px; }
+      87.5% { width: 48px; height: 48px; margin-top: 64px; margin-left: 64px; }
+      100% { width: 112px; height: 48px; margin-top: 64px; margin-left: 0px; }
+    }
+  </style>
   <div style="grid-column: 1 / -1; display: flex; justify-content: center; padding: 60px 0;">
-    <div style="width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.05); border-top-color: var(--citrine); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+    <div class="uiverse-loader" style="transform: scale(0.35);">
+      <div class="box1"></div><div class="box2"></div><div class="box3"></div>
+    </div>
   </div>
-  <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
 `;
 // ------------------------------------
 
@@ -45,10 +89,13 @@ const loadingSpinnerHTML = `
 const pageTransitionOverlay = document.createElement("div");
 pageTransitionOverlay.style.cssText = "position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(11, 20, 22, 0.85); backdrop-filter: blur(5px); z-index: 9999; display: none; justify-content: center; align-items: center; flex-direction: column;";
 pageTransitionOverlay.innerHTML = `
-  <div style="width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.05); border-top-color: var(--citrine); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
-  <p style="color: var(--citrine); margin-top: 20px; font-weight: 600; font-size: 14px; letter-spacing: 1px;">LOADING MOVIE...</p>
+  <div class="uiverse-loader" style="transform: scale(0.5); margin-bottom: -15px;">
+    <div class="box1"></div><div class="box2"></div><div class="box3"></div>
+  </div>
+  <p style="color: var(--citrine); margin-top: 20px; font-weight: 600; font-size: 14px; letter-spacing: 1px;">LOADING PLEASE WAIT...</p>
 `;
 document.body.appendChild(pageTransitionOverlay);
+// -----------------------------------------
 // -----------------------------------------
 
 // 2. Now you can safely use it.
@@ -544,6 +591,16 @@ document.addEventListener("DOMContentLoaded", () => {
     if (signupModal) signupModal.classList.add("active");
   });
 
+  // Switch from Sign Up back to Sign In
+  const switchToSigninBtn = document.getElementById("switch-to-signin-btn");
+  if (switchToSigninBtn) {
+    switchToSigninBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (signupModal) signupModal.classList.remove("active");
+      if (signinModal) signinModal.classList.add("active");
+    });
+  }
+
   if (closeSigninBtn && signinModal) {
     closeSigninBtn.addEventListener("click", () => {
       signinModal.classList.remove("active");
@@ -666,6 +723,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const username = document.getElementById("signup-username").value.trim();
       const email = document.getElementById("signup-email").value.trim();
       const password = document.getElementById("signup-password").value;
+      const confirmPassword = document.getElementById("signup-confirm-password").value;
+
+      if (password !== confirmPassword) {
+        alert("Your passwords do not match! Please try again.");
+        return; // Stops the function immediately
+      }
 
       try {
         const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
@@ -735,23 +798,42 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /*-----------------------------------*\
- * #LOGIN FORM INPUT ELEMENT VISIBILITY TOGGLE
+ * #FORM INPUT ELEMENT VISIBILITY TOGGLES
 \*-----------------------------------*/
 document.addEventListener("DOMContentLoaded", function () {
-  const passwordInput = document.getElementById("login-password");
-  const toggleIcon = document.getElementById("password-toggle-icon");
+  
+  // 1. Sign In Form Toggle
+  const loginPasswordInput = document.getElementById("login-password");
+  const loginToggleIcon = document.getElementById("password-toggle-icon");
 
-  if (toggleIcon && passwordInput) {
-    toggleIcon.addEventListener("click", function () {
-      if (passwordInput.type === "password") {
-        passwordInput.type = "text";
+  if (loginToggleIcon && loginPasswordInput) {
+    loginToggleIcon.addEventListener("click", function () {
+      if (loginPasswordInput.type === "password") {
+        loginPasswordInput.type = "text";
         this.setAttribute("name", "eye-off-outline");
       } else {
-        passwordInput.type = "password";
+        loginPasswordInput.type = "password";
         this.setAttribute("name", "eye-outline");
       }
     });
   }
+
+  // 2. Create Account Form Toggle (NEW)
+  const signupPasswordInput = document.getElementById("signup-password");
+  const signupToggleIcon = document.getElementById("signup-password-toggle-icon");
+
+  if (signupToggleIcon && signupPasswordInput) {
+    signupToggleIcon.addEventListener("click", function () {
+      if (signupPasswordInput.type === "password") {
+        signupPasswordInput.type = "text";
+        this.setAttribute("name", "eye-off-outline");
+      } else {
+        signupPasswordInput.type = "password";
+        this.setAttribute("name", "eye-outline");
+      }
+    });
+  }
+  
 });
 
 /*-----------------------------------*\
@@ -1277,13 +1359,62 @@ document.addEventListener("DOMContentLoaded", function () {
   const searchCategory = document.getElementById("search-category-select");
   const resultsContainer = document.getElementById("search-results-container");
 
+  // 1. UX UPGRADE: Beautiful graphic guiding the user exactly where to look
+  const emptySearchStateHTML = `
+    <div style="grid-column: 1 / -1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 80px 20px; text-align: center;">
+      <ion-icon name="search-circle-outline" style="font-size: 80px; color: var(--citrine); margin-bottom: 15px; opacity: 0.3;"></ion-icon>
+      <h3 style="color: white; font-size: 18px; margin-bottom: 8px;">What are you looking for?</h3>
+      <p style="color: #667788; font-size: 13px; max-width: 280px; line-height: 1.5;">Type a movie title in the search bar above to instantly scan the selected category.</p>
+    </div>
+  `;
+
+  // 2. UX UPGRADE: Advanced Radar Search Loader
+  const radarLoaderHTML = `
+    <style>
+      #wifi-loader { --front-color: var(--citrine); --back-color: rgba(229,184,0,0.15); --text-color: #667788; width: 64px; height: 64px; border-radius: 50px; position: relative; display: flex; justify-content: center; align-items: center; margin: 0 auto; }
+      #wifi-loader svg { position: absolute; display: flex; justify-content: center; align-items: center; }
+      #wifi-loader svg circle { position: absolute; fill: none; stroke-width: 6px; stroke-linecap: round; stroke-linejoin: round; transform: rotate(-100deg); transform-origin: center; }
+      #wifi-loader svg circle.back { stroke: var(--back-color); }
+      #wifi-loader svg circle.front { stroke: var(--front-color); }
+      #wifi-loader svg.circle-outer { height: 86px; width: 86px; }
+      #wifi-loader svg.circle-outer circle { stroke-dasharray: 62.75 188.25; }
+      #wifi-loader svg.circle-outer circle.back { animation: circle-outer135 1.8s ease infinite 0.3s; }
+      #wifi-loader svg.circle-outer circle.front { animation: circle-outer135 1.8s ease infinite 0.15s; }
+      #wifi-loader svg.circle-middle { height: 60px; width: 60px; }
+      #wifi-loader svg.circle-middle circle { stroke-dasharray: 42.5 127.5; }
+      #wifi-loader svg.circle-middle circle.back { animation: circle-middle6123 1.8s ease infinite 0.25s; }
+      #wifi-loader svg.circle-middle circle.front { animation: circle-middle6123 1.8s ease infinite 0.1s; }
+      #wifi-loader svg.circle-inner { height: 34px; width: 34px; }
+      #wifi-loader svg.circle-inner circle { stroke-dasharray: 22 66; }
+      #wifi-loader svg.circle-inner circle.back { animation: circle-inner162 1.8s ease infinite 0.2s; }
+      #wifi-loader svg.circle-inner circle.front { animation: circle-inner162 1.8s ease infinite 0.05s; }
+      #wifi-loader .text { position: absolute; bottom: -40px; display: flex; justify-content: center; align-items: center; text-transform: uppercase; font-weight: 700; font-size: 11px; letter-spacing: 1px; }
+      #wifi-loader .text::before, #wifi-loader .text::after { content: attr(data-text); }
+      #wifi-loader .text::before { color: var(--text-color); }
+      #wifi-loader .text::after { color: var(--front-color); animation: text-animation76 3.6s ease infinite; position: absolute; left: 0; }
+      @keyframes circle-outer135 { 0% { stroke-dashoffset: 25; } 25% { stroke-dashoffset: 0; } 65% { stroke-dashoffset: 301; } 80% { stroke-dashoffset: 276; } 100% { stroke-dashoffset: 276; } }
+      @keyframes circle-middle6123 { 0% { stroke-dashoffset: 17; } 25% { stroke-dashoffset: 0; } 65% { stroke-dashoffset: 204; } 80% { stroke-dashoffset: 187; } 100% { stroke-dashoffset: 187; } }
+      @keyframes circle-inner162 { 0% { stroke-dashoffset: 9; } 25% { stroke-dashoffset: 0; } 65% { stroke-dashoffset: 106; } 80% { stroke-dashoffset: 97; } 100% { stroke-dashoffset: 97; } }
+      @keyframes text-animation76 { 0% { clip-path: inset(0 100% 0 0); } 50% { clip-path: inset(0); } 100% { clip-path: inset(0 0 0 100%); } }
+    </style>
+    <div style="grid-column: 1 / -1; display: flex; justify-content: center; padding: 70px 0;">
+      <div id="wifi-loader">
+        <svg class="circle-outer" viewBox="0 0 86 86"><circle class="back" cx="43" cy="43" r="40"></circle><circle class="front" cx="43" cy="43" r="40"></circle><circle class="new" cx="43" cy="43" r="40"></circle></svg>
+        <svg class="circle-middle" viewBox="0 0 60 60"><circle class="back" cx="30" cy="30" r="27"></circle><circle class="front" cx="30" cy="30" r="27"></circle></svg>
+        <svg class="circle-inner" viewBox="0 0 34 34"><circle class="back" cx="17" cy="17" r="14"></circle><circle class="front" cx="17" cy="17" r="14"></circle></svg>
+        <div class="text" data-text="Searching"></div>
+      </div>
+    </div>
+  `;
+
   if (searchBtn && searchModal) {
     searchBtn.addEventListener("click", () => {
       searchModal.classList.add("active");
       if (searchInput) {
         searchInput.value = ""; // Clear input on open
         searchInput.focus();
-        resultsContainer.innerHTML = '<p id="search-status" style="grid-column: 1 / -1; color: var(--gainsboro); text-align: center; font-size: 14px; margin-top: 20px;">Type a movie name to search...</p>';
+        // Trigger the new graphic!
+        resultsContainer.innerHTML = emptySearchStateHTML;
       }
       document.body.classList.add("active");
     });
@@ -1302,17 +1433,16 @@ document.addEventListener("DOMContentLoaded", function () {
       const query = searchInput.value.trim().toLowerCase();
       const category = searchCategory.value;
 
-      // If the search bar is empty, reset the screen
+      // If the search bar is empty, reset the screen to the graphic
       if (query.length === 0) {
-         resultsContainer.innerHTML = '<p id="search-status" style="grid-column: 1 / -1; color: var(--gainsboro); text-align: center; font-size: 14px; margin-top: 20px;">Type a movie name to search...</p>';
+         resultsContainer.innerHTML = emptySearchStateHTML;
          return;
       }
 
-      // Show spinner while fetching
-      resultsContainer.innerHTML = `<div style="grid-column: 1 / -1; display: flex; justify-content: center; padding: 40px;"><div style="width: 30px; height: 30px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--citrine); border-radius: 50%; animation: spin 0.8s linear infinite;"></div></div>`;
+      // Show the new Radar spinner while fetching!
+      resultsContainer.innerHTML = radarLoaderHTML;
 
       try {
-        // Determine which database endpoint to check
         let fetchUrl = `${API_BASE_URL}/api/reviews/all`;
         if (category === "featured") fetchUrl = `${API_BASE_URL}/api/reviews/featured`;
         if (category === "recommendations") fetchUrl = `${API_BASE_URL}/api/reviews/recommendations`;
@@ -1354,14 +1484,12 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
     // DEBOUNCE TIMER: Waits 0.4 seconds after the user stops typing to execute the search
-    // This prevents your database from crashing if someone types really fast!
     let debounceTimer;
     searchInput.addEventListener("input", () => {
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(executeSearch, 400); 
     });
     
-    // Auto-search again if they change the category dropdown while typing
     searchCategory.addEventListener("change", executeSearch);
   }
 });
@@ -1766,7 +1894,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (uploadModalOverlay && dropdownSelect) {
         // 1. SAVE ORIGINAL STATE AND TRIGGER LOADING UI
         const originalHTML = this.innerHTML;
-        this.innerHTML = '<ion-icon name="sync-outline" style="animation: spin 0.8s linear infinite; font-size: 16px;"></ion-icon> <span>LOADING...</span>';
+        this.innerHTML = '<ion-icon name="sync-outline" style="animation: spin 0.8s linear infinite; font-size: 16px;"></ion-icon> <span>LOADING PLEASE WAIT...</span>';
         this.style.pointerEvents = "none"; // Prevent double-clicking
         this.style.opacity = "0.8";
 
@@ -1966,73 +2094,91 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!ratingBox) return;
 
     const averageScore = parseFloat(avgRating) || 0;
-    let ratingHTML = `<div class="rating-display-row" style="display: flex; align-items: center;">`;
+    
+    // 1. MASTER WRAPPER: Forces elements to stack vertically with a clean gap
+    let ratingHTML = `<div style="display: flex; flex-direction: column; gap: 14px; align-items: flex-start; width: 100%; margin-top: 5px;">`;
 
+    // 2. STATIC ROW: Global Average Display (FIXED LAYOUT)
+    ratingHTML += `<div class="rating-display-row" style="display: flex; align-items: center; gap: 12px;">`;
+    
+    // --> A. The Stars Wrapper
+    ratingHTML += `<div style="display: flex; align-items: center; gap: 2px;">`;
     for (let i = 1; i <= 5; i++) {
       if (averageScore >= i) {
-        ratingHTML += '<ion-icon name="star" style="color: var(--citrine); font-size: 16px; margin: 0;"></ion-icon>';
+        ratingHTML += '<ion-icon name="star" style="color: var(--citrine); font-size: 18px; margin: 0;"></ion-icon>';
       } else if (averageScore >= i - 0.5) {
-        ratingHTML += '<ion-icon name="star-half" style="color: var(--citrine); font-size: 16px; margin: 0;"></ion-icon>';
+        ratingHTML += '<ion-icon name="star-half" style="color: var(--citrine); font-size: 18px; margin: 0;"></ion-icon>';
       } else {
-        ratingHTML += '<ion-icon name="star-outline" style="color: #667788; font-size: 16px; margin: 0;"></ion-icon>';
+        ratingHTML += '<ion-icon name="star-outline" style="color: #667788; font-size: 18px; margin: 0;"></ion-icon>';
       }
     }
+    ratingHTML += `</div>`;
 
-    ratingHTML += `
-      <span class="average-score-text" style="color: var(--white); font-weight: 700; margin-left: 6px;">
-        ${averageScore > 0 ? `${averageScore} / 5 (${ratingCount} user${ratingCount === 1 ? "" : "s"} rated)` : "No ratings left yet"}
-      </span>
-    </div>`;
+    // --> B. The Neatly Stacked Text Column
+    // --> B. The Neatly Stacked Text Column
+    if (averageScore > 0) {
+      ratingHTML += `
+        <div style="display: flex; flex-direction: column; justify-content: center; line-height: 1.2;">
+          <div style="display: flex; align-items: baseline; gap: 4px;">
+            <span style="color: var(--white); font-weight: 700; font-size: 18px;">${averageScore}</span>
+            <span style="color: #667788; font-size: 13px; font-weight: 500;">/ 5</span>
+          </div>
+          <span style="color: #667788; font-size: 11px; font-weight: 500;">(${ratingCount} user${ratingCount === 1 ? "" : "s"} rated)</span>
+        </div>
+      `;
+    } else {
+      ratingHTML += `<span style="color: #667788; font-weight: 500; font-size: 13px;">No ratings left yet</span>`;
+    }
+    
+    ratingHTML += `</div>`; // Close Static Row
 
-    // Inject the interactive 1-time selector row underneath
+    // 3. INTERACTIVE ROW: User Rating Control Panel
     ratingHTML += `
-      <div class="interactive-user-rating-line" style="margin-top: 12px; display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.02); padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.05); width: max-content;">
-        <span style="color: #678; font-size: 12px; font-weight: 600;">${userRating ? "Your Rating:" : "Click to Rate:"}</span>
-        <div class="interactive-header-stars" style="display: flex; gap: 4px; font-size: 18px;">
-          ${[1, 2, 3, 4, 5]
+      <div class="interactive-user-rating-line" style="display: flex; align-items: center; gap: 15px; background: #0b1416; padding: 8px 18px; border-radius: 8px; border: 1px solid #1a282d; width: max-content;">
+        <span style="color: #78909c; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">${userRating ? "Your Rating:" : "Rate this movie:"}</span>
+        <div class="animated-star-radio">
+          ${[5, 4, 3, 2, 1]
             .map((num) => {
-              const isSelect = userRating && num <= userRating;
-              return `<ion-icon name="${isSelect ? "star" : "star-outline"}" data-value="${num}" class="${isSelect ? "selected-star" : ""}" style="cursor: pointer; color: ${isSelect ? "var(--citrine)" : "#678"}; transition: color 0.1s;"></ion-icon>`;
+              const isSelect = userRating === num; 
+              return `
+                <input value="${num}" name="rating" type="radio" id="rating-${num}" class="star-radio-input" ${isSelect ? "checked" : ""} />
+                <label title="${num} stars" for="rating-${num}">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" style="width: 22px; height: 22px;">
+                    <path d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z"></path>
+                  </svg>
+                </label>
+              `;
             })
             .join("")}
         </div>
       </div>
-    `;
+    </div>`; // Close Master Wrapper
 
     ratingBox.innerHTML = ratingHTML;
-    setupHeaderStarListeners();
+    
+    // Make sure we re-attach the event listeners after redrawing the HTML!
+    if (typeof setupHeaderStarListeners === "function") {
+      setupHeaderStarListeners();
+    }
   }
 
   function setupHeaderStarListeners() {
-    const container = document.querySelector(".interactive-header-stars");
+    const container = document.querySelector(".animated-star-radio");
     if (!container) return;
 
-    const stars = Array.from(container.querySelectorAll("ion-icon"));
+    // Listen to the hidden radio buttons changing, not the SVG clicks!
+    const inputs = Array.from(container.querySelectorAll(".star-radio-input"));
     const userEmail = localStorage.getItem("userEmail");
 
-    stars.forEach((star) => {
-      star.addEventListener("mouseenter", function () {
-        const val = parseInt(this.getAttribute("data-value"), 10);
-        stars.forEach(
-          (s, idx) => (s.style.color = idx < val ? "var(--citrine)" : "#678"),
-        );
-      });
-
-      star.addEventListener("mouseleave", function () {
-        stars.forEach(
-          (s) =>
-            (s.style.color = s.classList.contains("selected-star")
-              ? "var(--citrine)"
-              : "#678"),
-        );
-      });
-
-      star.addEventListener("click", async function () {
+    inputs.forEach((input) => {
+      input.addEventListener("change", async function () {
         if (!userEmail) {
           alert("Please sign in to rate this movie!");
+          this.checked = false; // Revert the visual click if not signed in
           return;
         }
-        const ratingVal = parseInt(this.getAttribute("data-value"), 10);
+        
+        const ratingVal = parseInt(this.value, 10);
 
         try {
           const response = await fetch(
@@ -2045,10 +2191,12 @@ document.addEventListener("DOMContentLoaded", () => {
           );
 
           if (response.ok) {
+            // Instantly sync the new data back to the UI
             const refreshRes = await fetch(
               `${API_BASE_URL}/api/reviews/details/${currentActiveReviewId}?email=${encodeURIComponent(userEmail)}`,
             );
             const refreshData = await refreshRes.json();
+            
             updateModalHeaderStars(
               refreshData.review.avg_rating,
               refreshData.review.rating_count,
@@ -2058,7 +2206,7 @@ document.addEventListener("DOMContentLoaded", () => {
             await fetchAndRenderAudienceReviews();
           }
         } catch (err) {
-          console.error(err);
+          console.error("Error submitting rating to database:", err);
         }
       });
     });
@@ -2075,6 +2223,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (modalContainer) modalContainer.classList.remove("is-editing-mode");
     toggleEditFormState(false);
 
+    
+
     try {
       const response = await fetch(
         `${API_BASE_URL}/api/reviews/details/${reviewId}?email=${encodeURIComponent(userEmail)}`,
@@ -2083,6 +2233,19 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await response.json();
 
       const moviePosterImg = document.getElementById("detail-movie-poster");
+      const posterLoader = document.getElementById("poster-image-loader");
+      
+      // 1. Show the loader and hide the image block initially
+      if (posterLoader) posterLoader.style.display = "flex";
+      moviePosterImg.style.opacity = "0";
+
+      // 2. Wait for the Cloudinary image to fully download into browser memory
+      moviePosterImg.onload = function() {
+        if (posterLoader) posterLoader.style.display = "none"; // Kill the loader
+        moviePosterImg.style.opacity = "1"; // Smoothly fade in the poster
+      };
+
+      // 3. Trigger the actual download
       moviePosterImg.src = data.review.image_data || "./assets/images/obs.jpg";
       document.getElementById("detail-movie-title").textContent =
         data.review.movie_name;
@@ -3759,6 +3922,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
           // 2. HELPER FUNCTION: Fetch and render active sub-replies
           const reloadModalSubReplies = async () => {
+
+            pageTransitionOverlay.style.display = "flex";
             const repliesList = document.getElementById(
               "comm-modal-replies-list",
             );
@@ -3775,6 +3940,8 @@ document.addEventListener("DOMContentLoaded", () => {
                   Number(reply.parent_comment_id) === Number(commentId),
               );
 
+              
+              pageTransitionOverlay.style.display = "none";
               // Get current user details for authorization
               const currentUsername = localStorage.getItem("username");
               const isGlobalAdmin = localStorage.getItem("isAdmin") === "true";
@@ -3783,11 +3950,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 repliesList.innerHTML = `<p style="color: #567; font-size: 12px; font-style: italic; margin: 0; text-align: left;">No discussion responses left here yet.</p>`;
                 return;
               }
+            
 
               repliesList.innerHTML = subReplies
                 .map((reply) => {
                   const isOwner = reply.username === currentUsername;
                   const canDelete = isOwner || isGlobalAdmin;
+
+                  
 
                   return `
             <div class="sub-reply-card-node" style="background: rgba(255,255,255,0.01); border-left: 3px solid var(--citrine); padding: 10px 14px; border-radius: 0 6px 6px 0; border: 1px solid rgba(255,255,255,0.02); text-align: left; margin-bottom: 8px;">
@@ -3800,6 +3970,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     <ion-icon name="copy-outline" style="font-size: 14px; pointer-events: none;"></ion-icon>
                   </button>
 
+                  
                   ${
                     canDelete
                       ? `
@@ -3817,9 +3988,13 @@ document.addEventListener("DOMContentLoaded", () => {
               </div>
               <p id="sub-reply-text-${reply.comment_id}" style="font-size: 12.5px; color: #cfd8dc; margin: 0; line-height: 1.5; word-break: break-word;">${reply.comment_text}</p>
             </div>
+            
           `;
+          pageTransitionOverlay.style.display = "none";
                 })
                 .join("");
+
+                
             } catch (err) {
               console.error("Failed loading thread map sub-replies:", err);
             }
@@ -3996,6 +4171,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  
+
   // ==========================================
   // 🚀 CORE GRID RUNNERS & INITIALIZERS
   // ==========================================
@@ -4018,6 +4195,201 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+
+/*-----------------------------------*\
+ * #COMMUNITY REPLY FORMATTING TOOLS & EMOJI PICKER
+\*-----------------------------------*/
+document.addEventListener("click", (e) => {
+  // 1. Handle Toggling the Emoji Popup Menu
+  const emojiToggle = e.target.closest(".comm-format-emoji-toggle");
+  if (emojiToggle) {
+    e.preventDefault();
+    const picker = emojiToggle.nextElementSibling;
+    
+    document.querySelectorAll(".emoji-picker-container.active").forEach(p => {
+      if (p !== picker) p.classList.remove("active");
+    });
+    
+    picker.classList.toggle("active");
+    return; 
+  }
+
+  // Click outside to close emoji picker
+  if (!e.target.closest(".emoji-picker-container")) {
+    document.querySelectorAll(".emoji-picker-container.active").forEach(p => p.classList.remove("active"));
+  }
+
+  // 2. Handle Core Formatting Tool Clicks
+  const formatBtn = e.target.closest(".comm-format-text-btn, .comm-format-image-btn, .emoji-btn");
+  if (!formatBtn) return;
+
+  e.preventDefault();
+  
+  const wrapper = formatBtn.closest(".uiverse-text-box");
+  if (!wrapper) return;
+  
+  const textarea = wrapper.querySelector("textarea");
+  if (!textarea) return;
+
+  // Native insertion helper
+  function insertAtCursor(startTag, endTag, defaultText = "") {
+    const startPos = textarea.selectionStart || 0;
+    const endPos = textarea.selectionEnd || 0;
+    const selectedText = textarea.value.substring(startPos, endPos);
+    const textToInsert = selectedText || defaultText;
+
+    textarea.value =
+      textarea.value.substring(0, startPos) +
+      startTag +
+      textToInsert +
+      endTag +
+      textarea.value.substring(endPos, textarea.value.length);
+
+    textarea.focus();
+    textarea.setSelectionRange(
+      startPos + startTag.length,
+      startPos + startTag.length + textToInsert.length
+    );
+  }
+
+  // ==========================================
+  // A. CAPITALIZE / LOWERCASE TOGGLE BUTTON
+  // ==========================================
+  if (formatBtn.classList.contains("comm-format-text-btn")) {
+    if (textarea.value && textarea.value === textarea.value.toUpperCase()) {
+      textarea.value = textarea.value.toLowerCase();
+    } else {
+      textarea.value = textarea.value.toUpperCase();
+    }
+    textarea.focus();
+  }
+  
+  // ==========================================
+  // B. IMAGE / STICKER UPLOAD PREVIEW WIDGET
+  // ==========================================
+  else if (formatBtn.classList.contains("comm-format-image-btn")) {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/*";
+    
+    fileInput.onchange = function () {
+      const file = this.files[0];
+      if (file) {
+        if (file.size > 5 * 1024 * 1024) {
+           alert("Image is too large! Please choose a picture under 5MB.");
+           return;
+        }
+
+        // 1. Create the Visual Attachment Preview Box dynamically
+        let previewWrapper = wrapper.querySelector(".attachment-preview-wrapper");
+        if (!previewWrapper) {
+          previewWrapper = document.createElement("div");
+          previewWrapper.className = "attachment-preview-wrapper";
+          previewWrapper.style.cssText = "display: block; position: relative; margin-top: 10px; margin-bottom: 10px; width: fit-content;";
+          previewWrapper.innerHTML = `
+             <div class="attachment-loader" style="display: flex; align-items: center; gap: 8px; background: rgba(229, 184, 0, 0.1); padding: 8px 14px; border-radius: 8px; border: 1px solid var(--citrine);">
+                <ion-icon name="sync-outline" style="animation: spin 1s linear infinite; font-size: 18px; color: var(--citrine);"></ion-icon>
+                <span style="font-size: 12px; color: var(--citrine); font-weight: 600;">Uploading securely to Cloudinary...</span>
+             </div>
+             <div class="attachment-image-container" style="display: none; position: relative;">
+                <img class="attachment-preview-img" src="" style="height: 70px; border-radius: 6px; border: 1px solid #243337; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+                <button class="attachment-remove-btn" title="Remove Attachment" style="position: absolute; top: -8px; right: -8px; background: #ff4560; color: white; border-radius: 50%; width: 22px; height: 22px; border: none; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.5);"><ion-icon name="close-outline"></ion-icon></button>
+             </div>
+          `;
+          
+          // Insert it neatly between the textarea and the formatting tools
+          const formattingBar = wrapper.querySelector(".formatting") || wrapper.querySelector(".formatting-left").parentElement;
+          wrapper.insertBefore(previewWrapper, formattingBar);
+
+          // Allow the user to cancel/remove the image before sending
+          previewWrapper.querySelector(".attachment-remove-btn").addEventListener("click", (e) => {
+             e.preventDefault();
+             previewWrapper.remove();
+          });
+        }
+
+        const loader = previewWrapper.querySelector(".attachment-loader");
+        const imgContainer = previewWrapper.querySelector(".attachment-image-container");
+        const previewImg = previewWrapper.querySelector(".attachment-preview-img");
+
+        // Switch UI to loading state
+        loader.style.display = "flex";
+        imgContainer.style.display = "none";
+        previewImg.src = "";
+
+        const reader = new FileReader();
+        reader.onload = async function (evt) {
+          const base64Data = evt.target.result;
+          try {
+            // Upload the image to Cloudinary
+            const finalImgUrl = await uploadImageToCloud(base64Data);
+            
+            // Swap the loading bar out for the actual picture!
+            loader.style.display = "none";
+            previewImg.src = finalImgUrl;
+            imgContainer.style.display = "block";
+          } catch (err) {
+            console.error("Image upload failed:", err);
+            alert("Failed to upload image. Please check your internet connection.");
+            previewWrapper.remove();
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+    fileInput.click(); 
+  }
+  
+  // ==========================================
+  // C. EMOJI SELECTION
+  // ==========================================
+  else if (formatBtn.classList.contains("emoji-btn")) {
+    const emoji = formatBtn.textContent.trim();
+    insertAtCursor(emoji, "", "");
+    formatBtn.closest(".emoji-picker-container").classList.remove("active");
+  }
+});
+
+// =========================================================================
+// 4. THE INVISIBLE ATTACHMENT INJECTOR (THE MAGIC TRICK!)
+// =========================================================================
+// This runs exactly 1 millisecond BEFORE your form submits to secretly
+// attach the image HTML to the text box so the database accepts it.
+document.addEventListener("click", (e) => {
+  const sendBtn = e.target.closest(".uiverse-send-btn, .comment-reply-submit-action-btn, .sub-edit-save-btn, .comment-edit-save-action-btn");
+  if (sendBtn) {
+    const wrapper = sendBtn.closest(".uiverse-text-box, .reddit-inline-reply-box, .reddit-inline-edit-box, .sub-reply-inline-edit-box");
+    if (wrapper) {
+      const textarea = wrapper.querySelector("textarea");
+      const previewWrapper = wrapper.querySelector(".attachment-preview-wrapper");
+      const previewImg = wrapper.querySelector(".attachment-preview-img");
+
+      if (textarea && previewImg && previewImg.src) {
+        // Build the HTML tag using the Cloudinary URL we saved in the preview
+        const imgHtml = `\n<br><img src="${previewImg.src}" style="max-width: 250px; border-radius: 8px; margin-top: 10px;" alt="User Upload">\n`;
+        
+        // Inject the HTML
+        textarea.value = textarea.value + imgHtml;
+
+        // Remove it from the text box 50 milliseconds later so the user never sees the raw code!
+        setTimeout(() => {
+          textarea.value = textarea.value.replace(imgHtml, "");
+        }, 50);
+
+        // Watch for a successful submission (when your native code clears the text box) and purge the preview UI
+        const checkClear = setInterval(() => {
+          if (textarea.value === "") {
+            if (previewWrapper) previewWrapper.remove();
+            clearInterval(checkClear);
+          }
+        }, 300);
+        
+        // Stop checking after 4 seconds just in case the server fails
+        setTimeout(() => clearInterval(checkClear), 4000); 
+      }
+    }
+  }
+}, true); // Setting this to 'true' ensures it intercepts the click before your submit functions run!
 
 
 
