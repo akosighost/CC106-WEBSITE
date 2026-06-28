@@ -2887,3 +2887,10 @@ input[type="password"]::-webkit-contacts-auto-fill-button {
   display: none !important;
 }
 
+/* Force the Back to Home button to stay horizontal on mobile */
+.btn-back-home {
+  white-space: nowrap !important;
+  display: flex !important;
+  align-items: center !important;
+  flex-wrap: nowrap !important;
+}
