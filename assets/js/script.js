@@ -248,7 +248,7 @@ fetch(`${API_BASE_URL}/api/reviews/all`)
 console.log("Current API URL:", API_BASE_URL);
 
 // --- MAINTENANCE MODE TOGGLE ---
-const IS_MAINTENANCE_MODE = false; // Set to true when you need maintenance
+const IS_MAINTENANCE_MODE = true; // Set to true when you need maintenance
 
 document.addEventListener("DOMContentLoaded", () => {
   // Check if user is an admin
@@ -267,25 +267,51 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 document.addEventListener("DOMContentLoaded", () => {
+  const creatorModal = document.getElementById("creator-warning-modal");
+  const creatorBtn = document.getElementById("creator-warning-btn");
+  
   const whatsNewModal = document.getElementById("whats-new-modal");
   const whatsNewBtn = document.getElementById("whats-new-btn");
 
-  // Check if the user has already seen the popup
-  if (!localStorage.getItem("whatsNewShown")) {
+  const hasSeenCreator = localStorage.getItem("creatorWarningShown");
+  const hasSeenWhatsNew = localStorage.getItem("whatsNewShown");
+
+  // 1. Show the Developer Note first if they haven't seen it
+  if (!hasSeenCreator) {
+    if (creatorModal) {
+      creatorModal.style.display = "flex";
+      document.body.style.overflow = "hidden"; // Stop scrolling
+    }
+  } 
+  // 2. If they already saw the Developer Note, but NOT the What's New popup, show it
+  else if (!hasSeenWhatsNew) {
     if (whatsNewModal) {
       whatsNewModal.style.display = "flex";
       document.body.style.overflow = "hidden"; // Stop scrolling
     }
   }
 
-  // Handle clicking "Got it"
+  // 3. Handle clicking "Close" on the Developer Note
+  if (creatorBtn) {
+    creatorBtn.addEventListener("click", () => {
+      creatorModal.style.display = "none";
+      localStorage.setItem("creatorWarningShown", "true");
+
+      // Instantly trigger the What's New modal right after!
+      if (!hasSeenWhatsNew && whatsNewModal) {
+        whatsNewModal.style.display = "flex";
+      } else {
+        document.body.style.overflow = "auto"; // Resume scrolling
+      }
+    });
+  }
+
+  // 4. Handle clicking "Got it" on the What's New Modal
   if (whatsNewBtn) {
     whatsNewBtn.addEventListener("click", () => {
       whatsNewModal.style.display = "none";
       document.body.style.overflow = "auto"; // Resume scrolling
-      
-      // Save the flag so it never shows again
-      localStorage.setItem("whatsNewShown", "true");
+      localStorage.setItem("whatsNewShown", "true"); // Save the flag
     });
   }
 });
