@@ -4814,7 +4814,40 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   });
+
+  /*-----------------------------------*\
+ * #DYNAMIC RUNNING TEXT (MARQUEE) FOR LONG TITLES
+\*-----------------------------------*/
+document.addEventListener("DOMContentLoaded", () => {
+  const titleObserver = new MutationObserver(() => {
+    
+    // Find all movie titles on the screen
+    document.querySelectorAll(".poster-footer .reviewer-name").forEach(title => {
+      
+      // Check if we haven't processed this one yet, and ensure it's a standard span
+      if (!title.hasAttribute("data-checked") && title.tagName.toLowerCase() === "span") {
+        title.setAttribute("data-checked", "true");
+        
+        // If the movie title is longer than 16 characters, make it run!
+        if (title.textContent.length > 16) {
+          const marquee = document.createElement("marquee");
+          marquee.setAttribute("scrollamount", "3"); // Adjust this number to change the scrolling speed
+          marquee.className = title.className; // Keep your existing font styles
+          marquee.style.cssText = title.style.cssText; // Keep your existing colors
+          marquee.textContent = title.textContent;
+          
+          // Swap the static text with the running text!
+          title.parentNode.replaceChild(marquee, title);
+        }
+      }
+    });
+  });
+
+  // Watch the page continuously for new database loads
+  titleObserver.observe(document.body, { childList: true, subtree: true });
+});
   
   // Start observing the page for database injections
   observer.observe(document.body, { childList: true, subtree: true });
 });
+
