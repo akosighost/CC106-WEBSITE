@@ -80,29 +80,32 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-document.addEventListener("DOMContentLoaded", () => {
-  const whatsNewModal = document.getElementById("whats-new-modal");
-  const whatsNewBtn = document.getElementById("whats-new-btn");
 
-  // Check if the user has already seen the popup
-  if (!localStorage.getItem("whatsNewShown")) {
-    if (whatsNewModal) {
-      whatsNewModal.style.display = "flex";
-      document.body.style.overflow = "hidden"; // Stop scrolling
-    }
-  }
+// WHAT NEW POP UP
 
-  // Handle clicking "Got it"
-  if (whatsNewBtn) {
-    whatsNewBtn.addEventListener("click", () => {
-      whatsNewModal.style.display = "none";
-      document.body.style.overflow = "auto"; // Resume scrolling
+// document.addEventListener("DOMContentLoaded", () => {
+//   const whatsNewModal = document.getElementById("whats-new-modal");
+//   const whatsNewBtn = document.getElementById("whats-new-btn");
+
+//   // Check if the user has already seen the popup
+//   if (!localStorage.getItem("whatsNewShown")) {
+//     if (whatsNewModal) {
+//       whatsNewModal.style.display = "flex";
+//       document.body.style.overflow = "hidden"; // Stop scrolling
+//     }
+//   }
+
+//   // Handle clicking "Got it"
+//   if (whatsNewBtn) {
+//     whatsNewBtn.addEventListener("click", () => {
+//       whatsNewModal.style.display = "none";
+//       document.body.style.overflow = "auto"; // Resume scrolling
       
-      // Save the flag so it never shows again
-      localStorage.setItem("whatsNewShown", "true");
-    });
-  }
-});
+//       // Save the flag so it never shows again
+//       localStorage.setItem("whatsNewShown", "true");
+//     });
+//   }
+// });
 
 /**
  * Navbar Toggle Logic Controller
@@ -487,11 +490,16 @@ document.addEventListener("DOMContentLoaded", () => {
           document.getElementById("profile-card-username").textContent = localStorage.getItem("username");
           document.getElementById("profile-card-email").textContent = localStorage.getItem("userEmail") || "test@gmail.com";
           document.getElementById("profile-card-password").value = localStorage.getItem("userPassword") || "password123";
+          
+          // ✅ NEW: Ensure all dynamic data loads for mobile users!
+          if (typeof window.loadUserBio === "function") window.loadUserBio();
+          if (typeof window.loadUserAvatar === "function") window.loadUserAvatar();
+          if (typeof window.loadUserStats === "function") window.loadUserStats();
+          
           profileModal.classList.add("active");
         }
       });
     }
-
     // 3. NEW: Instantly inject the saved Avatar and Username into the Nav Buttons!
     if (typeof window.loadUserAvatar === "function") {
       window.loadUserAvatar();
@@ -1072,7 +1080,7 @@ document.addEventListener("DOMContentLoaded", () => {
 const footerContent = {
   faq: {
     title: "Frequently Asked Questions",
-    text: `Q: Is Filmlane free?\nA: Yes, Filmlane is free to use for browsing movie reviews.\n\nQ: How do I download movies?\nA: Click the download button on the specific movie page (if available).\n\nQ: Can I submit a review?\nA: Currently, reviews are curated by our team.`,
+    text: `Q: Is Reav-on free?\nA: Yes, Filmlane is free to use for browsing movie reviews.\n\nQ: How do I post a review?\nA: Click the "Upload Review" button on the top right.\n\nQ: Can I submit a review?\nA. Yes, users can upload reviews, write comments, and share posts in the Community section.`,
   },
   help: {
     title: "Help Center",
