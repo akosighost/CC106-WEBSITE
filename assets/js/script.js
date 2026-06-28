@@ -248,7 +248,7 @@ fetch(`${API_BASE_URL}/api/reviews/all`)
 console.log("Current API URL:", API_BASE_URL);
 
 // --- MAINTENANCE MODE TOGGLE ---
-const IS_MAINTENANCE_MODE = true; // Set to true when you need maintenance
+const IS_MAINTENANCE_MODE = false; // Set to true when you need maintenance
 
 document.addEventListener("DOMContentLoaded", () => {
   // Check if user is an admin
