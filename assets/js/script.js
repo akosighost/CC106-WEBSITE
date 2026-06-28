@@ -276,6 +276,24 @@ document.addEventListener("DOMContentLoaded", () => {
   const hasSeenCreator = localStorage.getItem("creatorWarningShown");
   const hasSeenWhatsNew = localStorage.getItem("whatsNewShown");
 
+  // 5. Handle "See More" Tech Stack Toggle
+  const devSeeMoreBtn = document.getElementById("dev-see-more-btn");
+  const devTechStack = document.getElementById("dev-tech-stack");
+
+  if (devSeeMoreBtn && devTechStack) {
+    devSeeMoreBtn.addEventListener("click", () => {
+      if (devTechStack.style.display === "none") {
+        // Show it
+        devTechStack.style.display = "block";
+        devSeeMoreBtn.textContent = "Hide Tech Stack";
+      } else {
+        // Hide it
+        devTechStack.style.display = "none";
+        devSeeMoreBtn.textContent = "View Tech Stack";
+      }
+    });
+  }
+
   // 1. Show the Developer Note first if they haven't seen it
   if (!hasSeenCreator) {
     if (creatorModal) {

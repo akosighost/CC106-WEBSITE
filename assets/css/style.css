@@ -1829,6 +1829,8 @@ body.active { overflow: hidden; }
         width: 100%;
         font-family: var(--ff-poppins);
       }
+
+      
       
       #success-btn:hover {
         background: #c59b00 !important;
@@ -1847,6 +1849,25 @@ body.active { overflow: hidden; }
   cursor: pointer;
   width: 100%;
   margin-top: 10px;
+  
+  
+}
+
+#creator-warning-btn {
+  background: var(--citrine);
+  color: var(--black);
+  border: none;
+  padding: 12px 30px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 10px;
+  
+  
 }
 
       .custom-alert-overlay {
