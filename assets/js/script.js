@@ -39,9 +39,9 @@ const loadingSpinnerHTML = `
     .uiverse-loader .box1, .uiverse-loader .box2, .uiverse-loader .box3 {
       border: 16px solid var(--citrine); box-sizing: border-box; position: absolute; display: block;
     }
-    .uiverse-loader .box1 { width: 112px; height: 48px; margin-top: 64px; margin-left: 0px; animation: abox1 4s 1s forwards ease-in-out infinite; }
-    .uiverse-loader .box2 { width: 48px; height: 48px; margin-top: 0px; margin-left: 0px; animation: abox2 4s 1s forwards ease-in-out infinite; }
-    .uiverse-loader .box3 { width: 48px; height: 48px; margin-top: 0px; margin-left: 64px; animation: abox3 4s 1s forwards ease-in-out infinite; }
+    .uiverse-loader .box1 { width: 112px; height: 48px; margin-top: 64px; margin-left: 0px; animation: abox1 1s 1s forwards ease-in-out infinite; }
+    .uiverse-loader .box2 { width: 48px; height: 48px; margin-top: 0px; margin-left: 0px; animation: abox2 1s 1s forwards ease-in-out infinite; }
+    .uiverse-loader .box3 { width: 48px; height: 48px; margin-top: 0px; margin-left: 64px; animation: abox3 1s 1s forwards ease-in-out infinite; }
 
     @keyframes abox1 {
       0% { width: 112px; height: 48px; margin-top: 64px; margin-left: 0px; }
