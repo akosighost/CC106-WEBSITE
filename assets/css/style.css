@@ -2597,13 +2597,8 @@ ul {
   list-style: none;
 }
 
-.example-2 {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 .example-2 .icon-content {
-  margin: 0 10px;
+  margin: 0 8px; /* Tighter spacing so it looks cleaner on mobile */
   position: relative;
 }
 .example-2 .icon-content .tooltip {
@@ -2630,22 +2625,24 @@ ul {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 50px;
-  height: 50px;
+  width: 40px;                  /* ✅ Shrunk the button size */
+  height: 40px;                 /* ✅ Shrunk the button size */
   border-radius: 50%;
-  color: #4d4d4d;
-  background-color: #fff;
+  color: var(--gainsboro);      /* ✅ Blends with your dark theme text */
+  background-color: #132226;    /* ✅ Matches your dark slate background */
+  border: 1px solid #243337;    /* ✅ Adds a sleek, subtle border */
   transition: all 0.3s ease-in-out;
 }
 .example-2 .icon-content a:hover {
-  box-shadow: 3px 2px 45px 0px rgb(0 0 0 / 12%);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); /* Darker, cleaner shadow */
 }
 .example-2 .icon-content a svg {
   position: relative;
   z-index: 1;
-  width: 30px;
-  height: 30px;
+  width: 20px;                  /* ✅ Shrunk the icon to fit the new button */
+  height: 20px;                 /* ✅ Shrunk the icon to fit the new button */
 }
+
 .example-2 .icon-content a:hover {
   color: white;
 }
@@ -2761,4 +2758,86 @@ ul {
 .emoji-btn:hover::before {
   opacity: 1;
   visibility: visible;
+}
+
+/* =========================================================
+   #RESPONSIVE NAV FIX (HIDE MOBILE LINKS ON DESKTOP)
+========================================================= */
+@media (min-width: 992px) {
+  .mobile-only-link {
+    display: none !important;
+  }
+}
+
+/* =========================================================
+   #BACK TO HOME BUTTON (VIEW-REVIEW)
+========================================================= */
+.btn-back-home {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  font-size: 12px;
+  font-weight: 700;
+  background-color: #132226;
+  color: var(--citrine); /* Makes both the icon and text yellow initially */
+  border: 1px solid #243337;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.btn-back-home:hover {
+  background-color: var(--citrine);
+  color: #0b1416; /* Inverts the icon and text to dark on hover */
+  border-color: var(--citrine);
+}
+
+
+/* =========================================================
+   #FOOTER & SOCIAL ICONS RESPONSIVE FIX
+========================================================= */
+
+/* 1. Force the footer to stack sections vertically on mobile so nothing gets squished */
+.quicklink-wrapper {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 30px !important;
+  justify-content: center !important;
+  align-items: center !important;
+  text-align: center !important;
+  width: 100% !important;
+}
+
+/* 2. Force the social icons into a clean horizontal row */
+.example-2 {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 15px !important;
+  padding: 0 !important;
+}
+
+.example-2 .icon-content {
+  margin: 0 !important; /* Use gap instead of margins for perfect alignment */
+}
+
+/* 3. Hide tooltips on mobile to prevent them from glitching or blocking taps */
+@media (max-width: 768px) {
+  .example-2 .icon-content .tooltip {
+    display: none !important;
+  }
+}
+
+/* 4. On Desktop, spread the footer sections back out horizontally */
+@media (min-width: 992px) {
+  .quicklink-wrapper {
+    flex-direction: row !important;
+    justify-content: space-between !important;
+  }
+  .mobile-only {
+    display: none !important;
+  }
 }

@@ -31,6 +31,33 @@ async function uploadImageToCloud(base64Data) {
 }
 // ----------------------------------------
 
+// --- SKELETON LOADER FOR MOVIE REVIEWS (REDDIT STYLE) ---
+const skeletonRedditCommentsHTML = `
+  <style>
+    .skeleton-pulse { animation: skeleton-pulse-anim 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    @keyframes skeleton-pulse-anim { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+  </style>
+  <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 15px; width: 100%;">
+    ${[1, 2, 3].map(i => `
+    <div class="skeleton-pulse" style="display: flex; gap: 12px; margin-top: 12px;">
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+        <div style="width: 32px; height: 32px; border-radius: 50%; background: #1a282d; border: 1px solid var(--citrine); flex-shrink: 0;"></div>
+        <div style="width: 2px; height: 40px; background: #1a282d; border-radius: 2px;"></div>
+      </div>
+      <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 8px; padding-top: 4px;">
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <div style="width: 120px; height: 12px; border-radius: 4px; background: #243337;"></div>
+          <div style="width: 60px; height: 10px; border-radius: 4px; background: #1a282d;"></div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <div style="width: 95%; height: 10px; border-radius: 4px; background: #243337;"></div>
+          <div style="width: 70%; height: 10px; border-radius: 4px; background: #243337;"></div>
+        </div>
+      </div>
+    </div>`).join("")}
+  </div>
+`;
+
 // --- PASTE THE SPINNER RIGHT HERE ---
 // A reusable loading spinner for the data grids
 const loadingSpinnerHTML = `
@@ -89,10 +116,120 @@ const loadingSpinnerHTML = `
 const pageTransitionOverlay = document.createElement("div");
 pageTransitionOverlay.style.cssText = "position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(11, 20, 22, 0.85); backdrop-filter: blur(5px); z-index: 9999; display: none; justify-content: center; align-items: center; flex-direction: column;";
 pageTransitionOverlay.innerHTML = `
-  <div class="uiverse-loader" style="transform: scale(0.5); margin-bottom: -15px;">
-    <div class="box1"></div><div class="box2"></div><div class="box3"></div>
-  </div>
-  <p style="color: var(--citrine); margin-top: 20px; font-weight: 600; font-size: 14px; letter-spacing: 1px;">LOADING PLEASE WAIT...</p>
+
+<style>/* From Uiverse.io by peter_7887 */ 
+.spinner {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+}
+
+.spinner div {
+  position: absolute;
+  width: 50%;
+  height: 150%;
+  background: #667788;
+  transform: rotate(calc(var(--rotation) * 1deg))
+    translate(0, calc(var(--translation) * 1%));
+  animation: spinner-fzua35 1s calc(var(--delay) * 1s) infinite ease;
+}
+
+.spinner div:nth-child(1) {
+  --delay: 0.1;
+  --rotation: 36;
+  --translation: 150;
+}
+
+.spinner div:nth-child(2) {
+  --delay: 0.2;
+  --rotation: 72;
+  --translation: 150;
+}
+
+.spinner div:nth-child(3) {
+  --delay: 0.3;
+  --rotation: 108;
+  --translation: 150;
+}
+
+.spinner div:nth-child(4) {
+  --delay: 0.4;
+  --rotation: 144;
+  --translation: 150;
+}
+
+.spinner div:nth-child(5) {
+  --delay: 0.5;
+  --rotation: 180;
+  --translation: 150;
+}
+
+.spinner div:nth-child(6) {
+  --delay: 0.6;
+  --rotation: 216;
+  --translation: 150;
+}
+
+.spinner div:nth-child(7) {
+  --delay: 0.7;
+  --rotation: 252;
+  --translation: 150;
+}
+
+.spinner div:nth-child(8) {
+  --delay: 0.8;
+  --rotation: 288;
+  --translation: 150;
+}
+
+.spinner div:nth-child(9) {
+  --delay: 0.9;
+  --rotation: 324;
+  --translation: 150;
+}
+
+.spinner div:nth-child(10) {
+  --delay: 1;
+  --rotation: 360;
+  --translation: 150;
+}
+
+@keyframes spinner-fzua35 {
+  0%,
+  10%,
+  20%,
+  30%,
+  50%,
+  60%,
+  70%,
+  80%,
+  90%,
+  100% {
+    transform: rotate(calc(var(--rotation) * 1deg))
+      translate(0, calc(var(--translation) * 1%));
+  }
+
+  50% {
+    transform: rotate(calc(var(--rotation) * 1deg))
+      translate(0, calc(var(--translation) * 1.5%));
+  }
+}
+</style>
+
+
+<div class="spinner">
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+</div>
+
 `;
 document.body.appendChild(pageTransitionOverlay);
 // -----------------------------------------
@@ -692,9 +829,10 @@ document.addEventListener("DOMContentLoaded", () => {
           localStorage.setItem("userPassword", data.password);
           localStorage.setItem("isAdmin", data.is_admin);
           
-          // NEW: Catch the avatar and bio from the server on login
-          if (data.user_avatar) {
-            localStorage.setItem("userAvatar", data.user_avatar);
+          // ✅ FIXED: Catch the avatar regardless of what your backend named the column!
+          const caughtAvatar = data.user_avatar || data.avatar_data || data.avatar || data.profile_pic;
+          if (caughtAvatar) {
+            localStorage.setItem("userAvatar", caughtAvatar);
           }
           if (data.bio) {
             localStorage.setItem("userBio", data.bio);
@@ -1162,7 +1300,7 @@ document.addEventListener("DOMContentLoaded", () => {
 const footerContent = {
   faq: {
     title: "Frequently Asked Questions",
-    text: `Q: Is Reav-on free?\nA: Yes, Filmlane is free to use for browsing movie reviews.\n\nQ: How do I post a review?\nA: Click the "Upload Review" button on the top right.\n\nQ: Can I submit a review?\nA. Yes, users can upload reviews, write comments, and share posts in the Community section.`,
+    text: `Q: Is Reav-on free?\nA: Yes, Reav-on is free to use for browsing movie reviews.\n\nQ: How do I post a review?\nA: Click the "Upload Review" button on the top right.\n\nQ: Can I submit a review?\nA. Yes, users can upload reviews, write comments, and share posts in the Community section.`,
   },
   help: {
     title: "Help Center",
@@ -1681,14 +1819,25 @@ document.addEventListener("DOMContentLoaded", () => {
           displayYear = parsedYear ? parsedYear[0] : c.publish_date;
         }
 
+        // ✅ 1. THE AVATAR MEMORY BANK: Memorize faces from the main feed!
+        const backendAvatar = c.user_avatar || c.avatar || c.avatar_data || c.profile_pic;
+        if (backendAvatar) {
+          let cache = JSON.parse(localStorage.getItem("globalAvatarCache") || "{}");
+          cache[c.username] = backendAvatar;
+          localStorage.setItem("globalAvatarCache", JSON.stringify(cache));
+        }
+        let cachedAvatar = JSON.parse(localStorage.getItem("globalAvatarCache") || "{}")[c.username];
+        const safeFeedAvatar = backendAvatar || cachedAvatar || (isOwner ? localStorage.getItem("userAvatar") : null);
+
         return `
         <div class="review-card card-blue community-feed-card review-click-target-node" data-review-id="${c.review_id}" data-comment-id="${c.comment_id}" style="cursor: pointer; margin-bottom: 20px; padding: 25px; background: var(--rich-black-fogra-29); border: 1px solid #1a282d; border-top: 4px solid #3b82f6; border-radius: 8px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);">
           
           <div class="card-top-row" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; width: 100%;">
             <div class="review-header" style="display: flex; align-items: center; gap: 12px; border: none; padding: 0; margin: 0;">
+              
               <div class="avatar" style="width: 40px; height: 40px; flex-shrink: 0; border-radius: 50%; overflow: hidden; display: flex; justify-content: center; align-items: center; background: #1a282d; border: 1px solid var(--citrine);">
-                ${c.user_avatar 
-                  ? `<img src="${c.user_avatar}" style="width: 100%; height: 100%; object-fit: cover;" />` 
+                ${safeFeedAvatar 
+                  ? `<img src="${safeFeedAvatar}" style="width: 100%; height: 100%; object-fit: cover;" />` 
                   : `<ion-icon name="person-circle-outline" style="font-size: 40px; color: var(--citrine);"></ion-icon>`
                 }
               </div>
@@ -2223,12 +2372,26 @@ document.addEventListener("DOMContentLoaded", () => {
     if (modalContainer) modalContainer.classList.remove("is-editing-mode");
     toggleEditFormState(false);
 
-    
+    // ✅ 1. OPEN INSTANTLY
+    const detailModal = document.getElementById("movie-detail-modal-overlay");
+    if (detailModal) {
+      detailModal.classList.add("active");
+      document.body.classList.add("active");
+    }
+
+    // ✅ 2. INJECT NEW REDDIT SKELETON LOADER IMMEDIATELY
+    const commentsList = document.getElementById("modal-comments-list");
+    if (commentsList) commentsList.innerHTML = skeletonRedditCommentsHTML;
 
     try {
-      const response = await fetch(
+      // ✅ 3. FETCH AND DELAY AT THE SAME TIME (PROMISE.ALL)
+      const fetchPromise = fetch(
         `${API_BASE_URL}/api/reviews/details/${reviewId}?email=${encodeURIComponent(userEmail)}`,
       );
+      const delayPromise = new Promise(resolve => setTimeout(resolve, 1500));
+      
+      const [response] = await Promise.all([fetchPromise, delayPromise]);
+
       if (!response.ok) throw new Error("Packet unresolved.");
       const data = await response.json();
 
@@ -2507,13 +2670,10 @@ document.addEventListener("DOMContentLoaded", () => {
           deleteBtn.style.setProperty("display", "none", "important");
       }
 
+      // ✅ 4. RENDER COMMENTS NORMALLY (The 1.5s delay is already handled perfectly at the top)
       renderCommentsListCollection(data.comments, data.is_admin);
       resetStarSelectorInterfaceNode();
 
-      if (detailModal) {
-        detailModal.classList.add("active");
-        document.body.classList.add("active");
-      }
     } catch (err) {
       console.error("Error contacting dataset detail endpoint nodes:", err);
     }
@@ -2570,13 +2730,28 @@ document.addEventListener("DOMContentLoaded", () => {
         (r) => Number(r.parent_comment_id) === Number(c.comment_id),
       );
 
+      // ✅ SMART AVATAR CATCHER: Pulls from DB, or falls back to local memory!
+      const backendAvatar = c.user_avatar || c.avatar || c.avatar_data || c.profile_pic;
+      if (backendAvatar) {
+        let cache = JSON.parse(localStorage.getItem("globalAvatarCache") || "{}");
+        cache[c.username] = backendAvatar;
+        localStorage.setItem("globalAvatarCache", JSON.stringify(cache));
+      }
+      let cachedAvatar = JSON.parse(localStorage.getItem("globalAvatarCache") || "{}")[c.username];
+      const safeAvatar = backendAvatar || cachedAvatar || (isCommentOwner ? localStorage.getItem("userAvatar") : null);
+
       return `
         <div class="reddit-comment-block-wrapper" style="margin-top: 12px; margin-left: ${isReply ? "36px" : "0px"};">
           <div class="reddit-comment-node">
             <div class="reddit-comment-sidebar">
-              <div class="reddit-avatar-sm">
-                <ion-icon name="person-circle-outline"></ion-icon>
+              
+              <div class="reddit-avatar-sm" style="width: 32px; height: 32px; border-radius: 50%; overflow: hidden; background: #1a282d; display: flex; justify-content: center; align-items: center; border: 1px solid var(--citrine); margin: 0 auto;">
+                ${safeAvatar 
+                  ? `<img src="${safeAvatar}" style="width: 100%; height: 100%; object-fit: cover;" />` 
+                  : `<ion-icon name="person-circle-outline" style="font-size: 32px; color: var(--citrine);"></ion-icon>`
+                }
               </div>
+              
               <div class="reddit-thread-line"></div>
             </div>
             <div class="reddit-comment-main">
@@ -2760,10 +2935,16 @@ document.addEventListener("DOMContentLoaded", () => {
             commentField.value = "";
             resetStarSelectorInterfaceNode();
 
-            // Re-fetch clean active lists from PostgreSQL backend rows
-            const refreshRes = await fetch(
+            // ✅ INJECT REDDIT SKELETON WHILE WAITING FOR REFRESH
+            const listContainer = document.getElementById("modal-comments-list");
+            if (listContainer) listContainer.innerHTML = skeletonRedditCommentsHTML;
+
+            // ✅ RE-FETCH WITH 1.5s DELAY TO SHOW ANIMATION
+            const fetchPromise = fetch(
               `${API_BASE_URL}/api/reviews/details/${currentActiveReviewId}?email=${encodeURIComponent(userEmail)}`,
             );
+            const delayPromise = new Promise(resolve => setTimeout(resolve, 1500));
+            const [refreshRes] = await Promise.all([fetchPromise, delayPromise]);
             const refreshData = await refreshRes.json();
 
             renderCommentsListCollection(
@@ -2811,6 +2992,35 @@ document.addEventListener("DOMContentLoaded", () => {
   // 5. GLOBAL INTERACTIVE EVENT DELEGATION CAPTURE FOR COMMUNITY ELEMENTS
   document.addEventListener("click", async (e) => {
     const userEmail = localStorage.getItem("userEmail");
+
+    // ============================================================
+    // 🚨 NEW: SUB-REPLY RESPOND (TAG USER) HANDLER
+    // ============================================================
+    const subReplyRespondBtn = e.target.closest(".sub-reply-respond-btn");
+    if (subReplyRespondBtn) {
+      e.preventDefault();
+      const targetUser = subReplyRespondBtn.getAttribute("data-username");
+      const replyInput = document.getElementById("comm-modal-reply-input");
+      
+      if (replyInput) {
+        // No trailing space in the variable so the highlighter catches the exact name cleanly
+        const tag = `@${targetUser}`; 
+        
+        // Add the tag to the text box
+        if (!replyInput.value.includes(tag)) {
+           replyInput.value = tag + " " + replyInput.value;
+        }
+        
+        // ✅ NEW: Save the exact tag in the browser's memory so the Send Button can highlight it!
+        replyInput.setAttribute("data-active-tag", tag);
+        
+        // Auto-focus and push the cursor to the end
+        replyInput.focus();
+        const textLength = replyInput.value.length;
+        replyInput.setSelectionRange(textLength, textLength);
+      }
+      return;
+    }
 
     // ============================================================
     // 🚨 NEW: SUB-REPLY COPY HANDLER
@@ -3630,20 +3840,26 @@ document.addEventListener("DOMContentLoaded", () => {
   // ==========================================
   // 7. BASE REVIEW FILEREADER UPLOAD LAYER CONTROLS (STANDALONE WIDGET)
   // ==========================================
+  const mobileUploadBtn = document.getElementById("mobile-upload-btn");
+
+  const handleUploadNavigation = (e) => {
+    e.preventDefault();
+    // Guard entry: force sign-in prompt modal if no active browser token is detected
+    if (!localStorage.getItem("userToken")) {
+      alert("Please sign in to upload a movie review!");
+      document.getElementById("signin-modal-overlay")?.classList.add("active");
+    } else {
+      // Redirect seamlessly out to the dedicated review workspace page
+      window.location.href = "upload-review.html";
+    }
+  };
+
+  // Attach the logic to BOTH the desktop header button and the new mobile sidebar button!
   if (uploadReviewBtn) {
-    uploadReviewBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      // Guard entry: force sign-in prompt modal if no active browser token is detected
-      if (!localStorage.getItem("userToken")) {
-        alert("Please sign in to upload a movie review!");
-        document
-          .getElementById("signin-modal-overlay")
-          ?.classList.add("active");
-      } else {
-        // Redirect seamlessly out to the dedicated review workspace page
-        window.location.href = "upload-review.html";
-      }
-    });
+    uploadReviewBtn.addEventListener("click", handleUploadNavigation);
+  }
+  if (mobileUploadBtn) {
+    mobileUploadBtn.addEventListener("click", handleUploadNavigation);
   }
 
   // Dedicated check condition executed exclusively when opening upload-review.html
@@ -3902,10 +4118,25 @@ document.addEventListener("DOMContentLoaded", () => {
         );
         if (foundComment) {
           // 1. Bind main profile credential data positions safely
-          document.getElementById("comm-modal-username").textContent =
-            foundComment.username;
-          document.getElementById("comm-modal-text").textContent =
-            foundComment.comment_text;
+          document.getElementById("comm-modal-username").textContent = foundComment.username;
+          document.getElementById("comm-modal-text").textContent = foundComment.comment_text;
+
+          // ✅ SMART AVATAR CATCHER: Looks for multiple possible backend names
+          const parentAvatarContainer = document.querySelector("#community-view-modal-overlay .avatar");
+          if (parentAvatarContainer) {
+            const currentUsername = localStorage.getItem("username");
+            const isOwner = foundComment.username === currentUsername;
+            
+            // Checks every possible database column name!
+            const backendAvatar = foundComment.user_avatar || foundComment.avatar || foundComment.avatar_data || foundComment.profile_pic;
+            const safeAvatar = backendAvatar || (isOwner ? localStorage.getItem("userAvatar") : null);
+
+            if (safeAvatar) {
+              parentAvatarContainer.innerHTML = `<img src="${safeAvatar}" style="width: 100%; height: 100%; object-fit: cover;" />`;
+            } else {
+              parentAvatarContainer.innerHTML = `<ion-icon name="person-circle-outline" style="font-size: 50px; color: var(--citrine);"></ion-icon>`;
+            }
+          }
 
           // Render rating stars header context row
           const score = parseFloat(foundComment.rating) || 4;
@@ -3957,19 +4188,41 @@ document.addEventListener("DOMContentLoaded", () => {
                   const isOwner = reply.username === currentUsername;
                   const canDelete = isOwner || isGlobalAdmin;
 
+                  // ✅ 2. READ FROM MEMORY BANK FOR SUB-REPLIES
+                  const backendAvatar = reply.user_avatar || reply.avatar || reply.avatar_data || reply.profile_pic;
+                  if (backendAvatar) {
+                    let cache = JSON.parse(localStorage.getItem("globalAvatarCache") || "{}");
+                    cache[reply.username] = backendAvatar;
+                    localStorage.setItem("globalAvatarCache", JSON.stringify(cache));
+                  }
                   
+                  let cachedAvatar = JSON.parse(localStorage.getItem("globalAvatarCache") || "{}")[reply.username];
+                  const safeAvatar = backendAvatar || cachedAvatar || (isOwner ? localStorage.getItem("userAvatar") : null);
 
                   return `
             <div class="sub-reply-card-node" style="background: rgba(255,255,255,0.01); border-left: 3px solid var(--citrine); padding: 10px 14px; border-radius: 0 6px 6px 0; border: 1px solid rgba(255,255,255,0.02); text-align: left; margin-bottom: 8px;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                <span style="font-size: 12px; font-weight: 700; color: #fff;">${reply.username}</span>
+                
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <div style="width: 24px; height: 24px; border-radius: 50%; overflow: hidden; background: #1a282d; display: flex; justify-content: center; align-items: center; border: 1px solid var(--citrine); flex-shrink: 0;">
+                    ${safeAvatar 
+                      ? `<img src="${safeAvatar}" style="width: 100%; height: 100%; object-fit: cover;" />` 
+                      : `<ion-icon name="person-circle-outline" style="font-size: 24px; color: var(--citrine);"></ion-icon>`
+                    }
+                  </div>
+                  <span style="font-size: 12px; font-weight: 700; color: #fff;">${reply.username}</span>
+                </div>
+                
                 <div style="display: flex; align-items: center; gap: 8px;">
                   <span style="font-size: 10px; color: #567;">${new Date(reply.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>
+                  
+                  <button type="button" class="sub-reply-respond-btn" data-username="${reply.username}" style="background: transparent; border: none; color: #78909c; cursor: pointer; display: flex; align-items: center; padding: 2px; transition: 0.2s;" title="Reply to ${reply.username}">
+                    <ion-icon name="arrow-undo-outline" style="font-size: 14px; pointer-events: none;"></ion-icon>
+                  </button>
                   
                   <button type="button" class="sub-reply-copy-btn" style="background: transparent; border: none; color: #78909c; cursor: pointer; display: flex; align-items: center; padding: 2px; transition: 0.2s;" title="Copy text">
                     <ion-icon name="copy-outline" style="font-size: 14px; pointer-events: none;"></ion-icon>
                   </button>
-
                   
                   ${
                     canDelete
@@ -3988,7 +4241,6 @@ document.addEventListener("DOMContentLoaded", () => {
               </div>
               <p id="sub-reply-text-${reply.comment_id}" style="font-size: 12.5px; color: #cfd8dc; margin: 0; line-height: 1.5; word-break: break-word;">${reply.comment_text}</p>
             </div>
-            
           `;
           pageTransitionOverlay.style.display = "none";
                 })
@@ -4353,43 +4605,59 @@ document.addEventListener("click", (e) => {
 // =========================================================================
 // 4. THE INVISIBLE ATTACHMENT INJECTOR (THE MAGIC TRICK!)
 // =========================================================================
-// This runs exactly 1 millisecond BEFORE your form submits to secretly
-// attach the image HTML to the text box so the database accepts it.
 document.addEventListener("click", (e) => {
   const sendBtn = e.target.closest(".uiverse-send-btn, .comment-reply-submit-action-btn, .sub-edit-save-btn, .comment-edit-save-action-btn");
   if (sendBtn) {
     const wrapper = sendBtn.closest(".uiverse-text-box, .reddit-inline-reply-box, .reddit-inline-edit-box, .sub-reply-inline-edit-box");
     if (wrapper) {
       const textarea = wrapper.querySelector("textarea");
-      const previewWrapper = wrapper.querySelector(".attachment-preview-wrapper");
-      const previewImg = wrapper.querySelector(".attachment-preview-img");
-
-      if (textarea && previewImg && previewImg.src) {
-        // Build the HTML tag using the Cloudinary URL we saved in the preview
-        const imgHtml = `\n<br><img src="${previewImg.src}" style="max-width: 250px; border-radius: 8px; margin-top: 10px;" alt="User Upload">\n`;
+      
+      if (textarea) {
+        // --- A. HANDLE IMAGE ATTACHMENTS ---
+        const previewWrapper = wrapper.querySelector(".attachment-preview-wrapper");
+        const previewImg = wrapper.querySelector(".attachment-preview-img");
+        let imgHtml = "";
         
-        // Inject the HTML
-        textarea.value = textarea.value + imgHtml;
+        if (previewImg && previewImg.src) {
+          imgHtml = `\n<br><img src="${previewImg.src}" style="max-width: 250px; border-radius: 8px; margin-top: 10px;" alt="User Upload">\n`;
+          textarea.value = textarea.value + imgHtml;
+        }
 
-        // Remove it from the text box 50 milliseconds later so the user never sees the raw code!
-        setTimeout(() => {
-          textarea.value = textarea.value.replace(imgHtml, "");
-        }, 50);
-
-        // Watch for a successful submission (when your native code clears the text box) and purge the preview UI
-        const checkClear = setInterval(() => {
-          if (textarea.value === "") {
-            if (previewWrapper) previewWrapper.remove();
-            clearInterval(checkClear);
-          }
-        }, 300);
+        // --- B. HANDLE @USERNAME HIGHLIGHTING ---
+        const activeTag = textarea.getAttribute("data-active-tag");
+        let highlightedTag = "";
         
-        // Stop checking after 4 seconds just in case the server fails
-        setTimeout(() => clearInterval(checkClear), 4000); 
+        // If they replied to someone, wrap the tag in a beautiful yellow pill badge!
+        if (activeTag && textarea.value.includes(activeTag)) {
+           // ✅ FIXED: Added 'display: inline-block; width: max-content;' so it tightly hugs the text and stops stretching!
+           highlightedTag = `<span style="display: inline-block; width: max-content; color: var(--citrine); font-weight: 700; background: rgba(229, 184, 0, 0.15); padding: 2px 6px; border-radius: 4px; line-height: 1;">${activeTag}</span>`;
+           textarea.value = textarea.value.replace(activeTag, highlightedTag);
+        }
+
+        // --- C. THE CLEANUP ILLUSION ---
+        if (imgHtml || highlightedTag) {
+          
+          // Remove the raw HTML from the user's screen 50 milliseconds later so they never see the code!
+          setTimeout(() => {
+            if (imgHtml) textarea.value = textarea.value.replace(imgHtml, "");
+            if (highlightedTag) textarea.value = textarea.value.replace(highlightedTag, activeTag);
+          }, 50);
+
+          // Watch for a successful submission (when the backend clears the box) and purge the UI
+          const checkClear = setInterval(() => {
+            if (textarea.value === "" || textarea.value === activeTag) {
+              if (previewWrapper) previewWrapper.remove();
+              textarea.removeAttribute("data-active-tag"); // Wipe the memory
+              clearInterval(checkClear);
+            }
+          }, 300);
+          
+          setTimeout(() => clearInterval(checkClear), 4000); 
+        }
       }
     }
   }
-}, true); // Setting this to 'true' ensures it intercepts the click before your submit functions run!
+}, true); // 'true' ensures this intercepts the click before your submit functions run!
 
 
 
