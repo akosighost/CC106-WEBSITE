@@ -2841,3 +2841,27 @@ ul {
     display: none !important;
   }
 }
+
+
+/* Password Strength Feedback */
+.pwd-met {
+  color: var(--citrine) !important;
+}
+
+#password-strength-container p {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.2s;
+}
+
+/* Remove browser default password eye icons */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear,
+input[type="password"]::-webkit-credentials-auto-fill-button {
+  display: none !important;
+}
+
+input[type="password"]::-webkit-contacts-auto-fill-button {
+  display: none !important;
+}

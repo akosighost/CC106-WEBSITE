@@ -933,6 +933,38 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
+  // --- PASSWORD STRENGTH CHECKER ---
+  const passwordInput = document.getElementById("signup-password");
+  const strengthContainer = document.getElementById("password-strength-container");
+  const registerBtn = signupForm.querySelector('button[type="submit"]');
+
+  if (passwordInput && strengthContainer) {
+    passwordInput.addEventListener("input", function() {
+      const val = this.value;
+      
+      // Show container when user starts typing
+      strengthContainer.style.display = val.length > 0 ? "block" : "none";
+
+      // Validation Rules
+      const isLen = val.length >= 8;
+      const isCase = /[a-z]/.test(val) && /[A-Z]/.test(val);
+      const isNum = /[0-9]/.test(val);
+      const isSpecial = /[^A-Za-z0-9]/.test(val);
+
+      // Update UI
+      document.getElementById("pwd-len").className = isLen ? "pwd-met" : "";
+      document.getElementById("pwd-upper").className = isCase ? "pwd-met" : "";
+      document.getElementById("pwd-num").className = isNum ? "pwd-met" : "";
+      document.getElementById("pwd-special").className = isSpecial ? "pwd-met" : "";
+
+      // Optional: Disable register button until strong
+      const isStrong = isLen && isCase && isNum && isSpecial;
+      registerBtn.disabled = !isStrong;
+      registerBtn.style.opacity = isStrong ? "1" : "0.5";
+      registerBtn.style.cursor = isStrong ? "pointer" : "not-allowed";
+    });
+  }
 });
 
 /*-----------------------------------*\
@@ -956,7 +988,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // 2. Create Account Form Toggle (NEW)
+  // 3. Confirm Password Form Toggle
   const signupPasswordInput = document.getElementById("signup-password");
   const signupToggleIcon = document.getElementById("signup-password-toggle-icon");
 
@@ -971,6 +1003,23 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   }
+
+  // 3. Confirm Password Form Toggle
+  const signupConfirmPasswordInput = document.getElementById("signup-confirm-password");
+  const signupConfirmToggleIcon = document.getElementById("signup-confirm-password-toggle-icon");
+
+  if (signupConfirmToggleIcon && signupConfirmPasswordInput) {
+    signupConfirmToggleIcon.addEventListener("click", function () {
+      if (signupConfirmPasswordInput.type === "password") {
+        signupConfirmPasswordInput.type = "text";
+        this.setAttribute("name", "eye-off-outline");
+      } else {
+        signupConfirmPasswordInput.type = "password";
+        this.setAttribute("name", "eye-outline");
+      }
+    });
+  }
+
   
 });
 

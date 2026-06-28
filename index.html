@@ -515,7 +515,6 @@
 
           <div class="input-group">
             <input type="password" id="login-password" placeholder="Password" required class="login-input" style="padding-right: 45px;" />
-            <ion-icon name="lock-closed-outline"></ion-icon>
             <ion-icon name="eye-outline" id="password-toggle-icon" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 20px; color: #667788; z-index: 10;"></ion-icon>
           </div>
 
@@ -682,13 +681,23 @@
             <input type="email" id="signup-email" placeholder="Email Address" required class="login-input" />
             <ion-icon name="mail-outline"></ion-icon>
           </div>
-          <div class="input-group">
-            <input type="password" id="signup-password" placeholder="Password" required class="login-input" style="padding-right: 45px;" />
-            <ion-icon name="eye-outline" id="signup-password-toggle-icon" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 20px; color: #667788; z-index: 10;"></ion-icon>
-          </div>
+          <!-- The Input Group stays here -->
+<div class="input-group">
+  <input type="password" id="signup-password" placeholder="Password" required class="login-input" style="padding-right: 45px;" />
+  <ion-icon name="eye-outline" id="signup-password-toggle-icon" ... ></ion-icon>
+</div>
+
+<!-- Strength container is now OUTSIDE -->
+<div id="password-strength-container" style="margin-top: 10px; margin-bottom: 15px; font-size: 11px; color: #678; display: none;">
+  <p id="pwd-len">○ 8+ characters</p>
+  <p id="pwd-upper">○ Uppercase & Lowercase</p>
+  <p id="pwd-num">○ Number</p>
+  <p id="pwd-special">○ Special character (!@#$%^&*)</p>
+</div>
+          
           <div class="input-group">
             <input type="password" id="signup-confirm-password" placeholder="Confirm Password" required class="login-input" style="padding-right: 45px;" />
-            <ion-icon name="eye-outline" id="signup-confirm-password-toggle-icon" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 20px; color: #667788; z-index: 10;"></ion-icon>
+            <ion-icon name="eye-outline" id="signup-confirm-password-toggle-icon"> </ion-icon>
           </div>
           <button type="submit" class="signin-submit-btn">Register</button>
           <div style="text-align: center; margin-top: 20px;">

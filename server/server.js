@@ -379,12 +379,12 @@ app.get('/api/reviews/details/:id', async (req, res) => {
     const userRatedValue = userRatingQuery.rows.length > 0 ? userRatingQuery.rows[0].rating : null;
 
     const commentsQuery = await pool.query(
-      `SELECT c.*, u.username, u.is_admin AS comment_user_is_admin,
+      `SELECT c.*, u.username, u.is_admin AS comment_user_is_admin, u.user_avatar, -- ✅ ADDED u.user_avatar HERE
        (SELECT COUNT(*)::INT FROM comment_likes cl WHERE cl.comment_id = c.comment_id) as upvote_score,
        EXISTS (SELECT 1 FROM comment_likes cl JOIN users lu ON cl.user_id = lu.user_id WHERE cl.comment_id = c.comment_id AND LOWER(lu.email) = LOWER($2)) as user_has_liked,
        EXISTS (SELECT 1 FROM comment_dislikes cd JOIN users lu ON cd.user_id = lu.user_id WHERE cd.comment_id = c.comment_id AND LOWER(lu.email) = LOWER($2)) as user_has_disliked
        FROM movie_comments c JOIN users u ON c.user_id = u.user_id 
-       WHERE c.review_id = $1 AND c.comment_type != 'community' -- ✅ FIX: Excludes global community posts!
+       WHERE c.review_id = $1 AND c.comment_type != 'community' 
        ORDER BY c.comment_id ASC`,
       [reviewId, email || '']
     );
