@@ -265,31 +265,30 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-// WHAT NEW POP UP
 
-// document.addEventListener("DOMContentLoaded", () => {
-//   const whatsNewModal = document.getElementById("whats-new-modal");
-//   const whatsNewBtn = document.getElementById("whats-new-btn");
+document.addEventListener("DOMContentLoaded", () => {
+  const whatsNewModal = document.getElementById("whats-new-modal");
+  const whatsNewBtn = document.getElementById("whats-new-btn");
 
-//   // Check if the user has already seen the popup
-//   if (!localStorage.getItem("whatsNewShown")) {
-//     if (whatsNewModal) {
-//       whatsNewModal.style.display = "flex";
-//       document.body.style.overflow = "hidden"; // Stop scrolling
-//     }
-//   }
+  // Check if the user has already seen the popup
+  if (!localStorage.getItem("whatsNewShown")) {
+    if (whatsNewModal) {
+      whatsNewModal.style.display = "flex";
+      document.body.style.overflow = "hidden"; // Stop scrolling
+    }
+  }
 
-//   // Handle clicking "Got it"
-//   if (whatsNewBtn) {
-//     whatsNewBtn.addEventListener("click", () => {
-//       whatsNewModal.style.display = "none";
-//       document.body.style.overflow = "auto"; // Resume scrolling
+  // Handle clicking "Got it"
+  if (whatsNewBtn) {
+    whatsNewBtn.addEventListener("click", () => {
+      whatsNewModal.style.display = "none";
+      document.body.style.overflow = "auto"; // Resume scrolling
       
-//       // Save the flag so it never shows again
-//       localStorage.setItem("whatsNewShown", "true");
-//     });
-//   }
-// });
+      // Save the flag so it never shows again
+      localStorage.setItem("whatsNewShown", "true");
+    });
+  }
+});
 
 /**
  * Navbar Toggle Logic Controller
