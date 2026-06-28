@@ -703,6 +703,7 @@ app.get('/api/community/feed', async (req, res) => {
     const feedQuery = await pool.query(
       `SELECT c.comment_id, c.comment_text, c.created_at, c.rating,
               u.username, u.user_avatar, r.review_id, r.movie_name, r.publish_date, r.image_data,
+              (SELECT COALESCE(ROUND(AVG(rt.rating), 1), 0) FROM movie_ratings rt WHERE rt.review_id = r.review_id) as movie_avg_rating,
               (SELECT COUNT(*)::INT FROM comment_likes cl WHERE cl.comment_id = c.comment_id) as likes_count,
               (SELECT COUNT(*)::INT FROM movie_comments sub_c WHERE sub_c.parent_comment_id = c.comment_id) as comments_count,
               EXISTS (SELECT 1 FROM comment_likes cl 
@@ -711,7 +712,7 @@ app.get('/api/community/feed', async (req, res) => {
        FROM movie_comments c
        JOIN users u ON c.user_id = u.user_id
        JOIN reviews r ON c.review_id = r.review_id
-       WHERE c.comment_type = 'community' -- ✅ FIXED: This filter keeps sub-replies off the main feed!
+       WHERE c.comment_type = 'community' 
        ORDER BY c.comment_id DESC`,
        [email || '']
     );

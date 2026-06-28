@@ -1878,7 +1878,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const isOwner = c.username === currentUsername; // Check if current user is the owner
         const isAdmin = localStorage.getItem("isAdmin") === "true"; // Check if user is admin
 
-        const score = parseFloat(c.rating) || 4;
+        
+        // ✅ STRICT MOVIE RATING SYNC
+        // This strictly uses the movie's true global average from the database. No fake 5-star fallbacks!
+        const score = parseFloat(c.movie_avg_rating) || 0; 
+
         let starHTML = "";
         for (let i = 1; i <= 5; i++) {
           starHTML += `<ion-icon name="${score >= i ? "star" : "star-outline"}"></ion-icon>`;
@@ -2201,22 +2205,28 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      try {
-        submitBtn.textContent = "POSTING PACKETS...";
-        submitBtn.disabled = true;
+      // ✅ Fix: Safely grab the rating, or default to 5 stars if no star selector exists
+      const ratingElement = document.getElementById("community-rating-value");
+      const selectedRating = ratingElement ? parseInt(ratingElement.value, 10) : 5; 
 
-        const response = await fetch(
-          `${API_BASE_URL}/api/reviews/details/${targetReviewId}/comments`,
-          {
+      try {
+        if (submitBtn) {
+          submitBtn.textContent = "Posting...";
+          submitBtn.disabled = true;
+        }
+
+        // ✅ Fix: Properly uses targetReviewId and commentMessage
+        const response = await fetch(`${API_BASE_URL}/api/reviews/details/${targetReviewId}/comments`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               email: userEmail,
               commentText: commentMessage,
-              rating: 4,
-              type: "community", // ✅ FIX: Declare this as a global community post
+              rating: selectedRating, 
+              parentCommentId: null,
+              type: 'community' 
             }),
-          },
+          }
         );
 
         if (response.ok) {
@@ -2228,13 +2238,10 @@ document.addEventListener("DOMContentLoaded", () => {
           document.body.classList.remove("active");
           this.reset();
 
-          // ✅ FIXED: Trigger an immediate, forced re-render of the feed grid
-          // This pulls the latest counts from the database and updates the DOM instantly
+          // ✅ Trigger an immediate, forced re-render of the feed grid
           const activeStartupEmail = localStorage.getItem("userEmail") || "";
-          await fetchAndRenderCommunityFeed(activeStartupEmail);
-
           if (typeof fetchAndRenderCommunityFeed === "function") {
-            await fetchAndRenderCommunityFeed();
+            await fetchAndRenderCommunityFeed(activeStartupEmail);
           } else {
             window.location.reload();
           }
