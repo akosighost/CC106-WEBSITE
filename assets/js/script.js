@@ -3723,7 +3723,6 @@ document.addEventListener("DOMContentLoaded", () => {
           .getElementById("signin-modal-overlay")
           ?.classList.add("active");
       } else {
-        uploadModal.classList.add("active");
         document.body.classList.add("active");
 
         // FIX: Look for the checkbox wrapper and turn it on if the user is an admin
