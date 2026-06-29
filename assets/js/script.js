@@ -1805,6 +1805,10 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
+  //     document.querySelectorAll(".reviewer-name").forEach(element => {
+  // if (element.textContent.trim().length > 20) {
+  //   element.classList.add("marquee");
+  // }
       // ✅ FIXED: Renders movie posters inside reviewsGrid instead of wiping out the community feed section
       reviewsGrid.innerHTML = reviews
         .map((item) => {
@@ -1817,19 +1821,22 @@ document.addEventListener("DOMContentLoaded", () => {
               : "☆☆☆☆☆";
 
           return `
-          <div class="premium-box-card review-click-target-node" data-review-id="${item.review_id}" style="border-bottom: 3px solid var(--citrine); style="cursor: pointer;">
-            <div class="poster-wrapper">
-              <img src="${item.image_data || "./assets/images/obs.jpg"}" alt="${item.movie_name}" />
-            </div>
-            <div class="poster-footer">
-              <span class="reviewer-name">${item.movie_name}</span>
-              <div class="card-meta">
-                <span class="stars-indicator" style="color: var(--citrine);">${starText}</span>
-                <span class="review-date">${item.publish_date}</span>
-              </div>
-            </div>
+      <div class="premium-box-card review-click-target-node" data-review-id="${item.review_id}" style="border-bottom: 3px solid var(--citrine); cursor: pointer; display: flex; flex-direction: column; height: 100%;">
+        
+        <div class="poster-wrapper" style="position: relative; width: 100%; padding-top: 150%; height: 0; overflow: hidden; margin-bottom: 10px; background-color: #0b1416; border-radius: 4px;">
+          <img src="${item.image_data || "./assets/images/obs.jpg"}" alt="${item.movie_name}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; display: block;" />
+        </div>
+        
+        <div class="poster-footer" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; gap: 4px;">
+          <span class="reviewer-name" style="display: block; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 13px; font-weight: 600; color: white;">${item.movie_name}</span>
+          <div class="card-meta" style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="stars-indicator" style="color: var(--citrine); font-size: 11px;">${starText}</span>
+            <span class="review-date" style="color: #667788; font-size: 11px;">${item.publish_date}</span>
           </div>
-        `;
+        </div>
+        
+      </div>
+      `;
         })
         .join("");
     } catch (err) {
@@ -4491,6 +4498,7 @@ document.addEventListener("DOMContentLoaded", () => {
             grid.innerHTML = `<p style="color: #678; font-size: 14px; grid-column: 1 / -1; text-align: center; padding: 40px;">No movies found in this category.</p>`;
             return;
           }
+          
 
           grid.innerHTML = data.map((item) => {
             const ratingCount = parseInt(item.rating_count) || 0;
@@ -4814,7 +4822,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  /*-----------------------------------*\
+/*-----------------------------------*\
  * #DYNAMIC RUNNING TEXT (MARQUEE) FOR LONG TITLES
 \*-----------------------------------*/
 document.addEventListener("DOMContentLoaded", () => {
@@ -4827,15 +4835,20 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!title.hasAttribute("data-checked") && title.tagName.toLowerCase() === "span") {
         title.setAttribute("data-checked", "true");
         
-        // If the movie title is longer than 16 characters, make it run!
-        if (title.textContent.length > 16) {
+        // 1. If the movie title is longer than 20 characters, make it run!
+        if (title.textContent.length > 20) {
           const marquee = document.createElement("marquee");
-          marquee.setAttribute("scrollamount", "3"); // Adjust this number to change the scrolling speed
-          marquee.className = title.className; // Keep your existing font styles
-          marquee.style.cssText = title.style.cssText; // Keep your existing colors
+          marquee.setAttribute("scrollamount", "4"); // Smooth scrolling speed
+          marquee.className = title.className; 
+          marquee.style.cssText = title.style.cssText; 
+          
+          // 2. 🚨 THE FIX: Override the strict CSS ellipsis so the text can actually move!
+          marquee.style.textOverflow = "clip";
+          marquee.style.overflow = "visible";
+          
           marquee.textContent = title.textContent;
           
-          // Swap the static text with the running text!
+          // 3. Swap the static text with the running text!
           title.parentNode.replaceChild(marquee, title);
         }
       }
@@ -4845,7 +4858,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Watch the page continuously for new database loads
   titleObserver.observe(document.body, { childList: true, subtree: true });
 });
-  
+
   // Start observing the page for database injections
   observer.observe(document.body, { childList: true, subtree: true });
 });
